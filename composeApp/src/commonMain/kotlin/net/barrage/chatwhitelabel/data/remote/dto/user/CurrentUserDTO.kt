@@ -1,4 +1,4 @@
-package net.barrage.chatwhitelabel.data.remote.dto.auth
+package net.barrage.chatwhitelabel.data.remote.dto.user
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName

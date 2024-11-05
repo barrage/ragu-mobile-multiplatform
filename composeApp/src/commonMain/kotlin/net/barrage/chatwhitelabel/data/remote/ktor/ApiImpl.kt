@@ -8,7 +8,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Parameters
-import net.barrage.chatwhitelabel.data.remote.dto.auth.CurrentUserDTO
+import net.barrage.chatwhitelabel.data.remote.dto.user.CurrentUserDTO
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.utils.TokenStorage
 import net.barrage.chatwhitelabel.utils.safeApiCall
@@ -32,6 +32,13 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
     override suspend fun getCurrentUser(): Response<CurrentUserDTO> {
         return safeApiCall {
             val response = httpClient.get("users/current") { addCookieHeader() }
+            response
+        }
+    }
+
+    override suspend fun getWebSocketToken(): Response<String> {
+        return safeApiCall {
+            val response = httpClient.get("ws") { addCookieHeader() }
             response
         }
     }

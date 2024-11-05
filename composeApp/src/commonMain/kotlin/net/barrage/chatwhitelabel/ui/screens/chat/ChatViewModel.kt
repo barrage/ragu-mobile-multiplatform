@@ -3,10 +3,13 @@ package net.barrage.chatwhitelabel.ui.screens.chat
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.utils.WebSocketChatClient
 
-class ChatViewModel : ViewModel() {
+class ChatViewModel(private val webSocketTokenUseCase: WebSocketTokenUseCase) : ViewModel() {
     private val _messages = mutableStateListOf<String>()
     val messages: List<String> = _messages
 
@@ -52,6 +55,10 @@ class ChatViewModel : ViewModel() {
     }
 
     fun initializeWebSocketClient(callback: ReceiveMessageCallback, scope: CoroutineScope) {
+        scope.launch {
+            val token = webSocketTokenUseCase()
+            Napier.d(token.toString())
+        }
         webSocketChatClient = WebSocketChatClient(callback, scope)
     }
 }
