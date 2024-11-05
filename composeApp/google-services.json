@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "881711982075",
+    "project_id": "tgg-kmp-test",
+    "storage_bucket": "tgg-kmp-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:881711982075:android:d1875c39d3cd87d11d175e",
+        "android_client_info": {
+          "package_name": "net.barrage.chatwhitelabel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkY00Qs7-vD-k6mNn0f2zwTvddDsFFSEQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:881711982075:android:c0323e471fdd68db1d175e",
+        "android_client_info": {
+          "package_name": "org.barrage.tggfellowkmp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkY00Qs7-vD-k6mNn0f2zwTvddDsFFSEQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

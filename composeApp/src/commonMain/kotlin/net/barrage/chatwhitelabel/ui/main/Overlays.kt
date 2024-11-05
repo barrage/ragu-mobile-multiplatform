@@ -1,0 +1,27 @@
+package net.barrage.chatwhitelabel.ui.main
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import net.barrage.chatwhitelabel.ui.components.NoInternetAlert
+
+@Composable
+fun Overlays(appState: AppState, modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize()) {
+        if (!appState.networkAvailable.value) {
+            NoInternetOverlay(modifier = Modifier.fillMaxSize())
+        }
+    }
+}
+
+@Composable
+fun NoInternetOverlay(modifier: Modifier = Modifier) {
+    Box(modifier = modifier) {
+        NoInternetAlert(modifier = Modifier.fillMaxWidth().padding(20.dp).align(Alignment.Center))
+    }
+}
