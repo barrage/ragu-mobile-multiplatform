@@ -3,9 +3,9 @@ package net.barrage.chatwhitelabel.ui.screens.chat
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.utils.WebSocketChatClient
 
@@ -21,6 +21,10 @@ class ChatViewModel(private val webSocketTokenUseCase: WebSocketTokenUseCase) : 
     val isSendEnabled: Boolean
         get() = _isSendEnabled.value
 
+    private val _isReceivingMessage = mutableStateOf(false)
+    val isReceivingMessage: Boolean
+        get() = _isReceivingMessage.value
+
     var webSocketChatClient: WebSocketChatClient? = null
         private set
 
@@ -34,6 +38,10 @@ class ChatViewModel(private val webSocketTokenUseCase: WebSocketTokenUseCase) : 
 
     fun setSendEnabled(enabled: Boolean) {
         _isSendEnabled.value = enabled
+    }
+
+    fun setReceivingMessage(receiving: Boolean) {
+        _isReceivingMessage.value = receiving
     }
 
     fun sendMessage() {
@@ -57,8 +65,9 @@ class ChatViewModel(private val webSocketTokenUseCase: WebSocketTokenUseCase) : 
     fun initializeWebSocketClient(callback: ReceiveMessageCallback, scope: CoroutineScope) {
         scope.launch {
             val token = webSocketTokenUseCase()
-            Napier.d(token.toString())
+            if (token is Response.Success) {
+                webSocketChatClient = WebSocketChatClient(callback, scope, token.data)
+            }
         }
-        webSocketChatClient = WebSocketChatClient(callback, scope)
     }
 }

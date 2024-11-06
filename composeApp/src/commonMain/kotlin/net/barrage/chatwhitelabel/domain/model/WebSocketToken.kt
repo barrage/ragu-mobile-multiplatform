@@ -1,3 +1,3 @@
 package net.barrage.chatwhitelabel.domain.model
 
-data class WebSocketToken(val token: String)
+data class WebSocketToken(val value: String)

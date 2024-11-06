@@ -1,168 +1,136 @@
 package net.barrage.chatwhitelabel.utils
 
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
+import io.ktor.client.plugins.websocket.WebSocketException
 import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
-import io.ktor.websocket.readText
+import io.ktor.websocket.readReason
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
+import kotlinx.io.IOException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.put
+import net.barrage.chatwhitelabel.domain.model.WebSocketToken
 import net.barrage.chatwhitelabel.ui.screens.chat.ReceiveMessageCallback
+import net.barrage.chatwhitelabel.utils.chat.MessageHandler
 
 class WebSocketChatClient(
     private val receiveMessageCallback: ReceiveMessageCallback,
     private val scope: CoroutineScope,
+    private val wsToken: WebSocketToken,
 ) {
-    private var openChat = false
-    private var currentConversationId: String? = null
-    private var sendFirstMessage: () -> Unit = {}
-    private val userId = "11a8379e-6654-4293-a6b0-cda267c45f8f"
-
+    private var currentChatId: String? = null
     private var session: WebSocketSession? = null
-    private var sessionJob: Job? = null
+    private val messageHandler = MessageHandler(receiveMessageCallback)
 
     init {
         connect()
     }
 
     private fun connect() {
-        val serverUri = "wss://api.tgg-fellow-staging.m2.barrage.beer/?userId=$userId"
-        sessionJob =
-            scope.launch {
+        val serverUri = "wss://${Constants.BASE_URL}/?token=${wsToken.value}"
+        scope.launch {
+            try {
                 wsClient.webSocket(serverUri) {
                     receiveMessageCallback.enableSending()
                     session = this
                     handleIncomingMessages(this)
                 }
+            } catch (e: WebSocketException) {
+                debugLogError("WebSocket Connection failed", e)
+            } catch (e: IOException) {
+                debugLogError("Network error during WebSocket connection", e)
             }
+        }
     }
 
     private suspend fun handleIncomingMessages(wsSession: DefaultClientWebSocketSession) {
-        if (wsSession.isActive) {
+        try {
             for (frame in wsSession.incoming) {
                 when (frame) {
-                    is Frame.Text -> {
-                        val message = frame.readText()
-                        handleMessage(message)
-                    }
-
-                    else -> Unit
+                    is Frame.Text -> messageHandler.handleTextFrame(frame)
+                    is Frame.Close -> debugLog("WebSocket Closed: ${frame.readReason()}")
+                    else -> debugLog("WebSocket Unsupported frame: ${frame::class.simpleName}")
                 }
             }
+        } catch (e: WebSocketException) {
+            debugLogError("WebSocket Error", e)
+        } catch (e: IOException) {
+            debugLogError("Network Error", e)
+        } finally {
+            debugLog("WebSocket Connection closed")
         }
-    }
-
-    private fun handleMessage(message: String) {
-        if (message == "##STOP##") {
-            receiveMessageCallback.stopReceivingMessage()
-            return
-        }
-
-        runCatching { Json.decodeFromString<ConfigMessage>(message) }
-            .onSuccess { jsonMessage ->
-                val body = jsonMessage.body as? JsonObject
-                val config = body?.get("config")?.let { Json.decodeFromJsonElement<Config>(it) }
-
-                if (config?.stream == true) {
-                    currentConversationId = body["chatId"]?.toString()
-                    openChat = true
-                    sendFirstMessage()
-                    sendFirstMessage = {}
-                }
-            }
-            .onFailure { receiveMessageCallback.receiveMessage(message) }
     }
 
     fun sendMessage(message: String) {
-        if (!openChat) {
-            openChat(message)
-        } else {
-            val chatMessageJsonObject = buildJsonObject {
-                put("userId", userId)
-                put("type", "chat")
-                put("payload", message)
+        if (currentChatId == null) {
+            openNewChat()
+            messageHandler.sendFirstMessage = {
+                sendChatMessage(message)
+                messageHandler.sendFirstMessage = {}
             }
-            scope.launch { session?.send(Frame.Text(Json.encodeToString(chatMessageJsonObject))) }
+        } else {
+            sendChatMessage(message)
         }
     }
 
-    private fun openChat(messageString: String) {
-        val language = "eng"
-
-        val openChatMessage =
-            ChatMessage(
-                userId = userId,
-                type = "system",
-                payload =
-                    buildJsonObject {
-                        put("header", "open_chat")
-                        put(
-                            "body",
-                            buildJsonObject {
-                                put("type", "open_chat")
-                                put("llm", "gpt-4")
-                                put("agentId", "1")
-                                put("language", language)
-                            },
-                        )
-                    },
-            )
-
-        val originalMessageJsonObject = buildJsonObject {
-            put("userId", userId)
+    private fun sendChatMessage(message: String) {
+        val chatMessage = buildJsonObject {
             put("type", "chat")
-            put("payload", messageString)
+            put("text", message)
         }
+        sendJsonMessage(chatMessage)
+    }
 
-        scope.launch {
-            session?.send(Frame.Text(Json.encodeToString(openChatMessage)))
-            sendFirstMessage = {
-                scope.launch {
-                    session?.send(Frame.Text(Json.encodeToString(originalMessageJsonObject)))
-                }
-            }
+    private fun openNewChat() {
+        val openChatMessage = buildJsonObject {
+            put("type", "system")
+            put(
+                "payload",
+                buildJsonObject {
+                    put("type", "chat_open_new")
+                    put("agentId", "00000000-0000-0000-0000-000000000000")
+                },
+            )
         }
+        sendJsonMessage(openChatMessage)
+    }
+
+    private fun sendJsonMessage(jsonObject: JsonObject) {
+        val messageString = Json.encodeToString(jsonObject)
+        debugLog("WebSocket Outgoing: $messageString")
+        scope.launch { session?.send(Frame.Text(messageString)) }
     }
 
     fun disconnect() {
         scope.launch {
-            sessionJob?.cancel()
-            receiveMessageCallback.disableSending()
-            receiveMessageCallback.stopReceivingMessage()
+            closeChat()
             session?.close()
-            openChat = false
+            currentChatId = null
+            debugLog("WebSocket Disconnected")
         }
     }
 
-    /*fun cancelMessageStream() {
-        val stopStreamMessage = ChatMessage(
-            userId = userId,
-            type = "system",
-            payload = buildJsonObject {
-                put("header", "stop_stream")
+    private fun closeChat() {
+        if (currentChatId != null) {
+            val closeChatMessage = buildJsonObject {
+                put("type", "system")
+                put("payload", buildJsonObject { put("type", "chat_close") })
             }
-        )
-
-        scope.launch {
-            session?.send(Frame.Text(Json.encodeToString(stopStreamMessage)))
+            sendJsonMessage(closeChatMessage)
         }
-    }*/
+    }
+
+    fun stopMessageStream() {
+        val stopStreamMessage = buildJsonObject {
+            put("type", "system")
+            put("payload", buildJsonObject { put("type", "chat_stop_stream") })
+        }
+        sendJsonMessage(stopStreamMessage)
+    }
 }
-
-@Serializable
-data class ChatMessage(val userId: String, val type: String, val payload: JsonElement)
-
-@Serializable data class ConfigMessage(val header: String, val body: JsonElement)
-
-@Serializable data class Config(val stream: Boolean, val language: String, val temperature: Double)

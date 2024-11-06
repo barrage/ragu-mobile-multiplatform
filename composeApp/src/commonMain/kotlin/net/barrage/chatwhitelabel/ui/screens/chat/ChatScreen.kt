@@ -27,6 +27,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -87,7 +88,9 @@ fun ChatScreen(
             inputText = viewModel.inputText,
             onInputTextChange = { viewModel.updateInputText(it) },
             onSendMessage = { viewModel.sendMessage() },
+            onStopReceivingMessage = { viewModel.webSocketChatClient?.stopMessageStream() },
             isSendEnabled = viewModel.isSendEnabled,
+            isReceivingMessage = viewModel.isReceivingMessage,
             focusManager = focusManager,
             chatInteractionSource = chatInteractionSource,
         )
@@ -143,7 +146,9 @@ private fun ChatInput(
     inputText: String,
     onInputTextChange: (String) -> Unit,
     onSendMessage: () -> Unit,
+    onStopReceivingMessage: () -> Unit,
     isSendEnabled: Boolean,
+    isReceivingMessage: Boolean,
     focusManager: FocusManager,
     chatInteractionSource: MutableInteractionSource,
 ) {
@@ -186,13 +191,21 @@ private fun ChatInput(
                     ) {
                         IconButton(
                             onClick = {
-                                onSendMessage()
+                                if (isReceivingMessage) {
+                                    onStopReceivingMessage()
+                                } else {
+                                    onSendMessage()
+                                }
                                 focusManager.clearFocus()
                             },
                             modifier = Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp),
                             enabled = isSendEnabled,
                         ) {
-                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null)
+                            Icon(
+                                if (isReceivingMessage) Icons.Filled.Close
+                                else Icons.AutoMirrored.Filled.Send,
+                                contentDescription = null,
+                            )
                         }
                     }
                 },
@@ -208,7 +221,6 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                 var addNewMessage = true
 
                 override fun receiveMessage(message: String) {
-                    disableSending()
                     if (addNewMessage) {
                         viewModel.addMessage(message)
                     } else {
@@ -217,6 +229,7 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                     if (addNewMessage) {
                         addNewMessage = false
                     }
+                    viewModel.setReceivingMessage(true)
                 }
 
                 override fun enableSending() {
@@ -230,6 +243,7 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                 override fun stopReceivingMessage() {
                     addNewMessage = true
                     enableSending()
+                    viewModel.setReceivingMessage(false)
                 }
 
                 override fun setTtsLanguage(language: String) {
@@ -238,6 +252,10 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
 
                 override fun setChatId(chatId: String) {
                     // Set chat ID
+                }
+
+                override fun onError(errorMessage: String) {
+                    // Handle error
                 }
             },
             scope = scope,

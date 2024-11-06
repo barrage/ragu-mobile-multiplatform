@@ -13,11 +13,20 @@ import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.pingInterval
 import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.seconds
 
 actual val wsClient: HttpClient
-    get() = HttpClient(CIO) { install(WebSockets) { pingInterval = 5.seconds } }
+    get() =
+        HttpClient(CIO) {
+            install(WebSockets) { pingInterval = 5.seconds }
+            if (isDebug) {
+                install(Logging) {
+                    level = LogLevel.ALL
+                    logger = Logger.SIMPLE
+                }
+            }
+        }
 actual val restClient: HttpClient
     get() =
         HttpClient(CIO) {
@@ -27,7 +36,7 @@ actual val restClient: HttpClient
             }
             defaultRequest {
                 header("Content-Type", "application/json")
-                url("https://llmao-kotlin-api-staging.m2.barrage.beer/")
+                url("https://${Constants.BASE_URL}/")
             }
             install(ContentNegotiation) {
                 json(

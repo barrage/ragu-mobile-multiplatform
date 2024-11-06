@@ -1,6 +1,8 @@
 package net.barrage.chatwhitelabel.utils
 
 object Constants {
+    const val BASE_URL = "llmao-kotlin-api-staging.m2.barrage.beer"
+
     object Auth {
         private const val GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
         private const val CLIENT_ID =
