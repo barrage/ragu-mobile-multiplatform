@@ -13,5 +13,5 @@ interface ReceiveMessageCallback {
 
     fun setTtsLanguage(language: String)
 
-    fun setChatId(chatId: String)
+    fun setChatTitle(title: String)
 }

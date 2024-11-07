@@ -7,7 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
-import net.barrage.chatwhitelabel.utils.WebSocketChatClient
+import net.barrage.chatwhitelabel.utils.chat.WebSocketChatClient
 
 class ChatViewModel(private val webSocketTokenUseCase: WebSocketTokenUseCase) : ViewModel() {
     private val _messages = mutableStateListOf<String>()
@@ -24,6 +24,10 @@ class ChatViewModel(private val webSocketTokenUseCase: WebSocketTokenUseCase) : 
     private val _isReceivingMessage = mutableStateOf(false)
     val isReceivingMessage: Boolean
         get() = _isReceivingMessage.value
+
+    private val _chatTitle = mutableStateOf("New chat")
+    val chatTitle: String
+        get() = _chatTitle.value
 
     var webSocketChatClient: WebSocketChatClient? = null
         private set
@@ -69,5 +73,9 @@ class ChatViewModel(private val webSocketTokenUseCase: WebSocketTokenUseCase) : 
                 webSocketChatClient = WebSocketChatClient(callback, scope, token.data)
             }
         }
+    }
+
+    fun setChatTitle(title: String) {
+        _chatTitle.value = title
     }
 }

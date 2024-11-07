@@ -1,4 +1,4 @@
-package net.barrage.chatwhitelabel.utils
+package net.barrage.chatwhitelabel.utils.chat
 
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.WebSocketException
@@ -17,7 +17,10 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.barrage.chatwhitelabel.domain.model.WebSocketToken
 import net.barrage.chatwhitelabel.ui.screens.chat.ReceiveMessageCallback
-import net.barrage.chatwhitelabel.utils.chat.MessageHandler
+import net.barrage.chatwhitelabel.utils.Constants
+import net.barrage.chatwhitelabel.utils.debugLog
+import net.barrage.chatwhitelabel.utils.debugLogError
+import net.barrage.chatwhitelabel.utils.wsClient
 
 class WebSocketChatClient(
     private val receiveMessageCallback: ReceiveMessageCallback,

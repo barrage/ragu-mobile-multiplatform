@@ -5,6 +5,7 @@ import io.ktor.websocket.readText
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import net.barrage.chatwhitelabel.ui.screens.chat.ReceiveMessageCallback
 import net.barrage.chatwhitelabel.utils.debugLog
 import net.barrage.chatwhitelabel.utils.debugLogError
@@ -47,10 +48,10 @@ class MessageHandler(private val receiveMessageCallback: ReceiveMessageCallback)
     }
 
     private fun handleChatTitle(jsonMessage: JsonObject) {
-        val chatId = jsonMessage["chatId"]?.toString()?.trim('"')
-        val title = jsonMessage["title"]?.toString()?.trim('"')
-        debugLog("Received chat title update for chat $chatId: $title")
-        // Chat title update logic can be implemented here if needed
+        val title = jsonMessage["title"]?.jsonPrimitive?.content
+        if (!title.isNullOrEmpty()) {
+            receiveMessageCallback.setChatTitle(title)
+        }
     }
 
     private fun handleChatClosed() {
