@@ -5,4 +5,6 @@ import net.barrage.chatwhitelabel.domain.Response
 
 interface ChatRepository {
     suspend fun updateChatTitle(chatId: String, title: String): Response<HttpResponse>
+
+    suspend fun deleteChat(chatId: String): Response<HttpResponse>
 }

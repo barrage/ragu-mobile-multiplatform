@@ -16,8 +16,10 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,6 +55,7 @@ fun ChatScreen(
     val chatInteractionSource = remember { MutableInteractionSource() }
     val chatInputFocused by chatInteractionSource.collectIsFocusedAsState()
     var menuVisible by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     LaunchedEffect(isKeyboardOpen, viewModel.messages) {
         if (viewModel.messages.isNotEmpty()) {
@@ -77,6 +80,7 @@ fun ChatScreen(
                     },
                     onDeleteChatClick = {
                         // Delete chat
+                        showDeleteConfirmation = true
                         menuVisible = false
                     },
                     onDismiss = { menuVisible = false },
@@ -107,6 +111,26 @@ fun ChatScreen(
                     focusManager = focusManager,
                     chatInteractionSource = chatInteractionSource,
                 )
+        )
+    }
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = { Text("Delete Chat") },
+            text = { Text("Are you sure you want to delete this chat?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteChat()
+                        showDeleteConfirmation = false
+                    }
+                ) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) { Text("No") }
+            },
         )
     }
 }

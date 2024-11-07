@@ -15,4 +15,6 @@ interface Api {
     suspend fun getWebSocketToken(): Response<String>
 
     suspend fun updateChatTitle(chatId: String, title: String): Response<HttpResponse>
+
+    suspend fun deleteChat(chatId: String): Response<HttpResponse>
 }

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.domain.Response
+import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.utils.chat.WebSocketChatClient
@@ -16,6 +17,7 @@ import net.barrage.chatwhitelabel.utils.chat.WebSocketChatClient
 class ChatViewModel(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
     private val updateChatTitleUseCase: UpdateChatTitleUseCase,
+    private val deleteChatUseCase: DeleteChatUseCase,
 ) : ViewModel() {
     private val _messages = mutableStateListOf<String>()
     val messages: List<String> = _messages
@@ -109,6 +111,17 @@ class ChatViewModel(
                 updateChatTitleUseCase(webSocketChatClient?.currentChatId.orEmpty(), chatTitle)
             if (response is Response.Success) {
                 setEditingTitle(false)
+            } else {
+                // Handle error
+            }
+        }
+    }
+
+    fun deleteChat() {
+        viewModelScope.launch {
+            val response = deleteChatUseCase(webSocketChatClient?.currentChatId.orEmpty())
+            if (response is Response.Success) {
+                // Handle success
             } else {
                 // Handle error
             }

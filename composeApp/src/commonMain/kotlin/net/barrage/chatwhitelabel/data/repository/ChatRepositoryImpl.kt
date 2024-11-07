@@ -8,4 +8,6 @@ import net.barrage.chatwhitelabel.domain.repository.ChatRepository
 class ChatRepositoryImpl(private val api: Api) : ChatRepository {
     override suspend fun updateChatTitle(chatId: String, title: String): Response<HttpResponse> =
         api.updateChatTitle(chatId, title)
+
+    override suspend fun deleteChat(chatId: String): Response<HttpResponse> = api.deleteChat(chatId)
 }

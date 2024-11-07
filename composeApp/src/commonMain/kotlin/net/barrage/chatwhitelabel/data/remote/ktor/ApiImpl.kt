@@ -2,6 +2,7 @@ package net.barrage.chatwhitelabel.data.remote.ktor
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.delete
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -53,6 +54,13 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
                     addCookieHeader()
                     setBody(mapOf("title" to title))
                 }
+            response
+        }
+    }
+
+    override suspend fun deleteChat(chatId: String): Response<HttpResponse> {
+        return safeApiCall {
+            val response = httpClient.delete("chats/$chatId") { addCookieHeader() }
             response
         }
     }
