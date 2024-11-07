@@ -1,4 +1,4 @@
-package net.barrage.chatwhitelabel.ui.screens.modaldrawer.components.history
+package net.barrage.chatwhitelabel.ui.screens.history.components.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,11 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import net.barrage.chatwhitelabel.ui.screens.modaldrawer.components.ModalDrawerHistoryViewState
+import net.barrage.chatwhitelabel.domain.model.HistoryElement
 
 @Composable
 fun ModalDrawerHistoryElement(
-    viewState: ModalDrawerHistoryViewState,
+    viewState: HistoryElement,
     modifier: Modifier = Modifier,
     onClick: (String) -> Unit,
 ) {

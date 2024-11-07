@@ -1,4 +1,4 @@
-package net.barrage.chatwhitelabel.ui.screens.modaldrawer.components
+package net.barrage.chatwhitelabel.ui.screens.history.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -16,14 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import kotlin.math.ceil
-import net.barrage.chatwhitelabel.ui.screens.modaldrawer.ModalDrawerContentViewState
-import net.barrage.chatwhitelabel.ui.screens.modaldrawer.components.topbar.DarkLightThemeSwitcher
-import net.barrage.chatwhitelabel.ui.screens.modaldrawer.components.topbar.ThemePopup
-import net.barrage.chatwhitelabel.ui.screens.modaldrawer.components.topbar.ThemeSelectorButton
+import net.barrage.chatwhitelabel.ui.screens.history.HistoryModalDrawerContentViewState
+import net.barrage.chatwhitelabel.ui.screens.history.components.topbar.DarkLightThemeSwitcher
+import net.barrage.chatwhitelabel.ui.screens.history.components.topbar.ThemePopup
+import net.barrage.chatwhitelabel.ui.screens.history.components.topbar.ThemeSelectorButton
 
 @Composable
 fun ModalDrawerContentTopBar(
-    viewState: ModalDrawerContentViewState,
+    viewState: HistoryModalDrawerContentViewState,
     theme: Color,
     isDarkMode: Boolean,
     onSelectThemeClick: (Color) -> Unit,

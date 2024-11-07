@@ -1,4 +1,4 @@
-package net.barrage.chatwhitelabel.ui.screens.modaldrawer.components.topbar
+package net.barrage.chatwhitelabel.ui.screens.history.components.topbar
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable

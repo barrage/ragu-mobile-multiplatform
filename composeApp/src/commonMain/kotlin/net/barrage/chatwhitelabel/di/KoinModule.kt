@@ -3,23 +3,27 @@ package net.barrage.chatwhitelabel.di
 import net.barrage.chatwhitelabel.data.remote.ktor.ApiImpl
 import net.barrage.chatwhitelabel.data.repository.AgentRepositoryImpl
 import net.barrage.chatwhitelabel.data.repository.AuthRepositoryImpl
+import net.barrage.chatwhitelabel.data.repository.HistoryRepositoryImpl
 import net.barrage.chatwhitelabel.data.repository.ChatRepositoryImpl
 import net.barrage.chatwhitelabel.data.repository.UserRepositoryImpl
 import net.barrage.chatwhitelabel.data.repository.WebSocketRepositoryImpl
 import net.barrage.chatwhitelabel.domain.remote.ktor.Api
 import net.barrage.chatwhitelabel.domain.repository.AgentRepository
 import net.barrage.chatwhitelabel.domain.repository.AuthRepository
+import net.barrage.chatwhitelabel.domain.repository.HistoryRepository
 import net.barrage.chatwhitelabel.domain.repository.ChatRepository
 import net.barrage.chatwhitelabel.domain.repository.UserRepository
 import net.barrage.chatwhitelabel.domain.repository.WebSocketRepository
 import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LoginUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
+import net.barrage.chatwhitelabel.ui.screens.history.HistoryViewModel
 import net.barrage.chatwhitelabel.ui.screens.login.LoginViewModel
 import net.barrage.chatwhitelabel.utils.DataStoreTokenStorage
 import net.barrage.chatwhitelabel.utils.TokenStorage
@@ -33,6 +37,7 @@ val useCaseModule = module {
     single<LoginUseCase> { LoginUseCase(get()) }
     single<LogoutUseCase> { LogoutUseCase(get()) }
     single<CurrentUserUseCase> { CurrentUserUseCase(get()) }
+    single<HistoryUseCase> { HistoryUseCase(get()) }
     single<WebSocketTokenUseCase> { WebSocketTokenUseCase(get()) }
     single<UpdateChatTitleUseCase> { UpdateChatTitleUseCase(get()) }
     single<DeleteChatUseCase> { DeleteChatUseCase(get()) }
@@ -48,6 +53,7 @@ val apiModule = module { single<Api> { ApiImpl(restClient, get()) } }
 val repositoryModule = module {
     single<AuthRepository> { AuthRepositoryImpl(get()) }
     single<UserRepository> { UserRepositoryImpl(get()) }
+    single<HistoryRepository> { HistoryRepositoryImpl(get()) }
     single<WebSocketRepository> { WebSocketRepositoryImpl(get()) }
     single<ChatRepository> { ChatRepositoryImpl(get()) }
     single<AgentRepository> { AgentRepositoryImpl(get()) }
