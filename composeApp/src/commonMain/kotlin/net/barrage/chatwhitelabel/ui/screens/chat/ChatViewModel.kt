@@ -1,15 +1,22 @@
+@file:Suppress("TooManyFunctions")
+
 package net.barrage.chatwhitelabel.ui.screens.chat
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.domain.Response
+import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.utils.chat.WebSocketChatClient
 
-class ChatViewModel(private val webSocketTokenUseCase: WebSocketTokenUseCase) : ViewModel() {
+class ChatViewModel(
+    private val webSocketTokenUseCase: WebSocketTokenUseCase,
+    private val updateChatTitleUseCase: UpdateChatTitleUseCase,
+) : ViewModel() {
     private val _messages = mutableStateListOf<String>()
     val messages: List<String> = _messages
 
@@ -24,6 +31,14 @@ class ChatViewModel(private val webSocketTokenUseCase: WebSocketTokenUseCase) : 
     private val _isReceivingMessage = mutableStateOf(false)
     val isReceivingMessage: Boolean
         get() = _isReceivingMessage.value
+
+    private val _isEditingTitle = mutableStateOf(false)
+    val isEditingTitle: Boolean
+        get() = _isEditingTitle.value
+
+    private val _isChatOpen = mutableStateOf(false)
+    val isChatOpen: Boolean
+        get() = _isChatOpen.value
 
     private val _chatTitle = mutableStateOf("New chat")
     val chatTitle: String
@@ -77,5 +92,26 @@ class ChatViewModel(private val webSocketTokenUseCase: WebSocketTokenUseCase) : 
 
     fun setChatTitle(title: String) {
         _chatTitle.value = title
+    }
+
+    fun setEditingTitle(editing: Boolean) {
+        _isEditingTitle.value = editing
+    }
+
+    fun setChatOpen(isChatOpen: Boolean) {
+        _isChatOpen.value = isChatOpen
+    }
+
+    fun updateTitle() {
+        viewModelScope.launch {
+            if (isChatOpen.not()) return@launch
+            val response =
+                updateChatTitleUseCase(webSocketChatClient?.currentChatId.orEmpty(), chatTitle)
+            if (response is Response.Success) {
+                setEditingTitle(false)
+            } else {
+                // Handle error
+            }
+        }
     }
 }

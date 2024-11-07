@@ -14,4 +14,6 @@ interface ReceiveMessageCallback {
     fun setTtsLanguage(language: String)
 
     fun setChatTitle(title: String)
+
+    fun setChatOpen(isChatOpen: Boolean)
 }

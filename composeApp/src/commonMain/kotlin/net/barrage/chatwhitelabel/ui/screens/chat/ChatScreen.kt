@@ -68,10 +68,11 @@ fun ChatScreen(
             state =
                 ChatTitleState(
                     title = viewModel.chatTitle,
-                    menuVisible = menuVisible,
+                    isMenuVisible = menuVisible,
+                    isEditingTitle = viewModel.isEditingTitle,
                     onThreeDotsClick = { menuVisible = true },
                     onEditTitleClick = {
-                        // Edit title
+                        viewModel.setEditingTitle(true)
                         menuVisible = false
                     },
                     onDeleteChatClick = {
@@ -79,6 +80,9 @@ fun ChatScreen(
                         menuVisible = false
                     },
                     onDismiss = { menuVisible = false },
+                    onTitleChange = { viewModel.setChatTitle(it) },
+                    onTitleChangeConfirmation = { viewModel.updateTitle() },
+                    isChatOpen = viewModel.isChatOpen,
                 ),
             modifier = Modifier.align(Alignment.CenterHorizontally),
         )
@@ -192,6 +196,10 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
 
                 override fun onError(errorMessage: String) {
                     // Handle error
+                }
+
+                override fun setChatOpen(isChatOpen: Boolean) {
+                    viewModel.setChatOpen(isChatOpen)
                 }
             },
             scope = scope,

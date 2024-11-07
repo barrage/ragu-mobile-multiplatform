@@ -1,8 +1,8 @@
 package net.barrage.chatwhitelabel.data.repository
 
-import net.barrage.chatwhitelabel.data.remote.ktor.Api
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.model.WebSocketToken
+import net.barrage.chatwhitelabel.domain.remote.ktor.Api
 import net.barrage.chatwhitelabel.domain.repository.WebSocketRepository
 
 class WebSocketRepositoryImpl(private val api: Api) : WebSocketRepository {

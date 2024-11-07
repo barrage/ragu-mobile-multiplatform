@@ -1,4 +1,4 @@
-package net.barrage.chatwhitelabel.data.remote.ktor
+package net.barrage.chatwhitelabel.domain.remote.ktor
 
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Parameters
@@ -13,4 +13,6 @@ interface Api {
     suspend fun getCurrentUser(): Response<CurrentUserDTO>
 
     suspend fun getWebSocketToken(): Response<String>
+
+    suspend fun updateChatTitle(chatId: String, title: String): Response<HttpResponse>
 }

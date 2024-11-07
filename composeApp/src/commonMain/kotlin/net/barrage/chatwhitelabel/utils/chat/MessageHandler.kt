@@ -10,7 +10,10 @@ import net.barrage.chatwhitelabel.ui.screens.chat.ReceiveMessageCallback
 import net.barrage.chatwhitelabel.utils.debugLog
 import net.barrage.chatwhitelabel.utils.debugLogError
 
-class MessageHandler(private val receiveMessageCallback: ReceiveMessageCallback) {
+class MessageHandler(
+    private val receiveMessageCallback: ReceiveMessageCallback,
+    private val handleChatId: (String?) -> Unit,
+) {
     var sendFirstMessage: () -> Unit = {}
 
     fun handleTextFrame(frame: Frame.Text) {
@@ -43,7 +46,9 @@ class MessageHandler(private val receiveMessageCallback: ReceiveMessageCallback)
     private fun handleChatOpen(jsonMessage: JsonObject) {
         val chatId = jsonMessage["chatId"]?.toString()?.trim('"')
         debugLog("WebSocket Chat Opened: $chatId")
+        handleChatId(chatId)
         receiveMessageCallback.enableSending()
+        receiveMessageCallback.setChatOpen(true)
         sendFirstMessage()
     }
 

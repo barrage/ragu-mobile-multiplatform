@@ -6,10 +6,13 @@ import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Parameters
 import net.barrage.chatwhitelabel.data.remote.dto.user.CurrentUserDTO
 import net.barrage.chatwhitelabel.domain.Response
+import net.barrage.chatwhitelabel.domain.remote.ktor.Api
 import net.barrage.chatwhitelabel.utils.TokenStorage
 import net.barrage.chatwhitelabel.utils.safeApiCall
 
@@ -39,6 +42,17 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
     override suspend fun getWebSocketToken(): Response<String> {
         return safeApiCall {
             val response = httpClient.get("ws") { addCookieHeader() }
+            response
+        }
+    }
+
+    override suspend fun updateChatTitle(chatId: String, title: String): Response<HttpResponse> {
+        return safeApiCall {
+            val response =
+                httpClient.put("chats/$chatId") {
+                    addCookieHeader()
+                    setBody(mapOf("title" to title))
+                }
             response
         }
     }

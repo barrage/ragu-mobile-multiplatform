@@ -27,9 +27,9 @@ class WebSocketChatClient(
     private val scope: CoroutineScope,
     private val wsToken: WebSocketToken,
 ) {
-    private var currentChatId: String? = null
+    var currentChatId: String? = null
     private var session: WebSocketSession? = null
-    private val messageHandler = MessageHandler(receiveMessageCallback)
+    private val messageHandler = MessageHandler(receiveMessageCallback) { currentChatId = it }
 
     init {
         connect()
@@ -91,6 +91,9 @@ class WebSocketChatClient(
     }
 
     private fun openNewChat() {
+        if (currentChatId != null) {
+            closeChat()
+        }
         val openChatMessage = buildJsonObject {
             put("type", "system")
             put(
@@ -116,6 +119,7 @@ class WebSocketChatClient(
             session?.close()
             currentChatId = null
             debugLog("WebSocket Disconnected")
+            receiveMessageCallback.setChatOpen(false)
         }
     }
 
@@ -126,6 +130,8 @@ class WebSocketChatClient(
                 put("payload", buildJsonObject { put("type", "chat_close") })
             }
             sendJsonMessage(closeChatMessage)
+            currentChatId = null
+            receiveMessageCallback.setChatOpen(false)
         }
     }
 

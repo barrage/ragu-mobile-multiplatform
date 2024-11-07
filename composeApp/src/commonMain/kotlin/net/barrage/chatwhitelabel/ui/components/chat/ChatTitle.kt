@@ -1,5 +1,6 @@
 package net.barrage.chatwhitelabel.ui.components.chat
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
@@ -26,8 +27,10 @@ import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.ic_check
 import chatwhitelabel.composeapp.generated.resources.ic_three_dots
 import net.barrage.chatwhitelabel.ui.components.TypewriterText
+import net.barrage.chatwhitelabel.ui.components.TypewriterTextState
 import net.barrage.chatwhitelabel.ui.theme.customTypography
 import org.jetbrains.compose.resources.painterResource
 
@@ -42,23 +45,39 @@ fun ChatTitle(state: ChatTitleState, modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier,
     ) {
-        TypewriterText(text = state.title, style = customTypography().textBase)
-        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-            IconButton(
-                onClick = state.onThreeDotsClick,
-                modifier =
-                    Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
-                        .size(24.dp)
-                        .onGloballyPositioned { coordinates ->
-                            iconPositionInParent = coordinates.positionInParent()
-                            iconPositionInRoot = coordinates.positionInRoot()
-                        },
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_three_dots),
-                    contentDescription = null,
-                    modifier = Modifier.padding(4.dp),
+        TypewriterText(
+            state =
+                TypewriterTextState(
+                    text = state.title,
+                    state.isEditingTitle,
+                    onTextChange = state.onTitleChange,
+                    style = customTypography().textBase,
                 )
+        )
+        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+            AnimatedVisibility(state.isChatOpen) {
+                IconButton(
+                    onClick =
+                        if (state.isEditingTitle) state.onTitleChangeConfirmation
+                        else state.onThreeDotsClick,
+                    modifier =
+                        Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
+                            .size(24.dp)
+                            .onGloballyPositioned { coordinates ->
+                                iconPositionInParent = coordinates.positionInParent()
+                                iconPositionInRoot = coordinates.positionInRoot()
+                            },
+                ) {
+                    Icon(
+                        painter =
+                            painterResource(
+                                if (state.isEditingTitle) Res.drawable.ic_check
+                                else Res.drawable.ic_three_dots
+                            ),
+                        contentDescription = null,
+                        modifier = Modifier.padding(4.dp),
+                    )
+                }
             }
         }
     }
@@ -66,7 +85,7 @@ fun ChatTitle(state: ChatTitleState, modifier: Modifier = Modifier) {
     ChatPopupMenu(
         state =
             ChatPopupMenuState(
-                visible = state.menuVisible,
+                visible = state.isMenuVisible,
                 onDismiss = state.onDismiss,
                 iconPositionInRoot = iconPositionInRoot,
                 menuItems =

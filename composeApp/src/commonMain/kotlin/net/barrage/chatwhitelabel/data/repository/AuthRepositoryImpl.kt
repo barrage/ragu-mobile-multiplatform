@@ -2,9 +2,9 @@ package net.barrage.chatwhitelabel.data.repository
 
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Parameters
-import net.barrage.chatwhitelabel.data.remote.ktor.Api
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.model.AuthToken
+import net.barrage.chatwhitelabel.domain.remote.ktor.Api
 import net.barrage.chatwhitelabel.domain.repository.AuthRepository
 
 class AuthRepositoryImpl(private val api: Api) : AuthRepository {
