@@ -36,6 +36,7 @@ fun MainContent(
                 theme = theme,
                 onSelectThemeClick = onSelectThemeClick,
                 onDarkLightModeClick = onDarkLightModeClick,
+                onUserClick = {},
                 onElementClick = {},
             )
         },

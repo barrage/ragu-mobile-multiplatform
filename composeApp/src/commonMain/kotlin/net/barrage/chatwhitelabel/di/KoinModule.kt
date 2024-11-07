@@ -23,7 +23,6 @@ import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
-import net.barrage.chatwhitelabel.ui.screens.history.HistoryViewModel
 import net.barrage.chatwhitelabel.ui.screens.login.LoginViewModel
 import net.barrage.chatwhitelabel.utils.DataStoreTokenStorage
 import net.barrage.chatwhitelabel.utils.TokenStorage

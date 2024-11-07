@@ -20,7 +20,7 @@ fun ModalDrawerHistoryElement(
 ) {
     Box(modifier.padding(4.dp).clickable { onClick(viewState.id) }) {
         Text(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp).fillMaxWidth(),
+            modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth().padding(start = 16.dp),
             textAlign = TextAlign.Start,
             fontSize = 24.sp,
             text = viewState.title,

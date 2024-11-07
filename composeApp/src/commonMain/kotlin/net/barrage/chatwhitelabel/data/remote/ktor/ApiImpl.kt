@@ -11,7 +11,6 @@ import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Parameters
-import net.barrage.chatwhitelabel.data.remote.dto.auth.CurrentUserDTO
 import net.barrage.chatwhitelabel.data.remote.dto.chat.HistoryResponseDTO
 import net.barrage.chatwhitelabel.data.remote.dto.agent.AgentResponse
 import net.barrage.chatwhitelabel.data.remote.dto.user.CurrentUserDTO

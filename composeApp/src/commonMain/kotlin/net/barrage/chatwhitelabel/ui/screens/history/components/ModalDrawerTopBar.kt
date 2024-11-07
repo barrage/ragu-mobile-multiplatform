@@ -1,8 +1,5 @@
 package net.barrage.chatwhitelabel.ui.screens.history.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,24 +40,18 @@ fun ModalDrawerContentTopBar(
 
         Column {
             ThemeSelectorButton(selectedTheme = theme, onClick = { showPopup = !showPopup })
-
-            AnimatedVisibility(
-                visible = showPopup,
-                enter = EnterTransition.None,
-                exit = ExitTransition.None,
-            ) {
-                ThemePopup(
-                    themeRows = themeRows,
-                    supportedThemeColumns = supportedThemeColumns,
-                    supportedThemes = viewState.supportedThemes,
-                    selectedTheme = theme,
-                    onDismissRequest = { showPopup = false },
-                    onSelectThemeClick = {
-                        onSelectThemeClick(it)
-                        showPopup = false
-                    },
-                )
-            }
+            ThemePopup(
+                themeRows = themeRows,
+                showPopup = showPopup,
+                supportedThemeColumns = supportedThemeColumns,
+                supportedThemes = viewState.supportedThemes,
+                selectedTheme = theme,
+                onDismissRequest = { showPopup = false },
+                onSelectThemeClick = {
+                    onSelectThemeClick(it)
+                    showPopup = false
+                },
+            )
         }
     }
 }

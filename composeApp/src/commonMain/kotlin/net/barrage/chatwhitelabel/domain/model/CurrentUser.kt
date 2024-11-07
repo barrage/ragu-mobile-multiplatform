@@ -7,4 +7,16 @@ data class CurrentUser(
     val firstName: String,
     val lastName: String,
     val active: Boolean,
-)
+) {
+    companion object {
+        val EMPTY =
+            CurrentUser(
+                id = "",
+                email = "",
+                fullName = "",
+                firstName = "",
+                lastName = "",
+                active = false,
+            )
+    }
+}
