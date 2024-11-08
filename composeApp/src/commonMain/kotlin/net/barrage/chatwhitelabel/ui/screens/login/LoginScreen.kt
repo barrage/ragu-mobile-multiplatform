@@ -11,14 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,9 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
-import chatwhitelabel.composeapp.generated.resources.ic_brain
 import chatwhitelabel.composeapp.generated.resources.ic_google
 import dev.theolm.rinku.DeepLink
+import net.barrage.chatwhitelabel.ui.components.AppIconCard
 import net.barrage.chatwhitelabel.utils.DeepLinkParser
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -95,19 +93,7 @@ fun LoginContent(onGoogleLogin: () -> Unit, modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(20.dp),
         ) {
-            Card(
-                colors =
-                    CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
-                    )
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_brain),
-                    contentDescription = null,
-                    modifier = Modifier.size(80.dp).padding(12.dp),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
-            }
+            AppIconCard()
             Spacer(modifier = Modifier.height(20.dp))
             Text("Login", style = MaterialTheme.typography.headlineMedium)
             Spacer(modifier = Modifier.height(20.dp))
