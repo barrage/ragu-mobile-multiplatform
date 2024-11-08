@@ -3,15 +3,15 @@ package net.barrage.chatwhitelabel.di
 import net.barrage.chatwhitelabel.data.remote.ktor.ApiImpl
 import net.barrage.chatwhitelabel.data.repository.AgentRepositoryImpl
 import net.barrage.chatwhitelabel.data.repository.AuthRepositoryImpl
-import net.barrage.chatwhitelabel.data.repository.HistoryRepositoryImpl
 import net.barrage.chatwhitelabel.data.repository.ChatRepositoryImpl
+import net.barrage.chatwhitelabel.data.repository.HistoryRepositoryImpl
 import net.barrage.chatwhitelabel.data.repository.UserRepositoryImpl
 import net.barrage.chatwhitelabel.data.repository.WebSocketRepositoryImpl
 import net.barrage.chatwhitelabel.domain.remote.ktor.Api
 import net.barrage.chatwhitelabel.domain.repository.AgentRepository
 import net.barrage.chatwhitelabel.domain.repository.AuthRepository
-import net.barrage.chatwhitelabel.domain.repository.HistoryRepository
 import net.barrage.chatwhitelabel.domain.repository.ChatRepository
+import net.barrage.chatwhitelabel.domain.repository.HistoryRepository
 import net.barrage.chatwhitelabel.domain.repository.UserRepository
 import net.barrage.chatwhitelabel.domain.repository.WebSocketRepository
 import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
