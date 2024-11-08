@@ -59,7 +59,7 @@ fun ModalDrawer(
             )
             CurrentUserCard(
                 modifier = Modifier.fillMaxWidth(),
-                viewState = viewModel.historyViewState.currentUser,
+                viewState = viewModel.currentUserViewState,
                 onUserClick = onUserClick,
             )
         }

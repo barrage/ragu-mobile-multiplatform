@@ -13,3 +13,13 @@ val LimePrimary = Color(0xFF6a9a23)
 val TealPrimary = Color(0xFF2898bd)
 val BrownPrimary = Color(0xFFa5712e)
 val SagePrimary = Color(0xFF6b7d6b)
+
+val StatusGreenBackground = Color(0xFFd7f8e5)
+val StatusGreenBorder = Color(0xFF63cf85)
+val StatusGreenIndicatorStart = Color(0xFF5ac077)
+val StatusGreenIndicatorEnd = Color(0xFFbdebcc)
+
+val StatusRedBackground = Color(0xFFF8D7DA)
+val StatusRedBorder = Color(0xFFCF636B)
+val StatusRedIndicatorStart = Color(0xFFC05763)
+val StatusRedIndicatorEnd = Color(0xFFF2C2C5)

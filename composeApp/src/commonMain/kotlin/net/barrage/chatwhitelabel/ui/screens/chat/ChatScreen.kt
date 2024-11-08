@@ -1,3 +1,4 @@
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
@@ -22,7 +24,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import net.barrage.chatwhitelabel.ui.components.chat.AgentContent
@@ -35,13 +39,16 @@ import net.barrage.chatwhitelabel.ui.components.chat.MessageList
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatScreenState
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
 import net.barrage.chatwhitelabel.ui.screens.chat.ReceiveMessageCallback
+import net.barrage.chatwhitelabel.ui.screens.profile.ProfileCard
 
 @Composable
 fun ChatScreen(
     viewModel: ChatViewModel,
     isKeyboardOpen: Boolean,
+    profileVisible: Boolean,
     scope: CoroutineScope,
     modifier: Modifier = Modifier,
+    changeProfileVisibility: () -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
@@ -64,23 +71,24 @@ fun ChatScreen(
         initializeWebSocketClient(viewModel, scope)
     }
 
-    Column(
-        modifier =
-            modifier
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier =
+            Modifier
                 .fillMaxSize()
                 .clickable(chatInteractionSource, null) {
                     if (chatInputFocused) focusManager.clearFocus()
                 }
                 .imePadding()
-    ) {
-        when (chatScreenState) {
-            is ChatScreenState.Success -> {
-                if (
-                    chatScreenState.messages.isNotEmpty() ||
+        ) {
+            when (chatScreenState) {
+                is ChatScreenState.Success -> {
+                    if (
+                        chatScreenState.messages.isNotEmpty() ||
                         viewModel.webSocketChatClient?.currentChatId?.value != null
-                ) {
-                    ChatTitle(
-                        state =
+                    ) {
+                        ChatTitle(
+                            state =
                             ChatTitleState(
                                 title = chatScreenState.chatTitle,
                                 isMenuVisible = menuVisible,
@@ -98,36 +106,36 @@ fun ChatScreen(
                                 onTitleChange = { viewModel.setChatTitle(it) },
                                 onTitleChangeConfirmation = { viewModel.updateTitle() },
                             ),
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                    ) {
-                        TextButton(onClick = { viewModel.newChat() }) { Text("New Chat") }
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End,
+                        ) {
+                            TextButton(onClick = { viewModel.newChat() }) { Text("New Chat") }
+                        }
                     }
-                }
 
-                if (
-                    chatScreenState.agents.isNotEmpty() &&
+                    if (
+                        chatScreenState.agents.isNotEmpty() &&
                         chatScreenState.messages.isEmpty() &&
                         viewModel.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
-                ) {
-                    AgentContent(
-                        agents = chatScreenState.agents.toImmutableList(),
-                        selectedAgent = viewModel.selectedAgent.value,
-                        onAgentClick = { selectedAgent -> viewModel.setAgent(selectedAgent) },
-                        modifier = Modifier.weight(1f),
-                    )
-                } else {
-                    MessageList(
-                        messages = chatScreenState.messages.toImmutableList(),
-                        lazyListState = lazyListState,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-                ChatInput(
-                    state =
+                    ) {
+                        AgentContent(
+                            agents = chatScreenState.agents.toImmutableList(),
+                            selectedAgent = viewModel.selectedAgent.value,
+                            onAgentClick = { selectedAgent -> viewModel.setAgent(selectedAgent) },
+                            modifier = Modifier.weight(1f),
+                        )
+                    } else {
+                        MessageList(
+                            messages = chatScreenState.messages.toImmutableList(),
+                            lazyListState = lazyListState,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                    ChatInput(
+                        state =
                         ChatInputState(
                             inputText = chatScreenState.inputText,
                             onInputTextChange = { viewModel.updateInputText(it) },
@@ -140,25 +148,43 @@ fun ChatScreen(
                             focusManager = focusManager,
                             chatInteractionSource = chatInteractionSource,
                         )
-                )
-            }
+                    )
+                }
 
-            is ChatScreenState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                is ChatScreenState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is ChatScreenState.Error ->
+                    ErrorContent(
+                        errorMessage = chatScreenState.message,
+                        onRetry = { viewModel.loadAllData() },
+                    )
+
+                is ChatScreenState.Idle -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
-
-            is ChatScreenState.Error ->
-                ErrorContent(
-                    errorMessage = chatScreenState.message,
-                    onRetry = { viewModel.loadAllData() },
+        }
+        if (profileVisible) {
+            Box(
+                modifier =
+                Modifier.fillMaxSize().background(Color.DarkGray.copy(alpha = 0.7f)).clickable(
+                    MutableInteractionSource(),
+                    null,
+                ) {},
+                contentAlignment = Alignment.Center,
+            ) {
+                ProfileCard(
+                    viewState = viewModel.currentUserViewState,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                    onCloseClick = changeProfileVisibility,
+                    onLogoutClick = { viewModel.logout() },
                 )
-
-            is ChatScreenState.Idle -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
             }
         }
     }

@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.model.Agent
 import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
+import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryByIdUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryUseCase
@@ -24,6 +25,7 @@ import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryModalDrawerContentViewState
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
+import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileViewState
 import net.barrage.chatwhitelabel.utils.BluePrimary
 import net.barrage.chatwhitelabel.utils.BrownPrimary
 import net.barrage.chatwhitelabel.utils.GreenPrimary
@@ -45,6 +47,7 @@ class ChatViewModel(
     private val updateChatTitleUseCase: UpdateChatTitleUseCase,
     private val deleteChatUseCase: DeleteChatUseCase,
     private val getAgentsUseCase: GetAgentsUseCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
 
     var chatScreenState by mutableStateOf<ChatScreenState>(ChatScreenState.Idle)
@@ -71,12 +74,14 @@ class ChatViewModel(
                     BrownPrimary,
                 ),
                 HistoryScreenStates.Idle,
-                HistoryScreenStates.Idle,
             )
         )
         private set
 
     var selectedAgent: MutableState<Agent?> = mutableStateOf(null)
+        private set
+
+    var currentUserViewState: HistoryScreenStates<ProfileViewState> = HistoryScreenStates.Idle
         private set
 
     fun loadAllData() {
@@ -296,6 +301,9 @@ class ChatViewModel(
                 else -> currentState
             }
         }
+    }
+    fun logout() {
+        viewModelScope.launch { logoutUseCase() }
     }
 
     suspend fun updateHistory() {

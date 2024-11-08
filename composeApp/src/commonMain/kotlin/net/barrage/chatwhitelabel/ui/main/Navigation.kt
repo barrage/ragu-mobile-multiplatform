@@ -32,7 +32,13 @@ import net.barrage.chatwhitelabel.utils.getAndroidVersion
 import org.koin.compose.koinInject
 
 @Composable
-fun AppNavHost(appState: AppState, deepLink: DeepLink?, modifier: Modifier = Modifier) {
+fun AppNavHost(
+    appState: AppState,
+    deepLink: DeepLink?,
+    profileVisible: Boolean,
+    modifier: Modifier = Modifier,
+    changeProfileVisibility: () -> Unit,
+) {
     val currentUserUseCase: CurrentUserUseCase = koinInject()
     var startDestination by remember { mutableStateOf<String?>(null) }
 
@@ -59,12 +65,14 @@ fun AppNavHost(appState: AppState, deepLink: DeepLink?, modifier: Modifier = Mod
                     viewModel = appState.chatViewModel,
                     isKeyboardOpen = keyboardAsState().value,
                     scope = appState.coroutineScope,
+                    profileVisible = profileVisible,
                     modifier =
                         Modifier.then(
                             if (getAndroidVersion() != -1)
                                 Modifier.consumeWindowInsets(PaddingValues())
                             else Modifier
                         ),
+                    changeProfileVisibility = changeProfileVisibility,
                 )
             }
             composable(Login.route) {

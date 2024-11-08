@@ -21,12 +21,12 @@ import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import net.barrage.chatwhitelabel.domain.model.CurrentUser
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
+import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileViewState
 
 @Composable
 fun CurrentUserCard(
-    viewState: HistoryScreenStates<CurrentUser>,
+    viewState: HistoryScreenStates<ProfileViewState>,
     modifier: Modifier = Modifier,
     onUserClick: () -> Unit,
 ) {
@@ -38,11 +38,12 @@ fun CurrentUserCard(
                 }
 
                 HistoryScreenStates.Idle -> {}
+
                 HistoryScreenStates.Loading -> {
                     Text(text = "Loading...", fontSize = 24.sp) // TODO loader
                 }
 
-                is HistoryScreenStates.Success<CurrentUser> -> {
+                is HistoryScreenStates.Success<ProfileViewState> -> {
                     TextButton(onClick = onUserClick) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
@@ -53,12 +54,12 @@ fun CurrentUserCard(
                             Spacer(modifier = Modifier.width(8.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = viewState.data.fullName,
+                                    text = viewState.data.header.name,
                                     style = MaterialTheme.typography.labelLarge,
                                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 )
                                 Text(
-                                    text = viewState.data.email,
+                                    text = viewState.data.content["Email"]?.value ?: "",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                                     overflow = Ellipsis,

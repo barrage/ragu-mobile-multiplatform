@@ -4,6 +4,8 @@ android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
 androidx-activityCompose = "1.9.3"
+coilCompose = "3.0.1"
+coilNetworkOkhttp = "3.0.1"
 compose-plugin = "1.7.0"
 datastorePreferencesCore = "1.1.1"
 konnection = "1.4.3"
@@ -34,6 +36,8 @@ androidx-startup = "1.2.0"
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastorePreferencesCore" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 konnection = { module = "dev.tmapps:konnection", version.ref = "konnection" }

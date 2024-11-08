@@ -11,4 +11,7 @@ fun CurrentUserDTO.toDomain() =
         firstName = firstName.trim(),
         lastName = lastName.trim(),
         active = active,
+        role = role,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
     )
