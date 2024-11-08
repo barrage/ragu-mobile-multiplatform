@@ -110,7 +110,8 @@ class ChatViewModel(
         scope.launch {
             val token = webSocketTokenUseCase()
             if (token is Response.Success) {
-                webSocketChatClient = WebSocketChatClient(callback, scope, token.data)
+                webSocketChatClient =
+                    WebSocketChatClient(callback, scope, token.data, _selectedAgent)
             }
         }
     }
@@ -153,5 +154,18 @@ class ChatViewModel(
 
     fun setAgent(agent: Agent) {
         _selectedAgent.value = agent
+    }
+
+    fun newChat() {
+        webSocketChatClient?.closeChat()
+    }
+
+    fun onChatClosed() {
+        _messages.clear()
+        _chatTitle.value = "New chat"
+        _isChatOpen.value = false
+        _isEditingTitle.value = false
+        _isReceivingMessage.value = false
+        _inputText.value = ""
     }
 }

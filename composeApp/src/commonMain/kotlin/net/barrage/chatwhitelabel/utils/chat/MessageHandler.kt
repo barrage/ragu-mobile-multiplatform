@@ -60,7 +60,7 @@ class MessageHandler(
     }
 
     private fun handleChatClosed() {
-        receiveMessageCallback.disableSending()
+        receiveMessageCallback.closeChat()
     }
 
     private fun handleFinishEvent(jsonMessage: JsonObject) {

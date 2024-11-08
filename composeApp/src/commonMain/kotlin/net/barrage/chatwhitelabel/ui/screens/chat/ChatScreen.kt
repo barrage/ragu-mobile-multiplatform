@@ -1,8 +1,11 @@
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
@@ -59,6 +62,7 @@ fun ChatScreen(
                         title = viewModel.chatTitle,
                         isMenuVisible = menuVisible,
                         isEditingTitle = viewModel.isEditingTitle,
+                        isChatOpen = viewModel.isChatOpen,
                         onThreeDotsClick = { menuVisible = true },
                         onEditTitleClick = {
                             viewModel.setEditingTitle(true)
@@ -71,13 +75,15 @@ fun ChatScreen(
                         onDismiss = { menuVisible = false },
                         onTitleChange = { viewModel.setChatTitle(it) },
                         onTitleChangeConfirmation = { viewModel.updateTitle() },
-                        isChatOpen = viewModel.isChatOpen,
                     ),
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                TextButton(onClick = { viewModel.newChat() }) { Text("New Chat") }
+            }
         }
 
-        if (viewModel.agents.isNotEmpty()) {
+        if (viewModel.agents.isNotEmpty() && viewModel.messages.isEmpty()) {
             AgentContent(
                 agents = viewModel.agents.toImmutableList(),
                 selectedAgent = viewModel.selectedAgent,
@@ -176,6 +182,10 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
 
                 override fun setChatOpen(isChatOpen: Boolean) {
                     viewModel.setChatOpen(isChatOpen)
+                }
+
+                override fun closeChat() {
+                    viewModel.onChatClosed()
                 }
             },
             scope = scope,

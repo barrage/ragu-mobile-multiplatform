@@ -1,5 +1,6 @@
 package net.barrage.chatwhitelabel.utils.chat
 
+import androidx.compose.runtime.MutableState
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.WebSocketException
 import io.ktor.client.plugins.websocket.webSocket
@@ -15,6 +16,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import net.barrage.chatwhitelabel.domain.model.Agent
 import net.barrage.chatwhitelabel.domain.model.WebSocketToken
 import net.barrage.chatwhitelabel.ui.screens.chat.ReceiveMessageCallback
 import net.barrage.chatwhitelabel.utils.Constants
@@ -26,6 +28,7 @@ class WebSocketChatClient(
     private val receiveMessageCallback: ReceiveMessageCallback,
     private val scope: CoroutineScope,
     private val wsToken: WebSocketToken,
+    private val selectedAgent: MutableState<Agent?>,
 ) {
     var currentChatId: String? = null
     private var session: WebSocketSession? = null
@@ -100,7 +103,10 @@ class WebSocketChatClient(
                 "payload",
                 buildJsonObject {
                     put("type", "chat_open_new")
-                    put("agentId", "00000000-0000-0000-0000-000000000000")
+                    put(
+                        "agentId",
+                        selectedAgent.value?.id ?: "00000000-0000-0000-0000-000000000000",
+                    )
                 },
             )
         }
@@ -123,7 +129,7 @@ class WebSocketChatClient(
         }
     }
 
-    private fun closeChat() {
+    fun closeChat() {
         if (currentChatId != null) {
             val closeChatMessage = buildJsonObject {
                 put("type", "system")
