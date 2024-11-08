@@ -27,7 +27,6 @@ fun ModalDrawer(
     onUserClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ChatViewModel = koinViewModel(),
-    onElementClick: (String) -> Unit,
 ) {
     ModalDrawerSheet(modifier = modifier.fillMaxWidth().padding(end = 75.dp)) {
         Column {
@@ -45,12 +44,13 @@ fun ModalDrawer(
             ModalDrawerHistoryContent(
                 modifier = Modifier.weight(1f),
                 viewState = viewModel.historyViewState.history,
-                onElementClick = onElementClick,
+                onElementClick = { viewModel.getHistoryChatById(it) },
             )
             Divider(
                 Modifier.padding(vertical = 8.dp, horizontal = 8.dp).background(Gray).height(1.dp)
             )
             CurrentUserCard(
+                modifier = Modifier.fillMaxWidth(),
                 viewState = viewModel.historyViewState.currentUser,
                 onUserClick = onUserClick,
             )

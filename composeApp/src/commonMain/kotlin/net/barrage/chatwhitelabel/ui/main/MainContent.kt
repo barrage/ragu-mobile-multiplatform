@@ -1,15 +1,9 @@
 package net.barrage.chatwhitelabel.ui.main
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,30 +31,16 @@ fun MainContent(
                 onSelectThemeClick = onSelectThemeClick,
                 onDarkLightModeClick = onDarkLightModeClick,
                 onUserClick = {},
-                onElementClick = {},
             )
         },
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Scaffold(
-                topBar = {
-                    TopBar(
-                        modifier =
-                            Modifier.padding(
-                                    WindowInsets.safeDrawing
-                                        .only(WindowInsetsSides.Vertical)
-                                        .asPaddingValues()
-                                )
-                                .padding(horizontal = 20.dp)
-                    )
-                }
-            ) { innerPadding ->
-                AppNavHost(
-                    appState = appState,
-                    deepLink = deepLink,
-                    modifier = Modifier.padding(innerPadding),
-                )
-            }
+        Column(modifier = Modifier.fillMaxSize()) {
+            TopBar(modifier = Modifier.padding(top = 40.dp).padding(horizontal = 20.dp))
+            AppNavHost(
+                appState = appState,
+                deepLink = deepLink,
+                modifier = Modifier.weight(1f).padding(bottom = 20.dp),
+            )
         }
     }
 }

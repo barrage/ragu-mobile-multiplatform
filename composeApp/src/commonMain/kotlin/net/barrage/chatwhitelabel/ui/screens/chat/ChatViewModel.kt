@@ -15,11 +15,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.domain.Response
+import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryByIdUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.model.Agent
 import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryModalDrawerContentViewState
@@ -40,6 +41,7 @@ import net.barrage.chatwhitelabel.utils.chat.WebSocketChatClient
 class ChatViewModel(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
     private val historyUseCase: HistoryUseCase,
+    private val historyByIdUseCase: HistoryByIdUseCase,
     private val currentUserUseCase: CurrentUserUseCase,
     private val updateChatTitleUseCase: UpdateChatTitleUseCase,
     private val deleteChatUseCase: DeleteChatUseCase,
@@ -218,6 +220,10 @@ class ChatViewModel(
         _isEditingTitle.value = false
         _isReceivingMessage.value = false
         _inputText.value = ""
+    }
+
+    fun getHistoryChatById(id: String) {
+        viewModelScope.launch { historyByIdUseCase.invoke(id) }
     }
 
     private suspend fun updateHistory(): HistoryModalDrawerContentViewState {

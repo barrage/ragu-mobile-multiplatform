@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -15,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
@@ -28,7 +30,7 @@ fun CurrentUserCard(
     modifier: Modifier = Modifier,
     onUserClick: () -> Unit,
 ) {
-    Card(modifier.padding(8.dp).clickable { onUserClick() }) {
+    Card(modifier.padding(8.dp).clip(RoundedCornerShape(12.dp)).clickable { onUserClick() }) {
         Box(modifier = Modifier.padding(8.dp)) {
             when (viewState) {
                 HistoryScreenStates.Error -> {

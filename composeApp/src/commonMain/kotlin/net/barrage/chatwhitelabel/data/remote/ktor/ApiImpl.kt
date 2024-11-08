@@ -6,12 +6,14 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Parameters
-import net.barrage.chatwhitelabel.data.remote.dto.chat.HistoryResponseDTO
+import net.barrage.chatwhitelabel.data.remote.dto.history.HistoryChatMessagesItemDTO
+import net.barrage.chatwhitelabel.data.remote.dto.history.HistoryResponseDTO
 import net.barrage.chatwhitelabel.data.remote.dto.agent.AgentResponse
 import net.barrage.chatwhitelabel.data.remote.dto.user.CurrentUserDTO
 import net.barrage.chatwhitelabel.domain.Response
@@ -44,7 +46,20 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
 
     override suspend fun getHistory(parameters: Parameters): Response<HistoryResponseDTO> {
         return safeApiCall {
-            val response = httpClient.get("chats") { addCookieHeader() }
+            val response =
+                httpClient.get("chats") {
+                    addCookieHeader()
+                    parameters.forEach { key, value -> parameter(key, value) }
+                }
+            response
+        }
+    }
+
+    override suspend fun getHistoryChatById(
+        chatId: String
+    ): Response<List<HistoryChatMessagesItemDTO>> {
+        return safeApiCall {
+            val response = httpClient.get("chats/$chatId/messages") { addCookieHeader() }
             response
         }
     }

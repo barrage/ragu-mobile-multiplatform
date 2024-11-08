@@ -1,4 +1,4 @@
-package net.barrage.chatwhitelabel.data.remote.dto.chat
+package net.barrage.chatwhitelabel.data.remote.dto.history
 
 import kotlinx.serialization.Serializable
 
