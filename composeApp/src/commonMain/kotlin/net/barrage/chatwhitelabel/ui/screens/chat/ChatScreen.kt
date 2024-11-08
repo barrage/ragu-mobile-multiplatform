@@ -1,3 +1,4 @@
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -54,7 +55,15 @@ fun ChatScreen(
 
     LaunchedEffect(Unit) { initializeWebSocketClient(viewModel, scope) }
 
-    Column(modifier = modifier.fillMaxSize().imePadding()) {
+    Column(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .clickable(chatInteractionSource, null) {
+                    if (chatInputFocused) focusManager.clearFocus()
+                }
+                .imePadding()
+    ) {
         if (viewModel.messages.isNotEmpty()) {
             ChatTitle(
                 state =
@@ -94,9 +103,6 @@ fun ChatScreen(
             MessageList(
                 messages = viewModel.messages.toImmutableList(),
                 lazyListState = lazyListState,
-                chatInteractionSource = chatInteractionSource,
-                chatInputFocused = chatInputFocused,
-                focusManager = focusManager,
                 modifier = Modifier.weight(1f),
             )
         }
