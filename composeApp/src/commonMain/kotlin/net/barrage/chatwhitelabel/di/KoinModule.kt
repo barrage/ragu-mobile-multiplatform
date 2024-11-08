@@ -17,9 +17,9 @@ import net.barrage.chatwhitelabel.domain.repository.WebSocketRepository
 import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LoginUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryByIdUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
@@ -68,7 +68,7 @@ val appModule = module {
 // Module for view models
 val viewModelModule = module {
     viewModel { LoginViewModel(get(), get(), get()) }
-    viewModel { ChatViewModel(get(), get(), get(), get()) }
+    viewModel { ChatViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 // Combine all modules into a single module list for Koin initialization

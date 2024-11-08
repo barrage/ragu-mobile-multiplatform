@@ -1,4 +1,4 @@
-@file:Suppress("TooManyFunctions")
+@file:Suppress("TooManyFunctions", "LongParameterList")
 
 package net.barrage.chatwhitelabel.ui.screens.chat
 
@@ -15,12 +15,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.domain.Response
-import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryByIdUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.model.Agent
 import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryByIdUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryModalDrawerContentViewState
@@ -89,26 +89,26 @@ class ChatViewModel(
         private set
 
     var historyViewState by
-    mutableStateOf(
-        HistoryModalDrawerContentViewState(
-            persistentListOf(
-                White,
-                SagePrimary,
-                TealPrimary,
-                BluePrimary,
-                VioletPrimary,
-                LimePrimary,
-                GreenPrimary,
-                YellowPrimary,
-                OrangePrimary,
-                RedPrimary,
-                MagentaPrimary,
-                BrownPrimary,
-            ),
-            HistoryScreenStates.Idle,
-            HistoryScreenStates.Idle,
+        mutableStateOf(
+            HistoryModalDrawerContentViewState(
+                persistentListOf(
+                    White,
+                    SagePrimary,
+                    TealPrimary,
+                    BluePrimary,
+                    VioletPrimary,
+                    LimePrimary,
+                    GreenPrimary,
+                    YellowPrimary,
+                    OrangePrimary,
+                    RedPrimary,
+                    MagentaPrimary,
+                    BrownPrimary,
+                ),
+                HistoryScreenStates.Idle,
+                HistoryScreenStates.Idle,
+            )
         )
-    )
         private set
 
     init {
@@ -125,6 +125,7 @@ class ChatViewModel(
             }
         }
     }
+
     fun updateInputText(text: String) {
         _inputText.value = text
     }
