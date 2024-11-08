@@ -1,6 +1,9 @@
+@file:Suppress("TooManyFunctions")
+
 package net.barrage.chatwhitelabel.utils.chat
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.WebSocketException
 import io.ktor.client.plugins.websocket.webSocket
@@ -30,9 +33,15 @@ class WebSocketChatClient(
     private val wsToken: WebSocketToken,
     private val selectedAgent: MutableState<Agent?>,
 ) {
-    var currentChatId: String? = null
+    var currentChatId = mutableStateOf<String?>(null)
+    var isChatOpen = mutableStateOf(false)
     private var session: WebSocketSession? = null
-    private val messageHandler = MessageHandler(receiveMessageCallback) { currentChatId = it }
+    private val messageHandler =
+        MessageHandler(
+            receiveMessageCallback,
+            handleChatId = { currentChatId.value = it },
+            handleChatOpen = { isChatOpen.value = it },
+        )
 
     init {
         connect()
@@ -74,7 +83,7 @@ class WebSocketChatClient(
     }
 
     fun sendMessage(message: String, chatId: String? = null) {
-        if (currentChatId == null) {
+        if (!isChatOpen.value) {
             if (chatId != null) {
                 openExistingChat(chatId)
             } else {
@@ -99,7 +108,7 @@ class WebSocketChatClient(
     }
 
     private fun openNewChat() {
-        if (currentChatId != null) {
+        if (currentChatId.value != null) {
             closeChat()
         }
         val openChatMessage = buildJsonObject {
@@ -119,7 +128,7 @@ class WebSocketChatClient(
     }
 
     private fun openExistingChat(chatId: String) {
-        if (currentChatId != null) {
+        if (currentChatId.value != null) {
             closeChat()
         }
         val openChatMessage = buildJsonObject {
@@ -145,21 +154,21 @@ class WebSocketChatClient(
         scope.launch {
             closeChat()
             session?.close()
-            currentChatId = null
+            currentChatId.value = null
             debugLog("WebSocket Disconnected")
-            receiveMessageCallback.setChatOpen(false)
+            isChatOpen.value = false
         }
     }
 
     fun closeChat() {
-        if (currentChatId != null) {
+        if (currentChatId.value != null) {
             val closeChatMessage = buildJsonObject {
                 put("type", "system")
                 put("payload", buildJsonObject { put("type", "chat_close") })
             }
             sendJsonMessage(closeChatMessage)
-            currentChatId = null
-            receiveMessageCallback.setChatOpen(false)
+            currentChatId.value = null
+            isChatOpen.value = false
         }
     }
 
@@ -169,5 +178,12 @@ class WebSocketChatClient(
             put("payload", buildJsonObject { put("type", "chat_stop_stream") })
         }
         sendJsonMessage(stopStreamMessage)
+    }
+
+    fun setChatId(chatId: String?) {
+        if (isChatOpen.value) {
+            closeChat()
+        }
+        currentChatId.value = chatId
     }
 }

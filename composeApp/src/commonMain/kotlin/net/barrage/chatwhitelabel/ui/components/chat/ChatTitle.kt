@@ -56,7 +56,7 @@ fun ChatTitle(state: ChatTitleState, modifier: Modifier = Modifier) {
                 )
         )
         CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-            AnimatedVisibility(state.isChatOpen) {
+            AnimatedVisibility(state.title != "New Chat") {
                 IconButton(
                     onClick =
                         if (state.isEditingTitle) state.onTitleChangeConfirmation

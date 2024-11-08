@@ -64,14 +64,16 @@ fun ChatScreen(
                 }
                 .imePadding()
     ) {
-        if (viewModel.messages.isNotEmpty()) {
+        if (
+            viewModel.messages.isNotEmpty() ||
+                viewModel.webSocketChatClient?.currentChatId?.value != null
+        ) {
             ChatTitle(
                 state =
                     ChatTitleState(
                         title = viewModel.chatTitle,
                         isMenuVisible = menuVisible,
                         isEditingTitle = viewModel.isEditingTitle,
-                        isChatOpen = viewModel.isChatOpen,
                         onThreeDotsClick = { menuVisible = true },
                         onEditTitleClick = {
                             viewModel.setEditingTitle(true)
@@ -92,7 +94,11 @@ fun ChatScreen(
             }
         }
 
-        if (viewModel.agents.isNotEmpty() && viewModel.messages.isEmpty()) {
+        if (
+            viewModel.agents.isNotEmpty() &&
+                viewModel.messages.isEmpty() &&
+                viewModel.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
+        ) {
             AgentContent(
                 agents = viewModel.agents.toImmutableList(),
                 selectedAgent = viewModel.selectedAgent,
@@ -184,10 +190,6 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
 
                 override fun onError(errorMessage: String) {
                     // Handle error
-                }
-
-                override fun setChatOpen(isChatOpen: Boolean) {
-                    viewModel.setChatOpen(isChatOpen)
                 }
 
                 override fun closeChat() {

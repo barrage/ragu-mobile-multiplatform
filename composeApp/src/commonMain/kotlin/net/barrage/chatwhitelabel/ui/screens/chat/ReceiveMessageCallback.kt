@@ -15,7 +15,5 @@ interface ReceiveMessageCallback {
 
     fun setChatTitle(title: String)
 
-    fun setChatOpen(isChatOpen: Boolean)
-
     fun closeChat()
 }

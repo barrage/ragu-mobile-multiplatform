@@ -8,8 +8,8 @@ class HistoryUseCase(private val historyRepository: HistoryRepository) {
     suspend fun invoke(
         page: Int,
         perPage: Int,
-        sortBy: String = "name",
-        sortOrder: String = "asc",
+        sortBy: String = "updatedAt",
+        sortOrder: String = "desc",
     ) = historyRepository.getChats(generateParameters(page, perPage, sortBy, sortOrder))
 
     private fun generateParameters(

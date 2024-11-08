@@ -69,10 +69,6 @@ class ChatViewModel(
     val isEditingTitle: Boolean
         get() = _isEditingTitle.value
 
-    private val _isChatOpen = mutableStateOf(false)
-    val isChatOpen: Boolean
-        get() = _isChatOpen.value
-
     private val _chatTitle = mutableStateOf("New chat")
     val chatTitle: String
         get() = _chatTitle.value
@@ -80,10 +76,6 @@ class ChatViewModel(
     private val _selectedAgent = mutableStateOf<Agent?>(null)
     val selectedAgent: Agent?
         get() = _selectedAgent.value
-
-    private val _currentChatId = mutableStateOf<String?>(null)
-    val currentChatId: String?
-        get() = _currentChatId.value
 
     var webSocketChatClient: WebSocketChatClient? = null
         private set
@@ -113,8 +105,8 @@ class ChatViewModel(
 
     init {
         viewModelScope.launch {
-            CoroutineScope(Dispatchers.IO).launch { historyViewState = updateHistory() }
-            CoroutineScope(Dispatchers.IO).launch { historyViewState = updateCurrentUser() }
+            CoroutineScope(Dispatchers.IO).launch { updateHistory() }
+            CoroutineScope(Dispatchers.IO).launch { updateCurrentUser() }
             val agents = getAgentsUseCase()
             if (agents is Response.Success) {
                 _agents.clear()
@@ -145,7 +137,7 @@ class ChatViewModel(
     fun sendMessage() {
         if (inputText.isEmpty()) return
         _messages.add(inputText)
-        webSocketChatClient?.sendMessage(inputText, currentChatId)
+        webSocketChatClient?.sendMessage(inputText)
         _inputText.value = ""
     }
 
@@ -178,15 +170,11 @@ class ChatViewModel(
         _isEditingTitle.value = editing
     }
 
-    fun setChatOpen(isChatOpen: Boolean) {
-        _isChatOpen.value = isChatOpen
-    }
-
     fun updateTitle() {
         viewModelScope.launch {
-            if (isChatOpen.not()) return@launch
+            if (webSocketChatClient?.currentChatId?.value.isNullOrEmpty()) return@launch
             val response =
-                updateChatTitleUseCase(webSocketChatClient?.currentChatId.orEmpty(), chatTitle)
+                updateChatTitleUseCase(webSocketChatClient?.currentChatId?.value!!, chatTitle)
             if (response is Response.Success) {
                 setEditingTitle(false)
             } else {
@@ -197,9 +185,10 @@ class ChatViewModel(
 
     fun deleteChat() {
         viewModelScope.launch {
-            val response = deleteChatUseCase(webSocketChatClient?.currentChatId.orEmpty())
+            if (webSocketChatClient?.currentChatId?.value.isNullOrEmpty()) return@launch
+            val response = deleteChatUseCase(webSocketChatClient?.currentChatId?.value!!)
             if (response is Response.Success) {
-                // Handle success
+                clearChat()
             } else {
                 // Handle error
             }
@@ -211,23 +200,22 @@ class ChatViewModel(
     }
 
     fun newChat() {
-        webSocketChatClient?.closeChat()
+        if (webSocketChatClient?.isChatOpen?.value == true) {
+            webSocketChatClient?.closeChat()
+        } else {
+            clearChat()
+        }
     }
 
     fun onChatClosed() {
-        _messages.clear()
-        _chatTitle.value = "New chat"
-        _isChatOpen.value = false
-        _isEditingTitle.value = false
-        _isReceivingMessage.value = false
-        _inputText.value = ""
+        clearChat()
     }
 
     fun getHistoryChatById(id: String, title: String) {
         viewModelScope.launch {
             val response = historyByIdUseCase.invoke(id)
             if (response is Response.Success) {
-                _currentChatId.value = id
+                webSocketChatClient?.setChatId(id)
                 _messages.clear()
                 _messages.addAll(response.data.map { it.content })
                 _chatTitle.value = title
@@ -237,35 +225,45 @@ class ChatViewModel(
         }
     }
 
-    private suspend fun updateHistory(): HistoryModalDrawerContentViewState {
-        return when (val response = historyUseCase.invoke(1, 10)) {
-            is Response.Success -> {
-                historyViewState.copy(history = HistoryScreenStates.Success(response.data))
-            }
-
-            is Response.Failure -> {
-                historyViewState.copy(history = HistoryScreenStates.Error)
-            }
-
-            Response.Loading -> {
-                historyViewState.copy(history = HistoryScreenStates.Loading)
-            }
-        }
+    private fun clearChat() {
+        _messages.clear()
+        _chatTitle.value = "New Chat"
+        _isEditingTitle.value = false
+        _isReceivingMessage.value = false
+        _inputText.value = ""
     }
 
-    private suspend fun updateCurrentUser(): HistoryModalDrawerContentViewState {
-        return when (val response = currentUserUseCase.invoke()) {
-            is Response.Success -> {
-                historyViewState.copy(currentUser = HistoryScreenStates.Success(response.data))
-            }
+    suspend fun updateHistory() {
+        historyViewState =
+            when (val response = historyUseCase.invoke(1, 10)) {
+                is Response.Success -> {
+                    historyViewState.copy(history = HistoryScreenStates.Success(response.data))
+                }
 
-            is Response.Failure -> {
-                historyViewState.copy(currentUser = HistoryScreenStates.Error)
-            }
+                is Response.Failure -> {
+                    historyViewState.copy(history = HistoryScreenStates.Error)
+                }
 
-            Response.Loading -> {
-                historyViewState.copy(currentUser = HistoryScreenStates.Loading)
+                Response.Loading -> {
+                    historyViewState.copy(history = HistoryScreenStates.Loading)
+                }
             }
-        }
+    }
+
+    private suspend fun updateCurrentUser() {
+        historyViewState =
+            when (val response = currentUserUseCase.invoke()) {
+                is Response.Success -> {
+                    historyViewState.copy(currentUser = HistoryScreenStates.Success(response.data))
+                }
+
+                is Response.Failure -> {
+                    historyViewState.copy(currentUser = HistoryScreenStates.Error)
+                }
+
+                Response.Loading -> {
+                    historyViewState.copy(currentUser = HistoryScreenStates.Loading)
+                }
+            }
     }
 }

@@ -16,7 +16,7 @@ fun HistoryElementDTO.toDomain() =
         id = id,
         agentId = agentId,
         createdAt = createdAt,
-        title = title ?: "",
+        title = title ?: "Chat",
         updatedAt = updatedAt,
         userId = userId,
     )

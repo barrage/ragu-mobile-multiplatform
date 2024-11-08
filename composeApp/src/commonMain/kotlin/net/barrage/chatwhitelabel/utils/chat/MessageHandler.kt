@@ -13,6 +13,7 @@ import net.barrage.chatwhitelabel.utils.debugLogError
 class MessageHandler(
     private val receiveMessageCallback: ReceiveMessageCallback,
     private val handleChatId: (String?) -> Unit,
+    private val handleChatOpen: (Boolean) -> Unit,
 ) {
     var sendFirstMessage: () -> Unit = {}
 
@@ -48,7 +49,7 @@ class MessageHandler(
         debugLog("WebSocket Chat Opened: $chatId")
         handleChatId(chatId)
         receiveMessageCallback.enableSending()
-        receiveMessageCallback.setChatOpen(true)
+        handleChatOpen(true)
         sendFirstMessage()
     }
 
@@ -61,6 +62,7 @@ class MessageHandler(
 
     private fun handleChatClosed() {
         receiveMessageCallback.closeChat()
+        handleChatOpen(false)
     }
 
     private fun handleFinishEvent(jsonMessage: JsonObject) {

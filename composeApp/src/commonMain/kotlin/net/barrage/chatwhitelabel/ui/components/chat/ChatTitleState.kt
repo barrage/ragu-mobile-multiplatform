@@ -4,7 +4,6 @@ data class ChatTitleState(
     val title: String,
     val isMenuVisible: Boolean,
     val isEditingTitle: Boolean,
-    val isChatOpen: Boolean,
     val onThreeDotsClick: () -> Unit,
     val onEditTitleClick: () -> Unit,
     val onDeleteChatClick: () -> Unit,
