@@ -73,9 +73,14 @@ class WebSocketChatClient(
         }
     }
 
-    fun sendMessage(message: String) {
+    fun sendMessage(message: String, chatId: String? = null) {
         if (currentChatId == null) {
-            openNewChat()
+            if (chatId != null) {
+                openExistingChat(chatId)
+            } else {
+                openNewChat()
+            }
+
             messageHandler.sendFirstMessage = {
                 sendChatMessage(message)
                 messageHandler.sendFirstMessage = {}
@@ -107,6 +112,23 @@ class WebSocketChatClient(
                         "agentId",
                         selectedAgent.value?.id ?: "00000000-0000-0000-0000-000000000000",
                     )
+                },
+            )
+        }
+        sendJsonMessage(openChatMessage)
+    }
+
+    private fun openExistingChat(chatId: String) {
+        if (currentChatId != null) {
+            closeChat()
+        }
+        val openChatMessage = buildJsonObject {
+            put("type", "system")
+            put(
+                "payload",
+                buildJsonObject {
+                    put("type", "chat_open_existing")
+                    put("chatId", chatId)
                 },
             )
         }

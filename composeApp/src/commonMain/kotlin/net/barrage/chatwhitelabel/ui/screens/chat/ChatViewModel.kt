@@ -56,6 +56,10 @@ class ChatViewModel(
     val selectedAgent: Agent?
         get() = _selectedAgent.value
 
+    private val _currentChatId = mutableStateOf<String?>(null)
+    val currentChatId: String?
+        get() = _currentChatId.value
+
     var webSocketChatClient: WebSocketChatClient? = null
         private set
 
@@ -91,7 +95,7 @@ class ChatViewModel(
     fun sendMessage() {
         if (inputText.isEmpty()) return
         _messages.add(inputText)
-        webSocketChatClient?.sendMessage(inputText)
+        webSocketChatClient?.sendMessage(inputText, currentChatId)
         _inputText.value = ""
     }
 
