@@ -48,7 +48,7 @@ fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
             textFieldValue = it
             state.onTextChange(it.text)
         },
-        textStyle = state.style,
+        textStyle = state.textStyle.copy(color = state.textColor),
         modifier = modifier.width(IntrinsicSize.Min).focusRequester(focusRequester),
         enabled = state.isEditing,
     )

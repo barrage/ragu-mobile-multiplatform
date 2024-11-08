@@ -1,15 +1,18 @@
 package net.barrage.chatwhitelabel.di
 
 import net.barrage.chatwhitelabel.data.remote.ktor.ApiImpl
+import net.barrage.chatwhitelabel.data.repository.AgentRepositoryImpl
 import net.barrage.chatwhitelabel.data.repository.AuthRepositoryImpl
 import net.barrage.chatwhitelabel.data.repository.ChatRepositoryImpl
 import net.barrage.chatwhitelabel.data.repository.UserRepositoryImpl
 import net.barrage.chatwhitelabel.data.repository.WebSocketRepositoryImpl
 import net.barrage.chatwhitelabel.domain.remote.ktor.Api
+import net.barrage.chatwhitelabel.domain.repository.AgentRepository
 import net.barrage.chatwhitelabel.domain.repository.AuthRepository
 import net.barrage.chatwhitelabel.domain.repository.ChatRepository
 import net.barrage.chatwhitelabel.domain.repository.UserRepository
 import net.barrage.chatwhitelabel.domain.repository.WebSocketRepository
+import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LoginUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
@@ -33,6 +36,7 @@ val useCaseModule = module {
     single<WebSocketTokenUseCase> { WebSocketTokenUseCase(get()) }
     single<UpdateChatTitleUseCase> { UpdateChatTitleUseCase(get()) }
     single<DeleteChatUseCase> { DeleteChatUseCase(get()) }
+    single<GetAgentsUseCase> { GetAgentsUseCase(get()) }
 }
 
 // Module for mappers
@@ -46,6 +50,7 @@ val repositoryModule = module {
     single<UserRepository> { UserRepositoryImpl(get()) }
     single<WebSocketRepository> { WebSocketRepositoryImpl(get()) }
     single<ChatRepository> { ChatRepositoryImpl(get()) }
+    single<AgentRepository> { AgentRepositoryImpl(get()) }
 }
 
 // Module for app
@@ -56,7 +61,7 @@ val appModule = module {
 // Module for view models
 val viewModelModule = module {
     viewModel { LoginViewModel(get(), get(), get()) }
-    viewModel { ChatViewModel(get(), get(), get()) }
+    viewModel { ChatViewModel(get(), get(), get(), get()) }
 }
 
 // Combine all modules into a single module list for Koin initialization

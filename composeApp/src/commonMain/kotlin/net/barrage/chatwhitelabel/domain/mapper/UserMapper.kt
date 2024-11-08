@@ -6,9 +6,9 @@ import net.barrage.chatwhitelabel.domain.model.CurrentUser
 fun CurrentUserDTO.toDomain() =
     CurrentUser(
         id = id,
-        email = email,
-        fullName = fullName,
-        firstName = firstName,
-        lastName = lastName,
+        email = email.trim(),
+        fullName = fullName.trim(),
+        firstName = firstName.trim(),
+        lastName = lastName.trim(),
         active = active,
     )

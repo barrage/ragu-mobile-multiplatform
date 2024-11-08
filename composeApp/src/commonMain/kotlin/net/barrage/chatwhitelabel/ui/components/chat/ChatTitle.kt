@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -31,7 +32,6 @@ import chatwhitelabel.composeapp.generated.resources.ic_check
 import chatwhitelabel.composeapp.generated.resources.ic_three_dots
 import net.barrage.chatwhitelabel.ui.components.TypewriterText
 import net.barrage.chatwhitelabel.ui.components.TypewriterTextState
-import net.barrage.chatwhitelabel.ui.theme.customTypography
 import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -49,9 +49,10 @@ fun ChatTitle(state: ChatTitleState, modifier: Modifier = Modifier) {
             state =
                 TypewriterTextState(
                     text = state.title,
-                    state.isEditingTitle,
+                    isEditing = state.isEditingTitle,
                     onTextChange = state.onTitleChange,
-                    style = customTypography().textBase,
+                    textStyle = MaterialTheme.typography.titleMedium,
+                    textColor = MaterialTheme.colorScheme.onSurface,
                 )
         )
         CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {

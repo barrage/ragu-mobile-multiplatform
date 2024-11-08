@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.domain.Response
+import net.barrage.chatwhitelabel.domain.model.Agent
+import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
@@ -18,9 +20,13 @@ class ChatViewModel(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
     private val updateChatTitleUseCase: UpdateChatTitleUseCase,
     private val deleteChatUseCase: DeleteChatUseCase,
+    private val getAgentsUseCase: GetAgentsUseCase,
 ) : ViewModel() {
     private val _messages = mutableStateListOf<String>()
     val messages: List<String> = _messages
+
+    private val _agents = mutableStateListOf<Agent>()
+    val agents: List<Agent> = _agents
 
     private val _inputText = mutableStateOf("")
     val inputText: String
@@ -46,8 +52,25 @@ class ChatViewModel(
     val chatTitle: String
         get() = _chatTitle.value
 
+    private val _selectedAgent = mutableStateOf<Agent?>(null)
+    val selectedAgent: Agent?
+        get() = _selectedAgent.value
+
     var webSocketChatClient: WebSocketChatClient? = null
         private set
+
+    init {
+        viewModelScope.launch {
+            val agents = getAgentsUseCase()
+            if (agents is Response.Success) {
+                _agents.clear()
+                _agents.addAll(agents.data)
+                _selectedAgent.value = agents.data.firstOrNull()
+            } else {
+                // Handle error
+            }
+        }
+    }
 
     fun updateInputText(text: String) {
         _inputText.value = text
@@ -126,5 +149,9 @@ class ChatViewModel(
                 // Handle error
             }
         }
+    }
+
+    fun setAgent(agent: Agent) {
+        _selectedAgent.value = agent
     }
 }
