@@ -16,9 +16,9 @@ import net.barrage.chatwhitelabel.domain.model.HistoryElement
 fun ModalDrawerHistoryElement(
     viewState: HistoryElement,
     modifier: Modifier = Modifier,
-    onClick: (String) -> Unit,
+    onClick: (HistoryElement) -> Unit,
 ) {
-    Box(modifier.padding(4.dp).clickable { onClick(viewState.id) }) {
+    Box(modifier.padding(4.dp).clickable { onClick(viewState) }) {
         Text(
             modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth().padding(start = 16.dp),
             textAlign = TextAlign.Start,

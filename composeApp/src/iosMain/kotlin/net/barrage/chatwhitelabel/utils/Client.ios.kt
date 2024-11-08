@@ -13,8 +13,8 @@ import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.pingInterval
 import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.serialization.json.Json
 
 actual val wsClient: HttpClient
     get() = HttpClient(Darwin) { install(WebSockets) { pingInterval = 5.seconds } }

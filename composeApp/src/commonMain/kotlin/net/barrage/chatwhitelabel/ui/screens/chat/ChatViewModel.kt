@@ -223,8 +223,18 @@ class ChatViewModel(
         _inputText.value = ""
     }
 
-    fun getHistoryChatById(id: String) {
-        viewModelScope.launch { historyByIdUseCase.invoke(id) }
+    fun getHistoryChatById(id: String, title: String) {
+        viewModelScope.launch {
+            val response = historyByIdUseCase.invoke(id)
+            if (response is Response.Success) {
+                _currentChatId.value = id
+                _messages.clear()
+                _messages.addAll(response.data.map { it.content })
+                _chatTitle.value = title
+            } else {
+                // Handle error
+            }
+        }
     }
 
     private suspend fun updateHistory(): HistoryModalDrawerContentViewState {

@@ -1,5 +1,8 @@
 package net.barrage.chatwhitelabel.ui.main
 
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -26,6 +29,7 @@ data class AppState(
     val chatViewModel: ChatViewModel,
     val networkAvailable: State<Boolean>,
     val currentScreen: NavDestination,
+    val drawerState: DrawerState,
 )
 
 @Composable
@@ -40,6 +44,7 @@ fun rememberAppState(): AppState {
     val currentDestination = currentBackStack?.destination
     val currentScreen =
         FellowNavigation.screens.find { it.route == currentDestination?.route } ?: Chat
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -52,6 +57,13 @@ fun rememberAppState(): AppState {
     }
 
     return remember(navController, coroutineScope, chatViewModel, networkAvailable, currentScreen) {
-        AppState(navController, coroutineScope, chatViewModel, networkAvailable, currentScreen)
+        AppState(
+            navController,
+            coroutineScope,
+            chatViewModel,
+            networkAvailable,
+            currentScreen,
+            drawerState,
+        )
     }
 }

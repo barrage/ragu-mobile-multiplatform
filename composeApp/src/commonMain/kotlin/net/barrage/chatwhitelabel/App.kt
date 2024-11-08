@@ -6,6 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
@@ -34,6 +35,7 @@ fun App(modifier: Modifier = Modifier) {
     }
     CustomTheme(seedColor = selectedTheme, useDarkTheme = isDarkTheme) {
         val appState = rememberAppState()
+        val scope = rememberCoroutineScope()
 
         Surface(modifier = modifier) {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -47,11 +49,13 @@ fun App(modifier: Modifier = Modifier) {
                         CoroutineScope(Dispatchers.IO).launch {
                             coreComponent.appPreferences.saveThemeColor(it)
                         }
+                        scope.launch { appState.drawerState.close() }
                     },
                     onDarkLightModeClick = {
                         CoroutineScope(Dispatchers.IO).launch {
                             coreComponent.appPreferences.changeDarkMode(isDarkTheme)
                         }
+                        scope.launch { appState.drawerState.close() }
                         isDarkTheme = !isDarkTheme
                     },
                 )
