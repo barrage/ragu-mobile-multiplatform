@@ -1,12 +1,9 @@
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -24,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
@@ -171,14 +167,7 @@ fun ChatScreen(
             }
         }
         if (profileVisible) {
-            Box(
-                modifier =
-                Modifier.fillMaxSize().background(Color.DarkGray.copy(alpha = 0.7f)).clickable(
-                    MutableInteractionSource(),
-                    null,
-                ) {},
-                contentAlignment = Alignment.Center,
-            ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 ProfileCard(
                     viewState = viewModel.currentUserViewState,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),

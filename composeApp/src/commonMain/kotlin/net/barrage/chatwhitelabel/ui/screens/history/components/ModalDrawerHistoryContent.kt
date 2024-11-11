@@ -1,12 +1,15 @@
 package net.barrage.chatwhitelabel.ui.screens.history.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import net.barrage.chatwhitelabel.domain.model.History
 import net.barrage.chatwhitelabel.domain.model.HistoryElement
@@ -22,18 +25,33 @@ fun ModalDrawerHistoryContent(
     Box(modifier = modifier) {
         when (viewState) {
             HistoryScreenStates.Error -> {
-                Text(text = "Error loading data.", color = Red, fontSize = 24.sp)
+                Text(
+                    text = "Error loading data.",
+                    color = Red,
+                    fontSize = 24.sp,
+                    modifier = Modifier.padding(16.dp),
+                )
             }
 
             HistoryScreenStates.Idle -> {}
 
             HistoryScreenStates.Loading -> {
-                Text(text = "Loading...", fontSize = 24.sp) // TODO loader
+                Text(
+                    text = "Loading...",
+                    fontSize = 24.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(16.dp),
+                ) // TODO loader
             }
 
             is HistoryScreenStates.Success<History> -> {
                 if (viewState.data.elements.isEmpty()) {
-                    Text(text = "You have no previous chats.", fontSize = 24.sp)
+                    Text(
+                        text = "You have no previous chats.",
+                        fontSize = 24.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(16.dp),
+                    )
                 } else {
                     LazyColumn {
                         items(viewState.data.elements) {

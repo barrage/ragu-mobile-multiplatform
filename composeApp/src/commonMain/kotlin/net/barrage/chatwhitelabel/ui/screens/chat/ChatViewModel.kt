@@ -318,11 +318,21 @@ class ChatViewModel(
         viewModelScope.launch { logoutUseCase() }
     }
 
-    suspend fun updateHistory() {
-        historyViewState =
-            when (val response = historyUseCase.invoke(1, 10)) {
-                is Response.Success ->
-                    historyViewState.copy(history = HistoryScreenStates.Success(response.data))
+    private suspend fun updateHistory(): HistoryModalDrawerContentViewState {
+        return when (val response = historyUseCase.invoke(1, 10)) {
+            is Response.Success -> {
+                historyViewState.copy(
+                    history =
+                        HistoryScreenStates.Success(
+                            response.data.copy(
+                                elements =
+                                    response.data.elements
+                                        .map { it.copy(isSelected = it.id == currentChatId) }
+                                        .toImmutableList()
+                            )
+                        )
+                )
+            }
 
                 is Response.Failure -> historyViewState.copy(history = HistoryScreenStates.Error)
                 Response.Loading -> historyViewState.copy(history = HistoryScreenStates.Loading)

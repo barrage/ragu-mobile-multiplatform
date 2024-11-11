@@ -11,6 +11,7 @@ import net.barrage.chatwhitelabel.data.remote.dto.user.Role
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileContentItem
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileHeaderViewState
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileViewState
+import net.barrage.chatwhitelabel.utils.formatIsoDateToReadable
 
 data class CurrentUser(
     val id: String,
@@ -43,13 +44,13 @@ data class CurrentUser(
                         ),
                     "Created At" to
                         ProfileContentItem(
-                            value = createdAt.toString(),
+                            value = formatIsoDateToReadable(createdAt),
                             iconId = Res.drawable.ic_created_at,
                             iconDescription = "created At",
                         ),
                     "Updated At" to
                         ProfileContentItem(
-                            value = createdAt.toString(),
+                            value = formatIsoDateToReadable(createdAt),
                             iconId = Res.drawable.ic_updated_at,
                             iconDescription = "Updated At",
                         ),

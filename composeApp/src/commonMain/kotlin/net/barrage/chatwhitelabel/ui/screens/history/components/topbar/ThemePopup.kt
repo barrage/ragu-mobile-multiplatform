@@ -63,7 +63,7 @@ fun ThemePopup(
             exit = shrinkVertically(),
         ) {
             Card(modifier = Modifier.padding(end = 16.dp).wrapContentSize().padding(8.dp)) {
-                Column(modifier = Modifier.padding(10.dp).widthIn(max = 150.dp)) {
+                Column(modifier = Modifier.padding(10.dp).widthIn(max = 160.dp)) {
                     for (row in 0 until themeRows) {
                         ThemeRow(
                             row = row,
@@ -73,7 +73,7 @@ fun ThemePopup(
                             onSelectThemeClick = onSelectThemeClick,
                         )
                     }
-                    Row {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             "Variants",
                             modifier = Modifier,

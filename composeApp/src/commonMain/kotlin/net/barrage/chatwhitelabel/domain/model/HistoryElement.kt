@@ -7,4 +7,5 @@ data class HistoryElement(
     val title: String,
     val updatedAt: String,
     val userId: String,
+    val isSelected: Boolean = false,
 )

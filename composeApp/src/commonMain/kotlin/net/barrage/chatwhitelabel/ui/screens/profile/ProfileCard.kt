@@ -11,20 +11,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.profile.components.ProfileCardHeader
 import net.barrage.chatwhitelabel.ui.screens.profile.components.ProfileContent
@@ -37,58 +38,68 @@ fun ProfileCard(
     modifier: Modifier = Modifier,
     onLogoutClick: () -> Unit,
 ) {
-    Box(modifier = modifier) {
-        when (viewState) {
-            HistoryScreenStates.Error -> {
-                Text(
-                    text = "Error loading data.",
-                    color = Red,
-                    fontSize = 24.sp,
-                    modifier = Modifier.padding(8.dp),
-                )
-            }
+    AlertDialog(
+        modifier = modifier.fillMaxWidth(),
+        onDismissRequest = { /* No-op, as we don't want to dismiss this alert */ },
+        title = {},
+        text = {
+            when (viewState) {
+                HistoryScreenStates.Error -> {
+                    Text(
+                        text = "Error loading data.",
+                        color = Red,
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(8.dp),
+                    )
+                }
 
-            HistoryScreenStates.Idle -> {}
+                HistoryScreenStates.Idle -> {}
 
-            HistoryScreenStates.Loading -> {
-                Text(
-                    text = "Loading...",
-                    fontSize = 24.sp,
-                    modifier = Modifier.padding(8.dp),
-                ) // TODO loader
-            }
+                HistoryScreenStates.Loading -> {
+                    Text(
+                        text = "Loading...",
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(8.dp),
+                    ) // TODO loader
+                }
 
-            is HistoryScreenStates.Success -> {
-                Card(modifier = Modifier.clip(RoundedCornerShape(12.dp))) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                is HistoryScreenStates.Success -> {
+                    Column {
                         Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                            horizontalArrangement =
+                                Arrangement.End, // Align the icon to the end of the Row
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            Spacer(modifier = Modifier)
                             Icon(
                                 Icons.Rounded.Close,
                                 contentDescription = "close",
+                                tint =
+                                    MaterialTheme.colorScheme
+                                        .onSurface, // Ensure the icon color is visible
                                 modifier = Modifier.clip(CircleShape).clickable { onCloseClick() },
                             )
                         }
                         ProfileSpacer()
-                        ProfileCardHeader(viewState = viewState.data.header)
+                        ProfileCardHeader(
+                            modifier = Modifier.padding(top = 16.dp),
+                            viewState = viewState.data.header,
+                        )
                         ProfileSpacer()
                         ProfileContent(viewState = viewState.data.content)
                         ProfileSpacer()
-                        Button(onClick = onLogoutClick, modifier = Modifier.padding(top = 16.dp)) {
-                            Text(
-                                text = "Logout",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onPrimary,
-                            )
+                        Button(
+                            onClick = onLogoutClick,
+                            modifier = Modifier.padding(top = 16.dp).align(Alignment.End),
+                        ) {
+                            Text(text = "Logout", style = MaterialTheme.typography.titleMedium)
                         }
                     }
                 }
             }
-        }
-    }
+        },
+        confirmButton = { /* No buttons needed */ },
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    )
 }
 
 @Composable

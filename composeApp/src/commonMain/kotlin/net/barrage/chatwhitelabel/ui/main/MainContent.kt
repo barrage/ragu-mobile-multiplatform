@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.materialkolor.PaletteStyle
 import dev.theolm.rinku.DeepLink
 import kotlinx.coroutines.launch
+import net.barrage.chatwhitelabel.navigation.Chat
 import net.barrage.chatwhitelabel.ui.components.TopBar
 import net.barrage.chatwhitelabel.ui.screens.history.ModalDrawer
 
@@ -39,15 +40,17 @@ fun MainContent(
     ModalNavigationDrawer(
         modifier = modifier,
         drawerState = drawerState,
-        gesturesEnabled = profileVisible.not(),
+        gesturesEnabled = profileVisible.not() && appState.currentScreen == Chat,
         drawerContent = {
             ModalDrawer(
                 isDarkMode = isDarkMode,
                 currentTheme = currentTheme,
                 currentVariant = currentVariant,
                 onSelectThemeClick = onSelectThemeClick,
+                viewModel = appState.chatViewModel,
                 onSelectVariantClick = onSelectVariantClick,
                 onDarkLightModeClick = onDarkLightModeClick,
+                changeDrawerVisibility = { scope.launch { drawerState.close() } },
                 onUserClick = {
                     profileVisible = true
                     scope.launch { drawerState.close() }

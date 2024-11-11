@@ -12,8 +12,7 @@ fun timestampToHhMm(timestamp: Long): String {
         localDateTime.minute.toString().padStart(2, '0')
 }
 
-fun formatIsoDateToReadable(isoDate: String): String {
-    val instant = Instant.parse(isoDate)
+fun formatIsoDateToReadable(instant: Instant): String {
 
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
 

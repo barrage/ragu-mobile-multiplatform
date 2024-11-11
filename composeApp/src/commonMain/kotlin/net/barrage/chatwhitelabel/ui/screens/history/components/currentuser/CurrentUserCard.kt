@@ -1,21 +1,24 @@
 package net.barrage.chatwhitelabel.ui.screens.history.components.currentuser
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
@@ -30,7 +33,7 @@ fun CurrentUserCard(
     modifier: Modifier = Modifier,
     onUserClick: () -> Unit,
 ) {
-    Card(modifier.padding(8.dp)) {
+    Card(modifier.padding(16.dp)) {
         Box(modifier = Modifier) {
             when (viewState) {
                 HistoryScreenStates.Error -> {
@@ -44,27 +47,32 @@ fun CurrentUserCard(
                 }
 
                 is HistoryScreenStates.Success<ProfileViewState> -> {
-                    TextButton(onClick = onUserClick) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = "user profile",
-                                tint = Gray,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier =
+                            Modifier.clip(RoundedCornerShape(12.dp))
+                                .background(MaterialTheme.colorScheme.surfaceDim)
+                                .clickable(onClick = onUserClick)
+                                .padding(8.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Person,
+                            contentDescription = "user profile",
+                            tint = Gray,
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = viewState.data.header.name,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = viewState.data.header.name,
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                )
-                                Text(
-                                    text = viewState.data.content["Email"]?.value ?: "",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    overflow = Ellipsis,
-                                )
-                            }
+                            Text(
+                                text = viewState.data.content["Email"]?.value ?: "",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                overflow = Ellipsis,
+                            )
                         }
                     }
                 }
