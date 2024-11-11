@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.materialkolor.PaletteStyle
 import dev.theolm.rinku.DeepLink
 import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.ui.components.TopBar
@@ -23,10 +24,12 @@ import net.barrage.chatwhitelabel.ui.screens.history.ModalDrawer
 @Composable
 fun MainContent(
     appState: AppState,
-    theme: Color,
+    currentTheme: Color,
+    currentVariant: PaletteStyle,
     isDarkMode: Boolean,
     deepLink: DeepLink?,
     onSelectThemeClick: (Color) -> Unit,
+    onSelectVariantClick: (PaletteStyle) -> Unit,
     modifier: Modifier = Modifier,
     onDarkLightModeClick: () -> Unit,
 ) {
@@ -40,8 +43,10 @@ fun MainContent(
         drawerContent = {
             ModalDrawer(
                 isDarkMode = isDarkMode,
-                theme = theme,
+                currentTheme = currentTheme,
+                currentVariant = currentVariant,
                 onSelectThemeClick = onSelectThemeClick,
+                onSelectVariantClick = onSelectVariantClick,
                 onDarkLightModeClick = onDarkLightModeClick,
                 onUserClick = {
                     profileVisible = true

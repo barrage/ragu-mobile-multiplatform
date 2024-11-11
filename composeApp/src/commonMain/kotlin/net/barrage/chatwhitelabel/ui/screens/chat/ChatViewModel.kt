@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.materialkolor.PaletteStyle
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -72,6 +73,17 @@ class ChatViewModel(
                     RedPrimary,
                     MagentaPrimary,
                     BrownPrimary,
+                ),
+                persistentListOf(
+                    PaletteStyle.TonalSpot,
+                    PaletteStyle.Neutral,
+                    PaletteStyle.Vibrant,
+                    PaletteStyle.Expressive,
+                    PaletteStyle.Rainbow,
+                    PaletteStyle.FruitSalad,
+                    PaletteStyle.Monochrome,
+                    PaletteStyle.Fidelity,
+                    PaletteStyle.Content,
                 ),
                 HistoryScreenStates.Idle,
             )

@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
+import com.materialkolor.PaletteStyle
 import dev.theolm.rinku.DeepLink
 import dev.theolm.rinku.compose.ext.DeepLinkListener
 import kotlinx.coroutines.CoroutineScope
@@ -31,38 +32,47 @@ fun App(modifier: Modifier = Modifier) {
     DeepLinkListener { deepLink = it }
     var isDarkTheme by remember { mutableStateOf(true) }
     var selectedTheme by remember { mutableStateOf(White) }
+    var selectedVariant by remember { mutableStateOf(PaletteStyle.TonalSpot) }
     var isThemeLoaded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         isDarkTheme = coreComponent.appPreferences.isDarkModeEnabled()
         selectedTheme = coreComponent.appPreferences.getThemeColor()
+        selectedVariant = coreComponent.appPreferences.getThemeVariant()
         isThemeLoaded = true
     }
-
     AnimatedVisibility(isThemeLoaded) {
-        CustomTheme(seedColor = selectedTheme, useDarkTheme = isDarkTheme) {
+        CustomTheme(
+            seedColor = selectedTheme,
+            useDarkTheme = isDarkTheme,
+            style = selectedVariant
+        ) {
             val appState = rememberAppState()
-            val scope = rememberCoroutineScope()
 
             Surface(modifier = modifier) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     MainContent(
                         appState = appState,
                         deepLink = deepLink,
-                        theme = selectedTheme,
+                        currentTheme = selectedTheme,
+                        currentVariant = selectedVariant,
                         isDarkMode = isDarkTheme,
                         onSelectThemeClick = {
                             selectedTheme = it
                             CoroutineScope(Dispatchers.IO).launch {
                                 coreComponent.appPreferences.saveThemeColor(it)
                             }
-                            scope.launch { appState.drawerState.close() }
+                        },
+                        onSelectVariantClick = {
+                            selectedVariant = it
+                            CoroutineScope(Dispatchers.IO).launch {
+                                coreComponent.appPreferences.saveThemeVariant(it)
+                            }
                         },
                         onDarkLightModeClick = {
                             CoroutineScope(Dispatchers.IO).launch {
                                 coreComponent.appPreferences.changeDarkMode(isDarkTheme)
                             }
-                            scope.launch { appState.drawerState.close() }
                             isDarkTheme = !isDarkTheme
                         },
                     )

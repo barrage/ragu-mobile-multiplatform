@@ -26,8 +26,8 @@ import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
+import net.barrage.chatwhitelabel.ui.screens.profile.components.ProfileCardHeader
 import net.barrage.chatwhitelabel.ui.screens.profile.components.ProfileContent
-import net.barrage.chatwhitelabel.ui.screens.profile.components.ProfileHeader
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileViewState
 
 @Composable
@@ -40,13 +40,22 @@ fun ProfileCard(
     Box(modifier = modifier) {
         when (viewState) {
             HistoryScreenStates.Error -> {
-                Text(text = "Error loading data.", color = Red, fontSize = 24.sp)
+                Text(
+                    text = "Error loading data.",
+                    color = Red,
+                    fontSize = 24.sp,
+                    modifier = Modifier.padding(8.dp),
+                )
             }
 
             HistoryScreenStates.Idle -> {}
 
             HistoryScreenStates.Loading -> {
-                Text(text = "Loading...", fontSize = 24.sp) // TODO loader
+                Text(
+                    text = "Loading...",
+                    fontSize = 24.sp,
+                    modifier = Modifier.padding(8.dp),
+                ) // TODO loader
             }
 
             is HistoryScreenStates.Success -> {
@@ -64,7 +73,7 @@ fun ProfileCard(
                             )
                         }
                         ProfileSpacer()
-                        ProfileHeader(viewState = viewState.data.header)
+                        ProfileCardHeader(viewState = viewState.data.header)
                         ProfileSpacer()
                         ProfileContent(viewState = viewState.data.content)
                         ProfileSpacer()

@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.materialkolor.PaletteStyle
 import kotlin.math.ceil
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryModalDrawerContentViewState
 import net.barrage.chatwhitelabel.ui.screens.history.components.topbar.DarkLightThemeSwitcher
@@ -21,9 +22,11 @@ import net.barrage.chatwhitelabel.ui.screens.history.components.topbar.ThemeSele
 @Composable
 fun ModalDrawerContentTopBar(
     viewState: HistoryModalDrawerContentViewState,
-    theme: Color,
+    currentTheme: Color,
+    currentVariant: PaletteStyle,
     isDarkMode: Boolean,
     onSelectThemeClick: (Color) -> Unit,
+    onSelectVariantClick: (PaletteStyle) -> Unit,
     modifier: Modifier = Modifier,
     onDarkLightModeClick: () -> Unit,
 ) {
@@ -39,18 +42,18 @@ fun ModalDrawerContentTopBar(
         DarkLightThemeSwitcher(isDarkMode, onClick = onDarkLightModeClick)
 
         Column {
-            ThemeSelectorButton(selectedTheme = theme, onClick = { showPopup = !showPopup })
+            ThemeSelectorButton(selectedTheme = currentTheme, onClick = { showPopup = !showPopup })
             ThemePopup(
                 themeRows = themeRows,
                 showPopup = showPopup,
                 supportedThemeColumns = supportedThemeColumns,
                 supportedThemes = viewState.supportedThemes,
-                selectedTheme = theme,
+                supportedVariants = viewState.supportedVariants,
+                selectedVariant = currentVariant,
+                selectedTheme = currentTheme,
                 onDismissRequest = { showPopup = false },
-                onSelectThemeClick = {
-                    onSelectThemeClick(it)
-                    showPopup = false
-                },
+                onSelectVariantClick = onSelectVariantClick,
+                onSelectThemeClick = onSelectThemeClick,
             )
         }
     }

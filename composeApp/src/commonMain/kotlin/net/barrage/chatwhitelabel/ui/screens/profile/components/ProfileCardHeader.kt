@@ -17,7 +17,7 @@ import coil3.compose.AsyncImage
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileHeaderViewState
 
 @Composable
-fun ProfileHeader(viewState: ProfileHeaderViewState, modifier: Modifier = Modifier) {
+fun ProfileCardHeader(viewState: ProfileHeaderViewState, modifier: Modifier = Modifier) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
             viewState.profileImage,

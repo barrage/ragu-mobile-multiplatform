@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
+import com.materialkolor.PaletteStyle
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerContentTopBar
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerHistoryContent
@@ -23,9 +23,11 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ModalDrawer(
-    theme: Color,
+    currentTheme: Color,
+    currentVariant: PaletteStyle,
     isDarkMode: Boolean,
     onSelectThemeClick: (Color) -> Unit,
+    onSelectVariantClick: (PaletteStyle) -> Unit,
     onDarkLightModeClick: () -> Unit,
     onUserClick: () -> Unit,
     drawerState: DrawerState,
@@ -37,10 +39,12 @@ fun ModalDrawer(
         Column {
             ModalDrawerContentTopBar(
                 viewState = viewModel.historyViewState,
-                theme = theme,
+                currentTheme = currentTheme,
+                currentVariant = currentVariant,
                 isDarkMode = isDarkMode,
                 modifier = Modifier.padding(vertical = 8.dp),
                 onSelectThemeClick = onSelectThemeClick,
+                onSelectVariantClick = onSelectVariantClick,
                 onDarkLightModeClick = onDarkLightModeClick,
             )
             Divider(
