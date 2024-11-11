@@ -3,6 +3,7 @@ import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,7 +30,10 @@ import net.barrage.chatwhitelabel.ui.components.chat.ChatInput
 import net.barrage.chatwhitelabel.ui.components.chat.ChatInputState
 import net.barrage.chatwhitelabel.ui.components.chat.ChatTitle
 import net.barrage.chatwhitelabel.ui.components.chat.ChatTitleState
+import net.barrage.chatwhitelabel.ui.components.chat.ErrorContent
+import net.barrage.chatwhitelabel.ui.components.chat.IdleContent
 import net.barrage.chatwhitelabel.ui.components.chat.MessageList
+import net.barrage.chatwhitelabel.ui.screens.chat.ChatScreenState
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
 import net.barrage.chatwhitelabel.ui.screens.chat.ReceiveMessageCallback
 
@@ -46,9 +51,11 @@ fun ChatScreen(
     var menuVisible by remember { mutableStateOf(false) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isKeyboardOpen, viewModel.messages) {
-        if (viewModel.messages.isNotEmpty()) {
-            lazyListState.animateScrollToItem(viewModel.messages.lastIndex)
+    val chatScreenState = viewModel.chatScreenState
+
+    LaunchedEffect(isKeyboardOpen, chatScreenState) {
+        if (chatScreenState is ChatScreenState.Success && chatScreenState.messages.isNotEmpty()) {
+            lazyListState.animateScrollToItem(chatScreenState.messages.lastIndex)
             lazyListState.animateScrollBy(lazyListState.layoutInfo.viewportEndOffset.toFloat())
         }
     }
@@ -64,67 +71,90 @@ fun ChatScreen(
                 }
                 .imePadding()
     ) {
-        if (
-            viewModel.messages.isNotEmpty() ||
-                viewModel.webSocketChatClient?.currentChatId?.value != null
-        ) {
-            ChatTitle(
-                state =
-                    ChatTitleState(
-                        title = viewModel.chatTitle,
-                        isMenuVisible = menuVisible,
-                        isEditingTitle = viewModel.isEditingTitle,
-                        onThreeDotsClick = { menuVisible = true },
-                        onEditTitleClick = {
-                            viewModel.setEditingTitle(true)
-                            menuVisible = false
-                        },
-                        onDeleteChatClick = {
-                            showDeleteConfirmation = true
-                            menuVisible = false
-                        },
-                        onDismiss = { menuVisible = false },
-                        onTitleChange = { viewModel.setChatTitle(it) },
-                        onTitleChangeConfirmation = { viewModel.updateTitle() },
-                    ),
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                TextButton(onClick = { viewModel.newChat() }) { Text("New Chat") }
-            }
-        }
+        when (chatScreenState) {
+            is ChatScreenState.Success -> {
+                if (
+                    chatScreenState.messages.isNotEmpty() ||
+                        viewModel.webSocketChatClient?.currentChatId?.value != null
+                ) {
+                    ChatTitle(
+                        state =
+                            ChatTitleState(
+                                title = chatScreenState.chatTitle,
+                                isMenuVisible = menuVisible,
+                                isEditingTitle = chatScreenState.isEditingTitle,
+                                onThreeDotsClick = { menuVisible = true },
+                                onEditTitleClick = {
+                                    viewModel.setEditingTitle(true)
+                                    menuVisible = false
+                                },
+                                onDeleteChatClick = {
+                                    showDeleteConfirmation = true
+                                    menuVisible = false
+                                },
+                                onDismiss = { menuVisible = false },
+                                onTitleChange = { viewModel.setChatTitle(it) },
+                                onTitleChangeConfirmation = { viewModel.updateTitle() },
+                            ),
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                    ) {
+                        TextButton(onClick = { viewModel.newChat() }) { Text("New Chat") }
+                    }
+                }
 
-        if (
-            viewModel.agents.isNotEmpty() &&
-                viewModel.messages.isEmpty() &&
-                viewModel.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
-        ) {
-            AgentContent(
-                agents = viewModel.agents.toImmutableList(),
-                selectedAgent = viewModel.selectedAgent,
-                onAgentClick = { selectedAgent -> viewModel.setAgent(selectedAgent) },
-                modifier = Modifier.weight(1f),
-            )
-        } else {
-            MessageList(
-                messages = viewModel.messages.toImmutableList(),
-                lazyListState = lazyListState,
-                modifier = Modifier.weight(1f),
-            )
-        }
-        ChatInput(
-            state =
-                ChatInputState(
-                    inputText = viewModel.inputText,
-                    onInputTextChange = { viewModel.updateInputText(it) },
-                    onSendMessage = { viewModel.sendMessage() },
-                    onStopReceivingMessage = { viewModel.webSocketChatClient?.stopMessageStream() },
-                    isSendEnabled = viewModel.isSendEnabled,
-                    isReceivingMessage = viewModel.isReceivingMessage,
-                    focusManager = focusManager,
-                    chatInteractionSource = chatInteractionSource,
+                if (
+                    chatScreenState.agents.isNotEmpty() &&
+                        chatScreenState.messages.isEmpty() &&
+                        viewModel.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
+                ) {
+                    AgentContent(
+                        agents = chatScreenState.agents.toImmutableList(),
+                        selectedAgent = viewModel.selectedAgent.value,
+                        onAgentClick = { selectedAgent -> viewModel.setAgent(selectedAgent) },
+                        modifier = Modifier.weight(1f),
+                    )
+                } else {
+                    MessageList(
+                        messages = chatScreenState.messages.toImmutableList(),
+                        lazyListState = lazyListState,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                ChatInput(
+                    state =
+                        ChatInputState(
+                            inputText = chatScreenState.inputText,
+                            onInputTextChange = { viewModel.updateInputText(it) },
+                            onSendMessage = { viewModel.sendMessage() },
+                            onStopReceivingMessage = {
+                                viewModel.webSocketChatClient?.stopMessageStream()
+                            },
+                            isSendEnabled = chatScreenState.isSendEnabled,
+                            isReceivingMessage = chatScreenState.isReceivingMessage,
+                            focusManager = focusManager,
+                            chatInteractionSource = chatInteractionSource,
+                        )
                 )
-        )
+            }
+
+            is ChatScreenState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            is ChatScreenState.Error ->
+                ErrorContent(
+                    errorMessage = chatScreenState.message,
+                    onRetry = { viewModel.loadAllData() },
+                )
+
+            is ChatScreenState.Idle -> IdleContent(onStartNewChat = { viewModel.loadAllData() })
+        }
     }
     if (showDeleteConfirmation) {
         AlertDialog(

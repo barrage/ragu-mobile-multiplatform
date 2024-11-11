@@ -37,7 +37,7 @@ fun rememberAppState(): AppState {
     val navController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
     val chatViewModel = koinViewModel<ChatViewModel>()
-    val networkAvailable = remember { mutableStateOf(false) }
+    val networkAvailable = remember { mutableStateOf(true) }
     val konnection = Konnection.instance
 
     val currentBackStack by navController.currentBackStackEntryAsState()
