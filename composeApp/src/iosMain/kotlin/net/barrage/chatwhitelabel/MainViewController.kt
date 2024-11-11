@@ -2,7 +2,6 @@
 
 package net.barrage.chatwhitelabel
 
-import App
 import androidx.compose.ui.window.ComposeUIViewController
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.crashlytics.crashlytics

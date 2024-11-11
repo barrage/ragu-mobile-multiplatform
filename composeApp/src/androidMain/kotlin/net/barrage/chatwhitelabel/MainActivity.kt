@@ -1,6 +1,5 @@
 package net.barrage.chatwhitelabel
 
-import App
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity

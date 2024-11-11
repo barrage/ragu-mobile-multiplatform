@@ -1,6 +1,5 @@
 package net.barrage.chatwhitelabel.ui.screens.login
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -103,7 +103,7 @@ fun LoginContent(onGoogleLogin: () -> Unit, modifier: Modifier = Modifier) {
                 onClick = onGoogleLogin,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                border = ButtonDefaults.outlinedButtonBorder(true),
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
