@@ -1,33 +1,34 @@
 package net.barrage.chatwhitelabel.ui.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import net.barrage.chatwhitelabel.ui.theme.LocalCustomColorsPalette
-import net.barrage.chatwhitelabel.ui.theme.customTypography
+import androidx.compose.ui.window.DialogProperties
 
 @Composable
 fun NoInternetAlert(modifier: Modifier = Modifier) {
-    Card(modifier = modifier) {
-        Column(modifier = Modifier.padding(20.dp)) {
+    AlertDialog(
+        onDismissRequest = { /* No-op, as we don't want to dismiss this alert */ },
+        title = {
             Text(
                 "NO INTERNET CONNECTION",
-                color = LocalCustomColorsPalette.current.textBase,
-                style = customTypography().textBase,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.error,
             )
-            Spacer(modifier = Modifier.height(20.dp))
+        },
+        text = {
             Text(
                 "No internet connection detected. Please check your connection " +
                     "and try again to continue using the app.",
-                color = LocalCustomColorsPalette.current.textBase,
-                style = customTypography().textBase,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
             )
-        }
-    }
+        },
+        confirmButton = { /* No buttons needed */ },
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = modifier.fillMaxWidth(),
+    )
 }

@@ -1,3 +1,5 @@
+@file:Suppress("TooGenericExceptionCaught")
+
 package net.barrage.chatwhitelabel.utils
 
 import io.ktor.client.call.body
@@ -25,6 +27,9 @@ suspend inline fun <reified T> safeApiCall(apiCall: () -> HttpResponse): Respons
         Response.Failure(e)
     } catch (e: ServerResponseException) {
         // 5xx - responses
+        Response.Failure(e)
+    } catch (e: Exception) {
+        // Unknown error
         Response.Failure(e)
     }
 }

@@ -1,6 +1,7 @@
 package net.barrage.chatwhitelabel.ui.main
 
 import ChatScreen
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.navigation.Chat
+import net.barrage.chatwhitelabel.navigation.Empty
 import net.barrage.chatwhitelabel.navigation.Login
 import net.barrage.chatwhitelabel.ui.components.keyboardAsState
 import net.barrage.chatwhitelabel.ui.screens.login.LoginScreen
@@ -33,14 +35,15 @@ fun AppNavHost(appState: AppState, deepLink: DeepLink?, modifier: Modifier = Mod
     val currentUserUseCase: CurrentUserUseCase = koinInject()
     var startDestination by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(appState.networkAvailable.value) {
+        if (!appState.networkAvailable.value) return@LaunchedEffect
         appState.coroutineScope.launch {
             startDestination =
                 if (currentUserUseCase() is Response.Success) {
                     appState.chatViewModel.loadAllData()
                     Chat.route
                 } else {
-                    Login.route
+                    startDestination
                 }
         }
     }
@@ -48,7 +51,7 @@ fun AppNavHost(appState: AppState, deepLink: DeepLink?, modifier: Modifier = Mod
     if (startDestination != null) {
         NavHost(
             appState.navController,
-            startDestination = startDestination!!,
+            startDestination = startDestination ?: Empty.route,
             modifier = modifier,
         ) {
             composable(Chat.route) {
@@ -75,6 +78,11 @@ fun AppNavHost(appState: AppState, deepLink: DeepLink?, modifier: Modifier = Mod
                     },
                     modifier = Modifier.fillMaxSize(),
                 )
+            }
+            composable(Empty.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    // EmptyScreen()
+                }
             }
         }
     }
