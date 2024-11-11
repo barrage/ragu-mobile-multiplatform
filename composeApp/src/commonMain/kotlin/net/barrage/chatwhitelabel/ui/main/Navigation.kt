@@ -37,6 +37,7 @@ fun AppNavHost(appState: AppState, deepLink: DeepLink?, modifier: Modifier = Mod
         appState.coroutineScope.launch {
             startDestination =
                 if (currentUserUseCase() is Response.Success) {
+                    appState.chatViewModel.loadAllData()
                     Chat.route
                 } else {
                     Login.route
@@ -68,7 +69,10 @@ fun AppNavHost(appState: AppState, deepLink: DeepLink?, modifier: Modifier = Mod
                 LoginScreen(
                     onGoogleLogin = { uriHandler.openUri(Constants.Auth.getGoogleAuthUrl()) },
                     deepLink = deepLink,
-                    navigateToChat = { appState.navController.navigateSingleTopTo(Chat.route) },
+                    navigateToChat = {
+                        appState.chatViewModel.loadAllData()
+                        appState.navController.navigateSingleTopTo(Chat.route)
+                    },
                     modifier = Modifier.fillMaxSize(),
                 )
             }

@@ -103,7 +103,7 @@ class ChatViewModel(
         )
         private set
 
-    init {
+    fun loadAllData() {
         viewModelScope.launch {
             CoroutineScope(Dispatchers.IO).launch { updateHistory() }
             CoroutineScope(Dispatchers.IO).launch { updateCurrentUser() }

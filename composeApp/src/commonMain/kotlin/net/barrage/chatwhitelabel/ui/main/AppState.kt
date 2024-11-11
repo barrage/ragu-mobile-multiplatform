@@ -15,7 +15,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.tmapps.konnection.Konnection
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.navigation.Chat
@@ -52,10 +51,7 @@ fun rememberAppState(): AppState {
             konnection.observeHasConnection().collect { networkAvailable.value = it }
         }
     }
-    LaunchedEffect(drawerState.isOpen) {
-        Napier.d("Drawer state changed: ${drawerState.isOpen}")
-        chatViewModel.updateHistory()
-    }
+    LaunchedEffect(drawerState.isOpen) { chatViewModel.updateHistory() }
 
     DisposableEffect(coroutineScope) {
         onDispose { chatViewModel.webSocketChatClient?.disconnect() }
