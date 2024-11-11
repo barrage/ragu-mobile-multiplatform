@@ -31,6 +31,7 @@ fun MainContent(
     deepLink: DeepLink?,
     onSelectThemeClick: (Color) -> Unit,
     onSelectVariantClick: (PaletteStyle) -> Unit,
+    onLogoutSuccess: () -> Unit,
     modifier: Modifier = Modifier,
     onDarkLightModeClick: () -> Unit,
 ) {
@@ -67,6 +68,7 @@ fun MainContent(
                 profileVisible = profileVisible,
                 modifier = Modifier.weight(1f).padding(bottom = 20.dp),
                 changeProfileVisibility = { profileVisible = !profileVisible },
+                onLogoutSuccess = onLogoutSuccess,
             )
         }
     }

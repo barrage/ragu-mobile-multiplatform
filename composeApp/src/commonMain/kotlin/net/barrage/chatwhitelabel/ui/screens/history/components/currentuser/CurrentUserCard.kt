@@ -9,17 +9,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
@@ -37,13 +36,22 @@ fun CurrentUserCard(
         Box(modifier = Modifier) {
             when (viewState) {
                 HistoryScreenStates.Error -> {
-                    Text(text = "Error loading data.", color = Red, fontSize = 24.sp)
+                    Text(
+                        text = "Error loading data.",
+                        color = Red,
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(8.dp),
+                    )
                 }
 
                 HistoryScreenStates.Idle -> {}
 
                 HistoryScreenStates.Loading -> {
-                    Text(text = "Loading...", fontSize = 24.sp) // TODO loader
+                    Text(
+                        text = "Loading...",
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(8.dp),
+                    ) // TODO loader
                 }
 
                 is HistoryScreenStates.Success<ProfileViewState> -> {
@@ -55,22 +63,16 @@ fun CurrentUserCard(
                                 .clickable(onClick = onUserClick)
                                 .padding(8.dp),
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.Person,
-                            contentDescription = "user profile",
-                            tint = Gray,
-                        )
+                        Icon(imageVector = Icons.Filled.Person, contentDescription = "user profile")
                         Spacer(modifier = Modifier.width(8.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = viewState.data.header.name,
                                 style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                             )
                             Text(
                                 text = viewState.data.content["Email"]?.value ?: "",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 overflow = Ellipsis,
                             )
                         }

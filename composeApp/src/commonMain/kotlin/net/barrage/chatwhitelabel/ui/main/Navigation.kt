@@ -36,6 +36,7 @@ fun AppNavHost(
     appState: AppState,
     deepLink: DeepLink?,
     profileVisible: Boolean,
+    onLogoutSuccess: () -> Unit,
     modifier: Modifier = Modifier,
     changeProfileVisibility: () -> Unit,
 ) {
@@ -73,6 +74,18 @@ fun AppNavHost(
                             else Modifier
                         ),
                     changeProfileVisibility = changeProfileVisibility,
+                    onLogoutClick = {
+                        appState.navController.navigate(Login.route) {
+                            popUpTo(
+                                appState.navController.graph.findStartDestination().route
+                                    ?: return@navigate
+                            ) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                        onLogoutSuccess()
+                    },
                 )
             }
             composable(Login.route) {

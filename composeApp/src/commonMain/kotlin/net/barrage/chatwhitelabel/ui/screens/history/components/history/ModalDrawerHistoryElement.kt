@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,7 +37,8 @@ fun ModalDrawerHistoryElement(
         Text(
             modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth().padding(start = 12.dp),
             textAlign = TextAlign.Start,
-            fontSize = 24.sp,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Normal,
             text = viewState.title,
         )
     }

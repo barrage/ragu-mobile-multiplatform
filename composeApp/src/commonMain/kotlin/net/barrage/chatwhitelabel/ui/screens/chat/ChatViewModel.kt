@@ -10,12 +10,17 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.materialkolor.PaletteStyle
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.model.Agent
+import net.barrage.chatwhitelabel.domain.model.HistoryElement
 import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
@@ -26,6 +31,8 @@ import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryModalDrawerContentViewState
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
+import net.barrage.chatwhitelabel.ui.screens.history.HistoryTimePeriod
+import net.barrage.chatwhitelabel.ui.screens.history.HistoryViewState
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileViewState
 import net.barrage.chatwhitelabel.utils.BluePrimary
 import net.barrage.chatwhitelabel.utils.BrownPrimary
@@ -39,6 +46,7 @@ import net.barrage.chatwhitelabel.utils.TealPrimary
 import net.barrage.chatwhitelabel.utils.VioletPrimary
 import net.barrage.chatwhitelabel.utils.YellowPrimary
 import net.barrage.chatwhitelabel.utils.chat.WebSocketChatClient
+import net.barrage.chatwhitelabel.utils.coreComponent
 
 class ChatViewModel(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
@@ -314,21 +322,28 @@ class ChatViewModel(
             }
         }
     }
-    fun logout() {
-        viewModelScope.launch { logoutUseCase() }
+
+    fun logout(onLogoutSuccess: () -> Unit) {
+        viewModelScope.launch {
+            val response = logoutUseCase()
+            if (response is Response.Success) {
+                coreComponent.appPreferences.clear()
+                onLogoutSuccess()
+            }
+        }
     }
 
     private suspend fun updateHistory(): HistoryModalDrawerContentViewState {
-        return when (val response = historyUseCase.invoke(1, 10)) {
+        return when (val response = historyUseCase.invoke(1, 50)) {
             is Response.Success -> {
                 historyViewState.copy(
                     history =
                         HistoryScreenStates.Success(
-                            response.data.copy(
+                            HistoryViewState(
                                 elements =
-                                    response.data.elements
-                                        .map { it.copy(isSelected = it.id == currentChatId) }
-                                        .toImmutableList()
+                                    mapElementsByTimePeriod(response.data.elements, currentChatId)
+                                        .toImmutableMap(),
+                                itemsNum = response.data.itemsNum,
                             )
                         )
                 )
@@ -354,5 +369,47 @@ class ChatViewModel(
 
     private fun updateChatScreenState(update: (ChatScreenState) -> ChatScreenState) {
         chatScreenState = update(chatScreenState)
+    }
+
+    private fun mapElementsByTimePeriod(
+        elements: List<HistoryElement>,
+        currentChatId: String?,
+    ): ImmutableMap<String?, ImmutableList<HistoryElement>> {
+        val now = Clock.System.now()
+
+        val yesterday = calculateSeconds(now.epochSeconds, 1)
+        val dayBeforeYesterday = calculateSeconds(now.epochSeconds, 2)
+        val last7days = calculateSeconds(now.epochSeconds, 7)
+        val last30days = calculateSeconds(now.epochSeconds, 30)
+        val lastYear = calculateSeconds(now.epochSeconds, 365)
+        // TODO - find smarter way to get today's date
+
+        val groupedElements =
+            elements
+                .map { it.copy(isSelected = it.id == currentChatId) }
+                .groupBy { element ->
+                    val createdAt = element.createdAt.epochSeconds
+                    when {
+                        createdAt > yesterday -> HistoryTimePeriod.TODAY.label
+                        createdAt > dayBeforeYesterday -> HistoryTimePeriod.YESTERDAY.label
+                        createdAt > last7days -> HistoryTimePeriod.LAST_7_DAYS.label
+                        createdAt > last30days -> HistoryTimePeriod.LAST_30_DAYS.label
+                        createdAt > lastYear -> HistoryTimePeriod.LAST_YEAR.label
+                        else -> null
+                    }
+                }
+                .filterKeys { it != null }
+                .mapKeys { it.key }
+
+        val finalGroupedElements =
+            groupedElements.mapValues { entry -> entry.value.toImmutableList() }
+
+        return finalGroupedElements.toImmutableMap().toImmutableMap()
+    }
+
+    private fun calculateSeconds(now: Long, days: Int): Long {
+        val daySeconds = 86400L
+        val secondsSince = now % (daySeconds * days)
+        return now - secondsSince
     }
 }

@@ -49,35 +49,38 @@ fun App(modifier: Modifier = Modifier) {
         ) {
             val appState = rememberAppState()
 
-            Surface(modifier = modifier) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    MainContent(
-                        appState = appState,
-                        deepLink = deepLink,
-                        currentTheme = selectedTheme,
-                        currentVariant = selectedVariant,
-                        isDarkMode = isDarkTheme,
-                        onSelectThemeClick = {
-                            selectedTheme = it
-                            CoroutineScope(Dispatchers.IO).launch {
-                                coreComponent.appPreferences.saveThemeColor(it)
-                            }
-                        },
-                        onSelectVariantClick = {
-                            selectedVariant = it
-                            CoroutineScope(Dispatchers.IO).launch {
-                                coreComponent.appPreferences.saveThemeVariant(it)
-                            }
-                        },
-                        onDarkLightModeClick = {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                coreComponent.appPreferences.changeDarkMode(isDarkTheme)
-                            }
-                            isDarkTheme = !isDarkTheme
-                        },
-                    )
-                    Overlays(appState)
-                }
+        Surface(modifier = modifier) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                MainContent(
+                    appState = appState,
+                    deepLink = deepLink,
+                    currentTheme = selectedTheme,
+                    currentVariant = selectedVariant,
+                    isDarkMode = isDarkTheme,
+                    onSelectThemeClick = {
+                        selectedTheme = it
+                        CoroutineScope(Dispatchers.IO).launch {
+                            coreComponent.appPreferences.saveThemeColor(it)
+                        }
+                    },
+                    onSelectVariantClick = {
+                        selectedVariant = it
+                        CoroutineScope(Dispatchers.IO).launch {
+                            coreComponent.appPreferences.saveThemeVariant(it)
+                        }
+                    },
+                    onDarkLightModeClick = {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            coreComponent.appPreferences.changeDarkMode(isDarkTheme)
+                        }
+                        isDarkTheme = !isDarkTheme
+                    },
+                    onLogoutSuccess = {
+                        selectedTheme = White
+                        selectedVariant = PaletteStyle.TonalSpot
+                    },
+                )
+                Overlays(appState)
             }
         }
     }

@@ -31,6 +31,8 @@ interface AppPreferences {
     suspend fun getCookie(): String?
 
     suspend fun clearCookie(): Preferences
+
+    suspend fun clear(): Preferences
 }
 
 internal class AppPreferencesImpl(private val dataStore: DataStore<Preferences>) : AppPreferences {
@@ -83,4 +85,7 @@ internal class AppPreferencesImpl(private val dataStore: DataStore<Preferences>)
 
     override suspend fun clearCookie() =
         dataStore.edit { preferences -> preferences.remove(cookieKey) }
+
+    override suspend fun clear(): Preferences =
+        dataStore.edit { preferences -> preferences.clear() }
 }
