@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableMap
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileContentItem
@@ -37,12 +38,14 @@ fun ProfileContent(
                     text = it.key + ":",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
                     text = it.value.value,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
                 )
             }
         }

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -56,32 +57,25 @@ fun ProfileCard(
                 HistoryScreenStates.Idle -> {}
 
                 HistoryScreenStates.Loading -> {
-                    Text(
-                        text = "Loading...",
-                        fontSize = 24.sp,
-                        modifier = Modifier.padding(8.dp),
-                    ) // TODO loader
+                    CircularProgressIndicator(modifier = Modifier)
                 }
 
                 is HistoryScreenStates.Success -> {
                     Column {
                         Row(
-                            horizontalArrangement =
-                                Arrangement.End, // Align the icon to the end of the Row
-                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                         ) {
                             Icon(
                                 Icons.Rounded.Close,
                                 contentDescription = "close",
-                                tint =
-                                    MaterialTheme.colorScheme
-                                        .onSurface, // Ensure the icon color is visible
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.clip(CircleShape).clickable { onCloseClick() },
                             )
                         }
                         ProfileSpacer()
                         ProfileCardHeader(
-                            modifier = Modifier.padding(top = 16.dp),
+                            modifier = Modifier.padding(vertical = 16.dp),
                             viewState = viewState.data.header,
                         )
                         ProfileSpacer()
@@ -104,7 +98,7 @@ fun ProfileCard(
 
 @Composable
 fun ProfileSpacer(modifier: Modifier = Modifier) {
-    Box(modifier.padding(top = 16.dp)) {
+    Box(modifier = modifier) {
         Spacer(
             Modifier.background(MaterialTheme.colorScheme.onSecondaryContainer)
                 .height(1.dp)
