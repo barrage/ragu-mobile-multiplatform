@@ -7,8 +7,7 @@ object Constants {
         private const val GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
         private const val CLIENT_ID =
             "983914104581-ndgb7tsdc9eio8rfu1ohsrdprihk7mqi.apps.googleusercontent.com"
-        private const val REDIRECT_URI =
-            "https://llmao-kotlin-api-staging.m2.barrage.beer/auth/callback"
+        const val REDIRECT_URI = "https://llmao-kotlin-api-staging.m2.barrage.beer/oauthredirect"
         private const val RESPONSE_TYPE = "code"
         private const val SCOPE =
             "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid"

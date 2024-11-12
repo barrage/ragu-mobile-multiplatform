@@ -26,6 +26,6 @@ object DeepLinkParser {
 
     private fun isValidUri(uri: io.ktor.http.Url): Boolean {
         return uri.host == "llmao-kotlin-api-staging.m2.barrage.beer" &&
-            uri.encodedPath == "/auth/callback"
+            uri.encodedPath == "/oauthredirect"
     }
 }

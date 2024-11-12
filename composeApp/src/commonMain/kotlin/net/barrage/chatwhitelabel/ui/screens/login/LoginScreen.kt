@@ -89,7 +89,8 @@ fun LoginScreen(
                                         Text("Retry")
                                     }
                                 },
-                            )
+                            ),
+                        modifier = Modifier.padding(20.dp).align(Alignment.Center),
                     )
                 }
             }
