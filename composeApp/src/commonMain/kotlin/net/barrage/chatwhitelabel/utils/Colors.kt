@@ -1,6 +1,9 @@
 package net.barrage.chatwhitelabel.utils
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
+import com.materialkolor.PaletteStyle
+import kotlinx.collections.immutable.persistentListOf
 
 val BluePrimary = Color(0xFF3242bc)
 val VioletPrimary = Color(0xFF794ae9)
@@ -23,3 +26,32 @@ val StatusRedBackground = Color(0xFFF8D7DA)
 val StatusRedBorder = Color(0xFFCF636B)
 val StatusRedIndicatorStart = Color(0xFFC05763)
 val StatusRedIndicatorEnd = Color(0xFFF2C2C5)
+
+val ThemeColors =
+    persistentListOf(
+        White,
+        SagePrimary,
+        TealPrimary,
+        BluePrimary,
+        VioletPrimary,
+        LimePrimary,
+        GreenPrimary,
+        YellowPrimary,
+        OrangePrimary,
+        RedPrimary,
+        MagentaPrimary,
+        BrownPrimary,
+    )
+
+val PaletteVariants =
+    persistentListOf(
+        PaletteStyle.TonalSpot,
+        PaletteStyle.Neutral,
+        PaletteStyle.Vibrant,
+        PaletteStyle.Expressive,
+        PaletteStyle.Rainbow,
+        PaletteStyle.FruitSalad,
+        PaletteStyle.Monochrome,
+        PaletteStyle.Fidelity,
+        PaletteStyle.Content,
+    )

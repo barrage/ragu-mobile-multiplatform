@@ -6,13 +6,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.materialkolor.PaletteStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.CoroutineScope
@@ -34,17 +31,8 @@ import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryTimePeriod
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryViewState
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileViewState
-import net.barrage.chatwhitelabel.utils.BluePrimary
-import net.barrage.chatwhitelabel.utils.BrownPrimary
-import net.barrage.chatwhitelabel.utils.GreenPrimary
-import net.barrage.chatwhitelabel.utils.LimePrimary
-import net.barrage.chatwhitelabel.utils.MagentaPrimary
-import net.barrage.chatwhitelabel.utils.OrangePrimary
-import net.barrage.chatwhitelabel.utils.RedPrimary
-import net.barrage.chatwhitelabel.utils.SagePrimary
-import net.barrage.chatwhitelabel.utils.TealPrimary
-import net.barrage.chatwhitelabel.utils.VioletPrimary
-import net.barrage.chatwhitelabel.utils.YellowPrimary
+import net.barrage.chatwhitelabel.utils.PaletteVariants
+import net.barrage.chatwhitelabel.utils.ThemeColors
 import net.barrage.chatwhitelabel.utils.chat.WebSocketChatClient
 import net.barrage.chatwhitelabel.utils.coreComponent
 
@@ -68,31 +56,8 @@ class ChatViewModel(
     var historyViewState by
         mutableStateOf(
             HistoryModalDrawerContentViewState(
-                persistentListOf(
-                    White,
-                    SagePrimary,
-                    TealPrimary,
-                    BluePrimary,
-                    VioletPrimary,
-                    LimePrimary,
-                    GreenPrimary,
-                    YellowPrimary,
-                    OrangePrimary,
-                    RedPrimary,
-                    MagentaPrimary,
-                    BrownPrimary,
-                ),
-                persistentListOf(
-                    PaletteStyle.TonalSpot,
-                    PaletteStyle.Neutral,
-                    PaletteStyle.Vibrant,
-                    PaletteStyle.Expressive,
-                    PaletteStyle.Rainbow,
-                    PaletteStyle.FruitSalad,
-                    PaletteStyle.Monochrome,
-                    PaletteStyle.Fidelity,
-                    PaletteStyle.Content,
-                ),
+                ThemeColors,
+                PaletteVariants,
                 HistoryScreenStates.Idle,
             )
         )
