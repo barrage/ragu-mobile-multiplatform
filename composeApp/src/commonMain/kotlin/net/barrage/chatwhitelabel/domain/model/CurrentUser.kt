@@ -2,7 +2,7 @@ package net.barrage.chatwhitelabel.domain.model
 
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.ic_created_at
-import chatwhitelabel.composeapp.generated.resources.ic_mail
+import chatwhitelabel.composeapp.generated.resources.ic_email
 import chatwhitelabel.composeapp.generated.resources.ic_role
 import chatwhitelabel.composeapp.generated.resources.ic_updated_at
 import kotlinx.collections.immutable.persistentMapOf
@@ -33,7 +33,7 @@ data class CurrentUser(
                     "Email" to
                         ProfileContentItem(
                             value = email,
-                            iconId = Res.drawable.ic_mail,
+                            iconId = Res.drawable.ic_email,
                             iconDescription = "email",
                         ),
                     "Role" to

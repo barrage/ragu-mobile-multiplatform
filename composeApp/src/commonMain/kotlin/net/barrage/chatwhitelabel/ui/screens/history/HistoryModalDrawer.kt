@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.sp
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.ic_brain
 import com.materialkolor.PaletteStyle
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
+import net.barrage.chatwhitelabel.domain.model.HistoryElement
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerContentTopBar
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerHistoryContent
@@ -70,9 +73,10 @@ fun ModalDrawer(
             }
             HistoryDivider()
             ModalDrawerHistoryContent(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).fillMaxWidth(),
                 viewState = viewModel.historyViewState.history,
                 onElementClick = {
+                    updateHistory(it, viewModel)
                     viewModel.getHistoryChatById(id = it.id, title = it.title)
                     changeDrawerVisibility()
                 },
@@ -85,6 +89,31 @@ fun ModalDrawer(
             )
         }
     }
+}
+
+fun updateHistory(selectedElement: HistoryElement, viewModel: ChatViewModel) {
+    val updatedElements =
+        viewModel.historyViewState.history.let { historyState ->
+            when (historyState) {
+                is HistoryScreenStates.Success -> {
+                    val updatedMap =
+                        historyState.data.elements
+                            .mapValues { (_, list) ->
+                                list
+                                    .map { element ->
+                                        element.copy(isSelected = element.id == selectedElement.id)
+                                    }
+                                    .toImmutableList()
+                            }
+                            .toImmutableMap()
+
+                    HistoryScreenStates.Success(historyState.data.copy(elements = updatedMap))
+                }
+
+                else -> historyState
+            }
+        }
+    viewModel.historyViewState = viewModel.historyViewState.copy(history = updatedElements)
 }
 
 @Composable

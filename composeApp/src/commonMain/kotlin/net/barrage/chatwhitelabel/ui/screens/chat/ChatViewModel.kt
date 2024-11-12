@@ -68,17 +68,19 @@ class ChatViewModel(
                 HistoryScreenStates.Idle,
             )
         )
-        private set
 
     var selectedAgent: MutableState<Agent?> = mutableStateOf(null)
         private set
 
-    var currentUserViewState: HistoryScreenStates<ProfileViewState> = HistoryScreenStates.Idle
+    var currentUserViewState by
+        mutableStateOf<HistoryScreenStates<ProfileViewState>>(HistoryScreenStates.Idle)
         private set
 
     fun loadAllData() {
         viewModelScope.launch {
             chatScreenState = ChatScreenState.Loading
+            historyViewState = historyViewState.copy(history = HistoryScreenStates.Loading)
+            currentUserViewState = HistoryScreenStates.Loading
             launch { updateHistory() }
             launch { updateCurrentUser() }
 

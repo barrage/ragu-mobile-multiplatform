@@ -5,13 +5,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.aakira.napier.Napier
 import net.barrage.chatwhitelabel.domain.model.HistoryElement
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryViewState
@@ -23,6 +27,7 @@ fun ModalDrawerHistoryContent(
     modifier: Modifier = Modifier,
     onElementClick: (HistoryElement) -> Unit,
 ) {
+    LaunchedEffect(viewState) { Napier.d("aljda $viewState") }
     Box(modifier = modifier) {
         when (viewState) {
             HistoryScreenStates.Error -> {
@@ -37,12 +42,7 @@ fun ModalDrawerHistoryContent(
             HistoryScreenStates.Idle -> {}
 
             HistoryScreenStates.Loading -> {
-                Text(
-                    text = "Loading...",
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(16.dp),
-                ) // TODO loader
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
             }
 
             is HistoryScreenStates.Success<HistoryViewState> -> {
