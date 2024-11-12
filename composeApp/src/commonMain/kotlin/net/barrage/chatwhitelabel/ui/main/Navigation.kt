@@ -37,11 +37,10 @@ fun AppNavHost(appState: AppState, deepLink: DeepLink?, modifier: Modifier = Mod
     var startDestination by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(appState.networkAvailable.value) {
-        if (!appState.networkAvailable.value) return@LaunchedEffect
+        if (!appState.networkAvailable.value || startDestination != null) return@LaunchedEffect
         appState.coroutineScope.launch {
             startDestination =
                 if (currentUserUseCase() is Response.Success) {
-                    appState.chatViewModel.loadAllData()
                     Chat.route
                 } else {
                     FellowNavigation.startDestination
@@ -73,10 +72,7 @@ fun AppNavHost(appState: AppState, deepLink: DeepLink?, modifier: Modifier = Mod
                 LoginScreen(
                     onGoogleLogin = { uriHandler.openUri(Constants.Auth.getGoogleAuthUrl()) },
                     deepLink = deepLink,
-                    navigateToChat = {
-                        appState.chatViewModel.loadAllData()
-                        appState.navController.navigateSingleTopTo(Chat.route)
-                    },
+                    navigateToChat = { appState.navController.navigateSingleTopTo(Chat.route) },
                     modifier = Modifier.fillMaxSize(),
                 )
             }

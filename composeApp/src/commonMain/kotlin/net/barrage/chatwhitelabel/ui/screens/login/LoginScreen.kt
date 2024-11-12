@@ -21,16 +21,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.ic_google
 import dev.theolm.rinku.DeepLink
 import net.barrage.chatwhitelabel.ui.components.AppIconCard
+import net.barrage.chatwhitelabel.ui.components.ErrorDialog
+import net.barrage.chatwhitelabel.ui.components.ErrorDialogState
+import net.barrage.chatwhitelabel.utils.Constants
 import net.barrage.chatwhitelabel.utils.DeepLinkParser
+import net.barrage.chatwhitelabel.utils.isDebug
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -43,8 +46,7 @@ fun LoginScreen(
     viewModel: LoginViewModel = koinViewModel(),
 ) {
     val loginState = viewModel.loginState
-
-    val currentNavigateToChat by rememberUpdatedState(navigateToChat)
+    val uriHandler = LocalUriHandler.current
 
     LaunchedEffect(deepLink) {
         if (deepLink != null && viewModel.loginState is LoginScreenState.Idle) {
@@ -52,12 +54,6 @@ fun LoginScreen(
             if (code != null) {
                 viewModel.login(code)
             }
-        }
-    }
-
-    LaunchedEffect(loginState) {
-        if (loginState is LoginScreenState.Success) {
-            currentNavigateToChat()
         }
     }
 
@@ -72,11 +68,30 @@ fun LoginScreen(
             }
 
             is LoginScreenState.Success -> {
-                // Navigation is handled in LaunchedEffect
+                navigateToChat()
             }
 
             is LoginScreenState.Error -> {
-                Text("Error: ${loginState.message}")
+                Box(modifier = Modifier.fillMaxSize()) {
+                    ErrorDialog(
+                        state =
+                            ErrorDialogState(
+                                title = "Login Error",
+                                description =
+                                    "Failed to log in${if (isDebug) ": ${loginState.message}" else ""}",
+                                onDismissRequest = {},
+                                confirmButton = {
+                                    Button(
+                                        onClick = {
+                                            uriHandler.openUri(Constants.Auth.getGoogleAuthUrl())
+                                        }
+                                    ) {
+                                        Text("Retry")
+                                    }
+                                },
+                            )
+                    )
+                }
             }
         }
     }

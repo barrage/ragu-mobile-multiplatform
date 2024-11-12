@@ -9,25 +9,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.DialogProperties
 
 @Composable
-fun NoInternetAlert(modifier: Modifier = Modifier) {
+fun ErrorDialog(state: ErrorDialogState, modifier: Modifier = Modifier) {
     AlertDialog(
-        onDismissRequest = { /* No-op, as we don't want to dismiss this alert */ },
+        onDismissRequest = state.onDismissRequest,
         title = {
             Text(
-                "NO INTERNET CONNECTION",
+                state.title,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.error,
             )
         },
         text = {
             Text(
-                "No internet connection detected. Please check your connection " +
-                    "and try again to continue using the app.",
+                state.description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
         },
-        confirmButton = { /* No buttons needed */ },
+        confirmButton = state.confirmButton,
         properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = modifier.fillMaxWidth(),
     )

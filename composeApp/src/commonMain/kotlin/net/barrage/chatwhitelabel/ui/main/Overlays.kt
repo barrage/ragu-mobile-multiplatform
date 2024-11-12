@@ -12,7 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import net.barrage.chatwhitelabel.ui.components.NoInternetAlert
+import net.barrage.chatwhitelabel.ui.components.ErrorDialog
+import net.barrage.chatwhitelabel.ui.components.ErrorDialogState
 import net.barrage.chatwhitelabel.utils.getAndroidVersion
 
 @Composable
@@ -27,7 +28,22 @@ fun Overlays(appState: AppState, modifier: Modifier = Modifier) {
 @Composable
 fun NoInternetOverlay(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
-        NoInternetAlert(modifier = Modifier.fillMaxWidth().padding(20.dp).align(Alignment.Center))
+        ErrorDialog(
+            state =
+                ErrorDialogState(
+                    title = "No internet connection",
+                    description =
+                        "No internet connection detected. Please check your connection" +
+                            " and try again to continue using the app.",
+                    onDismissRequest = {
+                        // Do nothing
+                    },
+                    confirmButton = {
+                        // Do nothing
+                    },
+                ),
+            modifier = Modifier.fillMaxWidth().padding(20.dp).align(Alignment.Center),
+        )
     }
 }
 

@@ -11,7 +11,7 @@ plugins {
     alias(libs.plugins.prekommit)
     alias(libs.plugins.google.services)
     alias(libs.plugins.crashlytics)
-    kotlin("plugin.serialization") version libs.versions.kotlin.get()
+    alias(libs.plugins.kotlinSerialization)
 }
 
 preKommitConfig {

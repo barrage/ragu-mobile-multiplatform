@@ -51,7 +51,7 @@ fun rememberAppState(): AppState {
             konnection.observeHasConnection().collect { networkAvailable.value = it }
         }
     }
-    LaunchedEffect(drawerState.isOpen) { chatViewModel.updateHistory() }
+    LaunchedEffect(drawerState.isOpen) { if (drawerState.isOpen) chatViewModel.updateHistory() }
 
     DisposableEffect(coroutineScope) {
         onDispose { chatViewModel.webSocketChatClient?.disconnect() }

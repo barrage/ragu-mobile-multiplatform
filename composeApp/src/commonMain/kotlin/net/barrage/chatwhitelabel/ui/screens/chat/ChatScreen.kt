@@ -31,7 +31,6 @@ import net.barrage.chatwhitelabel.ui.components.chat.ChatInputState
 import net.barrage.chatwhitelabel.ui.components.chat.ChatTitle
 import net.barrage.chatwhitelabel.ui.components.chat.ChatTitleState
 import net.barrage.chatwhitelabel.ui.components.chat.ErrorContent
-import net.barrage.chatwhitelabel.ui.components.chat.IdleContent
 import net.barrage.chatwhitelabel.ui.components.chat.MessageList
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatScreenState
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
@@ -60,7 +59,10 @@ fun ChatScreen(
         }
     }
 
-    LaunchedEffect(Unit) { initializeWebSocketClient(viewModel, scope) }
+    LaunchedEffect(Unit) {
+        viewModel.loadAllData()
+        initializeWebSocketClient(viewModel, scope)
+    }
 
     Column(
         modifier =
@@ -153,7 +155,11 @@ fun ChatScreen(
                     onRetry = { viewModel.loadAllData() },
                 )
 
-            is ChatScreenState.Idle -> IdleContent(onStartNewChat = { viewModel.loadAllData() })
+            is ChatScreenState.Idle -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
         }
     }
     if (showDeleteConfirmation) {

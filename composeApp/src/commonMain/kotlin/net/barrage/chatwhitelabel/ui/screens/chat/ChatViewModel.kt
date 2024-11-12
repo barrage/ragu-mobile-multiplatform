@@ -12,8 +12,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.model.Agent
@@ -82,10 +80,11 @@ class ChatViewModel(
         private set
 
     fun loadAllData() {
-        chatScreenState = ChatScreenState.Loading
         viewModelScope.launch {
-            CoroutineScope(Dispatchers.IO).launch { updateHistory() }
-            CoroutineScope(Dispatchers.IO).launch { updateCurrentUser() }
+            chatScreenState = ChatScreenState.Loading
+            launch { updateHistory() }
+            launch { updateCurrentUser() }
+
             val agentsResponse = getAgentsUseCase()
             if (agentsResponse is Response.Success) {
                 updateChatScreenState { currentState ->
@@ -318,6 +317,7 @@ class ChatViewModel(
 
                 is Response.Failure ->
                     historyViewState.copy(currentUser = HistoryScreenStates.Error)
+
                 Response.Loading -> historyViewState.copy(currentUser = HistoryScreenStates.Loading)
             }
     }
