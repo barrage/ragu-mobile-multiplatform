@@ -15,6 +15,12 @@ import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.toLocalDateTime
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.model.Agent
 import net.barrage.chatwhitelabel.domain.model.HistoryElement
@@ -340,26 +346,25 @@ class ChatViewModel(
         elements: List<HistoryElement>,
         currentChatId: String?,
     ): ImmutableMap<String?, ImmutableList<HistoryElement>> {
-        val now = Clock.System.now()
-
-        val yesterday = calculateSeconds(now.epochSeconds, 1)
-        val dayBeforeYesterday = calculateSeconds(now.epochSeconds, 2)
-        val last7days = calculateSeconds(now.epochSeconds, 7)
-        val last30days = calculateSeconds(now.epochSeconds, 30)
-        val lastYear = calculateSeconds(now.epochSeconds, 365)
-        // TODO - find smarter way to get today's date
+        val now: Instant = Clock.System.now()
+        val today: LocalDate = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val yesterday: LocalDate = today.minus(1, DateTimeUnit.DAY)
+        val last7days: LocalDate = today.minus(7, DateTimeUnit.DAY)
+        val last30days: LocalDate = today.minus(1, DateTimeUnit.MONTH)
+        val lastYear: LocalDate = today.minus(1, DateTimeUnit.YEAR)
 
         val groupedElements =
             elements
                 .map { it.copy(isSelected = it.id == currentChatId) }
                 .groupBy { element ->
-                    val createdAt = element.createdAt.epochSeconds
+                    val currentElement =
+                        element.updatedAt.toLocalDateTime(TimeZone.currentSystemDefault()).date
                     when {
-                        createdAt > yesterday -> HistoryTimePeriod.TODAY.label
-                        createdAt > dayBeforeYesterday -> HistoryTimePeriod.YESTERDAY.label
-                        createdAt > last7days -> HistoryTimePeriod.LAST_7_DAYS.label
-                        createdAt > last30days -> HistoryTimePeriod.LAST_30_DAYS.label
-                        createdAt > lastYear -> HistoryTimePeriod.LAST_YEAR.label
+                        currentElement >= today -> HistoryTimePeriod.TODAY.label
+                        currentElement >= yesterday -> HistoryTimePeriod.YESTERDAY.label
+                        currentElement >= last7days -> HistoryTimePeriod.LAST_7_DAYS.label
+                        currentElement >= last30days -> HistoryTimePeriod.LAST_30_DAYS.label
+                        currentElement >= lastYear -> HistoryTimePeriod.LAST_YEAR.label
                         else -> null
                     }
                 }
@@ -370,11 +375,5 @@ class ChatViewModel(
             groupedElements.mapValues { entry -> entry.value.toImmutableList() }
 
         return finalGroupedElements.toImmutableMap().toImmutableMap()
-    }
-
-    private fun calculateSeconds(now: Long, days: Int): Long {
-        val daySeconds = 86400L
-        val secondsSince = now % (daySeconds * days)
-        return now - secondsSince
     }
 }

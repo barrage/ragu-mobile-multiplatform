@@ -92,8 +92,6 @@ kotlin {
             implementation(libs.rinku.compose.ext)
             implementation(libs.androidx.datastore.preferences.core)
             implementation(libs.multiplatform.settings.datastore)
-            implementation(libs.coil.compose)
-            implementation(libs.coil.network.okhttp)
         }
 
         desktopMain.dependencies {

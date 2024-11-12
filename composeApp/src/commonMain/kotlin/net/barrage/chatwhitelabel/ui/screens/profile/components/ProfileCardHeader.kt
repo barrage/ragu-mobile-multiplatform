@@ -12,16 +12,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil3.CoilImage
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileHeaderViewState
 
 @Composable
 fun ProfileCardHeader(viewState: ProfileHeaderViewState, modifier: Modifier = Modifier) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        AsyncImage(
-            viewState.profileImage,
-            "user profile image",
+        CoilImage(
+            imageModel = { viewState.profileImage },
+            imageOptions =
+                ImageOptions(alignment = Alignment.Center, contentScale = ContentScale.Crop),
             modifier =
                 Modifier.size(50.dp)
                     .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)

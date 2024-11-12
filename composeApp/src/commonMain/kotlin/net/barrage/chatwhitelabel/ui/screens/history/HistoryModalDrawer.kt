@@ -93,5 +93,5 @@ fun ModalDrawer(
 
 @Composable
 fun HistoryDivider(modifier: Modifier = Modifier) {
-    HorizontalDivider(modifier.height(2.dp))
+    HorizontalDivider(modifier.height(1.dp))
 }
