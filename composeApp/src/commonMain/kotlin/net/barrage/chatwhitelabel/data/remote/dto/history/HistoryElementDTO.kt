@@ -8,7 +8,7 @@ data class HistoryElementDTO(
     val id: String,
     val agentId: String,
     val createdAt: Instant,
-    val title: String,
+    val title: String? = null,
     val updatedAt: Instant,
     val userId: String,
 )

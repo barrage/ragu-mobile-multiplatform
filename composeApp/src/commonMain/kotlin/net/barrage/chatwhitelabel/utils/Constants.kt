@@ -10,7 +10,7 @@ object Constants {
         const val REDIRECT_URI = "https://llmao-kotlin-api-staging.m2.barrage.beer/oauthredirect"
         private const val RESPONSE_TYPE = "code"
         private const val SCOPE =
-            "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid"
+            "https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email%20openid"
 
         fun getGoogleAuthUrl(): String {
             return buildString {

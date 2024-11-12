@@ -4,7 +4,7 @@ import ComposeApp
 class AppDelegate: NSObject, UIApplicationDelegate {
     lazy var rinku = RinkuIos(deepLinkFilter: nil, deepLinkMapper: nil)
 
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    /*func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         rinku.onDeepLinkReceived(url: url.absoluteString)
         return true
     }
@@ -17,7 +17,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         rinku.onDeepLinkReceived(userActivity: userActivity)
         return true
-    }
+    }*/
 }
 
 @main
@@ -30,7 +30,9 @@ struct iOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView().onOpenURL { url in
+                self.appDelegate.rinku.onDeepLinkReceived(url: url.absoluteString)
+            }
         }
     }
 }
