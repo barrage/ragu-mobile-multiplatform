@@ -67,7 +67,7 @@ val appModule = module {
 
 // Module for view models
 val viewModelModule = module {
-    viewModel { LoginViewModel(get(), get()) }
+    viewModel { LoginViewModel(get(), get(), get()) }
     viewModel { ChatViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 

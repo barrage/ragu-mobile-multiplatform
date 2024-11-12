@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.CoroutineScope
@@ -304,21 +305,25 @@ class ChatViewModel(
         }
     }
 
-    private suspend fun updateHistory(): HistoryModalDrawerContentViewState {
-        return when (val response = historyUseCase.invoke(1, 50)) {
-            is Response.Success -> {
-                historyViewState.copy(
-                    history =
-                        HistoryScreenStates.Success(
-                            HistoryViewState(
-                                elements =
-                                    mapElementsByTimePeriod(response.data.elements, currentChatId)
-                                        .toImmutableMap(),
-                                itemsNum = response.data.itemsNum,
+    suspend fun updateHistory() {
+        historyViewState =
+            when (val response = historyUseCase.invoke(1, 50)) {
+                is Response.Success -> {
+                    historyViewState.copy(
+                        history =
+                            HistoryScreenStates.Success(
+                                HistoryViewState(
+                                    elements =
+                                        mapElementsByTimePeriod(
+                                                response.data.elements,
+                                                webSocketChatClient?.currentChatId?.value,
+                                            )
+                                            .toImmutableMap(),
+                                    itemsNum = response.data.itemsNum,
+                                )
                             )
-                        )
-                )
-            }
+                    )
+                }
 
                 is Response.Failure -> historyViewState.copy(history = HistoryScreenStates.Error)
                 Response.Loading -> historyViewState.copy(history = HistoryScreenStates.Loading)
@@ -326,15 +331,13 @@ class ChatViewModel(
     }
 
     private suspend fun updateCurrentUser() {
-        historyViewState =
+        currentUserViewState =
             when (val response = currentUserUseCase.invoke()) {
-                is Response.Success ->
-                    historyViewState.copy(currentUser = HistoryScreenStates.Success(response.data))
+                is Response.Success -> HistoryScreenStates.Success(response.data.toViewState())
 
-                is Response.Failure ->
-                    historyViewState.copy(currentUser = HistoryScreenStates.Error)
+                is Response.Failure -> HistoryScreenStates.Error
 
-                Response.Loading -> historyViewState.copy(currentUser = HistoryScreenStates.Loading)
+                Response.Loading -> HistoryScreenStates.Loading
             }
     }
 

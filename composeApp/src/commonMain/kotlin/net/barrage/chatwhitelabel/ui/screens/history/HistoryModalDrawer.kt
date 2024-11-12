@@ -10,13 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material.Divider
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -44,7 +41,6 @@ fun ModalDrawer(
     changeDrawerVisibility: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val scope = rememberCoroutineScope()
     ModalDrawerSheet(modifier = modifier.fillMaxWidth().padding(end = 75.dp)) {
         Column {
             ModalDrawerContentTopBar(
@@ -60,12 +56,12 @@ fun ModalDrawer(
             HistoryDivider()
             Row(
                 modifier =
-                Modifier.fillMaxWidth()
-                    .clickable {
-                        viewModel.newChat()
-                        changeDrawerVisibility()
-                    }
-                    .padding(16.dp),
+                    Modifier.fillMaxWidth()
+                        .clickable {
+                            viewModel.newChat()
+                            changeDrawerVisibility()
+                        }
+                        .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(painter = painterResource(Res.drawable.ic_brain), null)
@@ -78,7 +74,7 @@ fun ModalDrawer(
                 viewState = viewModel.historyViewState.history,
                 onElementClick = {
                     viewModel.getHistoryChatById(id = it.id, title = it.title)
-                    scope.launch { drawerState.close() }
+                    changeDrawerVisibility()
                 },
             )
             HistoryDivider()

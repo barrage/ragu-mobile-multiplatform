@@ -1,9 +1,13 @@
+@file:Suppress("CyclomaticComplexMethod")
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -71,38 +75,37 @@ fun ChatScreen(
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .clickable(chatInteractionSource, null) {
-                    if (chatInputFocused) focusManager.clearFocus()
-                }
-                .imePadding()
+                Modifier.fillMaxSize()
+                    .clickable(chatInteractionSource, null) {
+                        if (chatInputFocused) focusManager.clearFocus()
+                    }
+                    .imePadding()
         ) {
             when (chatScreenState) {
                 is ChatScreenState.Success -> {
                     if (
                         chatScreenState.messages.isNotEmpty() ||
-                        viewModel.webSocketChatClient?.currentChatId?.value != null
+                            viewModel.webSocketChatClient?.currentChatId?.value != null
                     ) {
                         ChatTitle(
                             state =
-                            ChatTitleState(
-                                title = chatScreenState.chatTitle,
-                                isMenuVisible = menuVisible,
-                                isEditingTitle = chatScreenState.isEditingTitle,
-                                onThreeDotsClick = { menuVisible = true },
-                                onEditTitleClick = {
-                                    viewModel.setEditingTitle(true)
-                                    menuVisible = false
-                                },
-                                onDeleteChatClick = {
-                                    showDeleteConfirmation = true
-                                    menuVisible = false
-                                },
-                                onDismiss = { menuVisible = false },
-                                onTitleChange = { viewModel.setChatTitle(it) },
-                                onTitleChangeConfirmation = { viewModel.updateTitle() },
-                            ),
+                                ChatTitleState(
+                                    title = chatScreenState.chatTitle,
+                                    isMenuVisible = menuVisible,
+                                    isEditingTitle = chatScreenState.isEditingTitle,
+                                    onThreeDotsClick = { menuVisible = true },
+                                    onEditTitleClick = {
+                                        viewModel.setEditingTitle(true)
+                                        menuVisible = false
+                                    },
+                                    onDeleteChatClick = {
+                                        showDeleteConfirmation = true
+                                        menuVisible = false
+                                    },
+                                    onDismiss = { menuVisible = false },
+                                    onTitleChange = { viewModel.setChatTitle(it) },
+                                    onTitleChangeConfirmation = { viewModel.updateTitle() },
+                                ),
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                         )
                         Row(
@@ -115,8 +118,8 @@ fun ChatScreen(
 
                     if (
                         chatScreenState.agents.isNotEmpty() &&
-                        chatScreenState.messages.isEmpty() &&
-                        viewModel.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
+                            chatScreenState.messages.isEmpty() &&
+                            viewModel.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
                     ) {
                         AgentContent(
                             agents = chatScreenState.agents.toImmutableList(),
@@ -133,18 +136,18 @@ fun ChatScreen(
                     }
                     ChatInput(
                         state =
-                        ChatInputState(
-                            inputText = chatScreenState.inputText,
-                            onInputTextChange = { viewModel.updateInputText(it) },
-                            onSendMessage = { viewModel.sendMessage() },
-                            onStopReceivingMessage = {
-                                viewModel.webSocketChatClient?.stopMessageStream()
-                            },
-                            isSendEnabled = chatScreenState.isSendEnabled,
-                            isReceivingMessage = chatScreenState.isReceivingMessage,
-                            focusManager = focusManager,
-                            chatInteractionSource = chatInteractionSource,
-                        )
+                            ChatInputState(
+                                inputText = chatScreenState.inputText,
+                                onInputTextChange = { viewModel.updateInputText(it) },
+                                onSendMessage = { viewModel.sendMessage() },
+                                onStopReceivingMessage = {
+                                    viewModel.webSocketChatClient?.stopMessageStream()
+                                },
+                                isSendEnabled = chatScreenState.isSendEnabled,
+                                isReceivingMessage = chatScreenState.isReceivingMessage,
+                                focusManager = focusManager,
+                                chatInteractionSource = chatInteractionSource,
+                            )
                     )
                 }
 

@@ -31,7 +31,7 @@ fun ModalDrawerHistoryElement(
                         Modifier
                     }
                 )
-                .clickable { onClick(viewState.id) }
+                .clickable { onClick(viewState) }
                 .padding(4.dp)
     ) {
         Text(

@@ -3,9 +3,7 @@ package net.barrage.chatwhitelabel.ui.main
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,7 +56,6 @@ fun MainContent(
                 },
             )
         },
-        drawerState = drawerState,
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             TopBar(modifier = Modifier.padding(top = 40.dp).padding(horizontal = 20.dp))
