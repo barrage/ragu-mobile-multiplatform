@@ -23,6 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
@@ -57,6 +59,8 @@ fun ChatScreen(
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     val chatScreenState = viewModel.chatScreenState
+    val density = LocalDensity.current
+    var width by remember { mutableStateOf(0.dp) }
 
     LaunchedEffect(isKeyboardOpen, chatScreenState) {
         if (chatScreenState is ChatScreenState.Success && chatScreenState.messages.isNotEmpty()) {
@@ -70,7 +74,12 @@ fun ChatScreen(
         initializeWebSocketClient(viewModel, scope)
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+        modifier =
+            modifier.fillMaxSize().onGloballyPositioned {
+                with(density) { width = it.size.width.toDp() - 80.dp }
+            }
+    ) {
         Column(
             modifier =
                 Modifier.fillMaxSize()
@@ -104,6 +113,7 @@ fun ChatScreen(
                                     onTitleChange = { viewModel.setChatTitle(it) },
                                     onTitleChangeConfirmation = { viewModel.updateTitle() },
                                 ),
+                            maxWidth = width,
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                         )
                     }

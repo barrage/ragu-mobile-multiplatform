@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.icons.Icons
@@ -26,6 +27,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.ic_check
@@ -36,14 +38,14 @@ import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ChatTitle(state: ChatTitleState, modifier: Modifier = Modifier) {
+fun ChatTitle(state: ChatTitleState, maxWidth: Dp, modifier: Modifier = Modifier) {
     var iconPositionInParent by remember { mutableStateOf(Offset.Zero) }
     var iconPositionInRoot by remember { mutableStateOf(Offset.Zero) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier,
+        modifier = modifier.padding(horizontal = 20.dp),
     ) {
         TypewriterText(
             state =
@@ -53,7 +55,8 @@ fun ChatTitle(state: ChatTitleState, modifier: Modifier = Modifier) {
                     onTextChange = state.onTitleChange,
                     textStyle = MaterialTheme.typography.titleMedium,
                     textColor = MaterialTheme.colorScheme.onSurface,
-                )
+                ),
+            modifier = Modifier.widthIn(min = 0.dp, max = maxWidth),
         )
         CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
             AnimatedVisibility(state.title != "New Chat") {

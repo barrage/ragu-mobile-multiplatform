@@ -31,7 +31,7 @@ fun ChatPopupMenu(state: ChatPopupMenuState, modifier: Modifier = Modifier) {
             with(density) {
                 IntOffset(
                     x = state.iconPositionInRoot.x.roundToInt() - 150,
-                    y = (state.iconPositionInParent.y + 48.dp.toPx()).roundToInt(),
+                    y = (state.iconPositionInParent.y + 28.dp.toPx()).roundToInt(),
                 )
             }
         }
@@ -52,7 +52,7 @@ fun ChatPopupMenu(state: ChatPopupMenuState, modifier: Modifier = Modifier) {
         ) {
             Card(
                 shape = RoundedCornerShape(12.dp),
-                modifier = modifier.widthIn(min = 0.dp, max = 300.dp),
+                modifier = modifier.widthIn(min = 0.dp, max = 300.dp).padding(12.dp),
             ) {
                 Column(
                     modifier = Modifier.width(IntrinsicSize.Max).padding(12.dp),
