@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.ic_chat_agent
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -47,7 +48,10 @@ fun AgentItem(state: AgentItemState, modifier: Modifier = Modifier) {
                     painter = painterResource(Res.drawable.ic_chat_agent),
                     contentDescription = null,
                 )
-                Text(text = state.agent.name, style = MaterialTheme.typography.titleSmall)
+                Text(
+                    text = state.agent.name,
+                    style = MaterialTheme.typography.titleSmall.fixCenterTextOnAllPlatforms(),
+                )
             }
             if (!state.agent.description.isNullOrEmpty()) {
                 AnimatedVisibility(state.selectedAgent == state.agent) {
@@ -56,7 +60,7 @@ fun AgentItem(state: AgentItemState, modifier: Modifier = Modifier) {
                         Text(
                             text = state.agent.description,
                             modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodySmall.fixCenterTextOnAllPlatforms(),
                         )
                     }
                 }

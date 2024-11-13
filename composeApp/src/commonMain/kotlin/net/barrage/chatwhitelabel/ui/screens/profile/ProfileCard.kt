@@ -23,14 +23,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.profile.components.ProfileCardHeader
 import net.barrage.chatwhitelabel.ui.screens.profile.components.ProfileContent
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileViewState
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun ProfileCard(
@@ -48,8 +47,8 @@ fun ProfileCard(
                 HistoryScreenStates.Error -> {
                     Text(
                         text = "Error loading data.",
-                        color = Red,
-                        fontSize = 24.sp,
+                        style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
+                        color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(8.dp),
                     )
                 }
@@ -85,7 +84,12 @@ fun ProfileCard(
                             onClick = onLogoutClick,
                             modifier = Modifier.padding(top = 16.dp).align(Alignment.End),
                         ) {
-                            Text(text = "Logout", style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                text = "Logout",
+                                style =
+                                    MaterialTheme.typography.titleMedium
+                                        .fixCenterTextOnAllPlatforms(),
+                            )
                         }
                     }
                 }
@@ -99,10 +103,6 @@ fun ProfileCard(
 @Composable
 fun ProfileSpacer(modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
-        Spacer(
-            Modifier.background(MaterialTheme.colorScheme.onSecondaryContainer)
-                .height(1.dp)
-                .fillMaxWidth()
-        )
+        Spacer(Modifier.background(MaterialTheme.colorScheme.outline).height(1.dp).fillMaxWidth())
     }
 }

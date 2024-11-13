@@ -31,10 +31,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import com.materialkolor.PaletteStyle
 import kotlinx.collections.immutable.ImmutableList
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -77,8 +77,8 @@ fun ThemePopup(
                         Text(
                             "Variants",
                             modifier = Modifier,
-                            fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            style =
+                                MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
                         )
                         Icon(
                             Icons.Filled.ArrowDropDown,

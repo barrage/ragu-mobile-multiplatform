@@ -13,6 +13,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import net.barrage.chatwhitelabel.domain.model.Agent
 import net.barrage.chatwhitelabel.ui.components.AppIconCard
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun AgentContent(
@@ -25,11 +26,17 @@ fun AgentContent(
         Spacer(modifier = Modifier.height(20.dp))
         AppIconCard()
         Spacer(modifier = Modifier.height(20.dp))
-        Text("LLM Chat", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            "LLM Chat",
+            style = MaterialTheme.typography.headlineMedium.fixCenterTextOnAllPlatforms(),
+        )
         Spacer(modifier = Modifier.height(20.dp))
-        Text("Choose an agent to start a chat with", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "Choose an agent to start a chat with",
+            style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
+        )
         Spacer(modifier = Modifier.height(12.dp))
-        Text("Agents:", style = MaterialTheme.typography.bodyMedium)
+        Text("Agents:", style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms())
         AgentList(
             agents =
                 agents

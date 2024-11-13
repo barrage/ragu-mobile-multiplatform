@@ -15,6 +15,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.delay
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
@@ -48,7 +49,7 @@ fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
             textFieldValue = it
             state.onTextChange(it.text)
         },
-        textStyle = state.textStyle.copy(color = state.textColor),
+        textStyle = state.textStyle.copy(color = state.textColor).fixCenterTextOnAllPlatforms(),
         modifier = modifier.width(IntrinsicSize.Min).focusRequester(focusRequester),
         enabled = state.isEditing,
     )

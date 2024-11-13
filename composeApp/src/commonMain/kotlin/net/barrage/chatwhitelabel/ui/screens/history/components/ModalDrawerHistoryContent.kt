@@ -12,14 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.aakira.napier.Napier
 import net.barrage.chatwhitelabel.domain.model.HistoryElement
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryViewState
 import net.barrage.chatwhitelabel.ui.screens.history.components.history.ModalDrawerHistoryElement
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun ModalDrawerHistoryContent(
@@ -33,8 +32,8 @@ fun ModalDrawerHistoryContent(
             HistoryScreenStates.Error -> {
                 Text(
                     text = "Error loading data.",
-                    color = Red,
-                    fontSize = 24.sp,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(16.dp),
                 )
             }
@@ -49,8 +48,7 @@ fun ModalDrawerHistoryContent(
                 if (viewState.data.elements.isEmpty()) {
                     Text(
                         text = "You have no previous chats.",
-                        fontSize = 24.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
                         modifier = Modifier.padding(16.dp),
                     )
                 } else {
@@ -65,9 +63,8 @@ fun ModalDrawerHistoryContent(
                                         Text(
                                             text = timePeriod,
                                             style =
-                                                MaterialTheme.typography.labelLarge.copy(
-                                                    fontSize = 16.sp
-                                                ),
+                                                MaterialTheme.typography.labelMedium
+                                                    .fixCenterTextOnAllPlatforms(),
                                             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
                                         )
                                     }

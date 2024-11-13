@@ -9,11 +9,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.barrage.chatwhitelabel.domain.model.HistoryElement
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun ModalDrawerHistoryElement(
@@ -36,9 +34,7 @@ fun ModalDrawerHistoryElement(
     ) {
         Text(
             modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth().padding(start = 12.dp),
-            textAlign = TextAlign.Start,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Normal,
+            style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
             text = viewState.title,
         )
     }

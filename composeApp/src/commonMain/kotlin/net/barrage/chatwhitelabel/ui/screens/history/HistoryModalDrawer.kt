@@ -10,15 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.ic_brain
 import com.materialkolor.PaletteStyle
@@ -29,6 +28,7 @@ import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerContentTopBar
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerHistoryContent
 import net.barrage.chatwhitelabel.ui.screens.history.components.currentuser.CurrentUserCard
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -69,7 +69,10 @@ fun ModalDrawer(
             ) {
                 Icon(painter = painterResource(Res.drawable.ic_brain), null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("New Chat", fontSize = 24.sp, textAlign = TextAlign.Start)
+                Text(
+                    "New Chat",
+                    style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
+                )
             }
             HistoryDivider()
             ModalDrawerHistoryContent(

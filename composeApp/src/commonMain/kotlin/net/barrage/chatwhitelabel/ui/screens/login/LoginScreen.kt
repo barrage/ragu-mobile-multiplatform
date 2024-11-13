@@ -33,6 +33,7 @@ import net.barrage.chatwhitelabel.ui.components.ErrorDialog
 import net.barrage.chatwhitelabel.ui.components.ErrorDialogState
 import net.barrage.chatwhitelabel.utils.Constants
 import net.barrage.chatwhitelabel.utils.DeepLinkParser
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 import net.barrage.chatwhitelabel.utils.isDebug
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -111,9 +112,15 @@ fun LoginContent(onGoogleLogin: () -> Unit, modifier: Modifier = Modifier) {
         ) {
             AppIconCard()
             Spacer(modifier = Modifier.height(20.dp))
-            Text("Login", style = MaterialTheme.typography.headlineMedium)
+            Text(
+                "Login",
+                style = MaterialTheme.typography.headlineMedium.fixCenterTextOnAllPlatforms(),
+            )
             Spacer(modifier = Modifier.height(20.dp))
-            Text("Choose a login method", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                "Choose a login method",
+                style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
+            )
             Spacer(modifier = Modifier.height(20.dp))
             Button(
                 onClick = onGoogleLogin,
@@ -131,7 +138,10 @@ fun LoginContent(onGoogleLogin: () -> Unit, modifier: Modifier = Modifier) {
                         contentDescription = null,
                     )
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text("Continue with Google", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        "Continue with Google",
+                        style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
+                    )
                 }
             }
         }

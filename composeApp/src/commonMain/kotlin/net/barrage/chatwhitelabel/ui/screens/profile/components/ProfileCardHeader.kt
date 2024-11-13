@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil3.CoilImage
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileHeaderViewState
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun ProfileCardHeader(viewState: ProfileHeaderViewState, modifier: Modifier = Modifier) {
@@ -33,7 +34,7 @@ fun ProfileCardHeader(viewState: ProfileHeaderViewState, modifier: Modifier = Mo
         Column(modifier = Modifier.padding(start = 16.dp)) {
             Text(
                 text = viewState.name,
-                style = MaterialTheme.typography.headlineLarge,
+                style = MaterialTheme.typography.headlineMedium.fixCenterTextOnAllPlatforms(),
                 modifier = Modifier.padding(bottom = 8.dp),
             )
             StatusIndicator(viewState.active)

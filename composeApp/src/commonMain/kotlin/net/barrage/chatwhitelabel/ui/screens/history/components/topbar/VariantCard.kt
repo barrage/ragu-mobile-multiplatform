@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.materialkolor.PaletteStyle
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun VariantCard(
@@ -39,6 +39,10 @@ fun VariantCard(
                     }
                 )
     ) {
-        Text(fontSize = 14.sp, text = variant.name, modifier = Modifier.padding(4.dp))
+        Text(
+            text = variant.name,
+            style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
+            modifier = Modifier.padding(4.dp),
+        )
     }
 }

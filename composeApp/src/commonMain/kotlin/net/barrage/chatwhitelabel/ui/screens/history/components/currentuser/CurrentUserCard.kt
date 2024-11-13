@@ -21,12 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileViewState
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun CurrentUserCard(
@@ -40,8 +39,8 @@ fun CurrentUserCard(
                 HistoryScreenStates.Error -> {
                     Text(
                         text = "Error loading data.",
-                        color = Red,
-                        fontSize = 24.sp,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
                         modifier = Modifier.padding(8.dp),
                     )
                 }
@@ -68,11 +67,15 @@ fun CurrentUserCard(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = viewState.data.header.name,
-                                style = MaterialTheme.typography.labelLarge,
+                                style =
+                                    MaterialTheme.typography.labelLarge
+                                        .fixCenterTextOnAllPlatforms(),
                             )
                             Text(
                                 text = viewState.data.content["Email"]?.value ?: "",
-                                style = MaterialTheme.typography.bodySmall,
+                                style =
+                                    MaterialTheme.typography.bodySmall
+                                        .fixCenterTextOnAllPlatforms(),
                                 overflow = Ellipsis,
                             )
                         }

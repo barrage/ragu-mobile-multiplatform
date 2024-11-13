@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun ErrorContent(errorMessage: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
@@ -19,13 +20,13 @@ fun ErrorContent(errorMessage: String, onRetry: () -> Unit, modifier: Modifier =
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = "An error occurred",
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.headlineSmall.fixCenterTextOnAllPlatforms(),
                 color = MaterialTheme.colorScheme.error,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = errorMessage,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(modifier = Modifier.height(16.dp))

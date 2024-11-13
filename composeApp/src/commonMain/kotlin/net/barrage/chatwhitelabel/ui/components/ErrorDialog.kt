@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.DialogProperties
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun ErrorDialog(state: ErrorDialogState, modifier: Modifier = Modifier) {
@@ -15,14 +16,14 @@ fun ErrorDialog(state: ErrorDialogState, modifier: Modifier = Modifier) {
         title = {
             Text(
                 state.title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
                 color = MaterialTheme.colorScheme.error,
             )
         },
         text = {
             Text(
                 state.description,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
                 color = MaterialTheme.colorScheme.onSurface,
             )
         },

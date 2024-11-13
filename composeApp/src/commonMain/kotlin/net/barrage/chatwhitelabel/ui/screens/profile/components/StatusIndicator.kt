@@ -9,24 +9,25 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import net.barrage.chatwhitelabel.utils.StatusGreenBackground
@@ -37,6 +38,7 @@ import net.barrage.chatwhitelabel.utils.StatusRedBackground
 import net.barrage.chatwhitelabel.utils.StatusRedBorder
 import net.barrage.chatwhitelabel.utils.StatusRedIndicatorEnd
 import net.barrage.chatwhitelabel.utils.StatusRedIndicatorStart
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun StatusIndicator(active: Boolean, modifier: Modifier = Modifier) {
@@ -57,15 +59,12 @@ fun StatusIndicator(active: Boolean, modifier: Modifier = Modifier) {
                 StatusRedIndicatorEnd,
             )
         }
-    val indicatorWidth by
+    val scale by
         infiniteTransition.animateFloat(
-            initialValue = 8f,
-            targetValue = 10f,
+            initialValue = 1f,
+            targetValue = 1.25f,
             animationSpec =
-                infiniteRepeatable(
-                    animation = tween(durationMillis = 1000, easing = LinearEasing),
-                    repeatMode = RepeatMode.Reverse,
-                ),
+                infiniteRepeatable(animation = tween(1000), repeatMode = RepeatMode.Reverse),
         )
 
     val indicatorColor by
@@ -79,33 +78,34 @@ fun StatusIndicator(active: Boolean, modifier: Modifier = Modifier) {
                 ),
         )
 
-    Row(
-        modifier =
-            modifier
-                .border(1.dp, border, RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-                .background(background)
-                .padding(vertical = 2.dp, horizontal = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    Card(
+        colors = CardDefaults.cardColors(containerColor = background),
+        border = BorderStroke(1.dp, border),
+        modifier = modifier,
+        shape = CircleShape,
     ) {
-        Box(modifier = Modifier.size(12.dp), contentAlignment = Alignment.Center) {
+        Row(
+            modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Spacer(
                 modifier =
-                    Modifier.size(indicatorWidth.dp).clip(CircleShape).background(indicatorColor)
+                    Modifier.scale(scale).size(10.dp).clip(CircleShape).background(indicatorColor)
+            )
+
+            Spacer(Modifier.width(8.dp))
+
+            Text(
+                text =
+                    if (active) {
+                        "Active"
+                    } else {
+                        "Inactive"
+                    },
+                color = Color(0xFF222222),
+                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodySmall.fixCenterTextOnAllPlatforms(),
             )
         }
-        Spacer(Modifier.width(8.dp))
-
-        Text(
-            text =
-                if (active) {
-                    "Active"
-                } else {
-                    "Inactive"
-                },
-            color = Color.Black,
-            fontSize = 12.sp,
-            textAlign = TextAlign.Center,
-        )
     }
 }

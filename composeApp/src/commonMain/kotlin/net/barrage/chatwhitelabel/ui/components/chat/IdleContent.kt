@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun IdleContent(onStartNewChat: () -> Unit, modifier: Modifier = Modifier) {
@@ -19,17 +20,22 @@ fun IdleContent(onStartNewChat: () -> Unit, modifier: Modifier = Modifier) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = "Welcome to Chat",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineMedium.fixCenterTextOnAllPlatforms(),
                 color = MaterialTheme.colorScheme.primary,
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Start a new chat or select an agent to begin",
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyLarge.fixCenterTextOnAllPlatforms(),
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(modifier = Modifier.height(24.dp))
-            Button(onClick = onStartNewChat) { Text("Start New Chat") }
+            Button(onClick = onStartNewChat) {
+                Text(
+                    "Start New Chat",
+                    style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
+                )
+            }
         }
     }
 }

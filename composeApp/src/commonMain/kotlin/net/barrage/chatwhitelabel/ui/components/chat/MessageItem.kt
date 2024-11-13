@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.barrage.chatwhitelabel.ui.theme.LocalCustomColorsPalette
 import net.barrage.chatwhitelabel.ui.theme.customTypography
+import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun MessageItem(message: String, isUserMessage: Boolean, modifier: Modifier = Modifier) {
@@ -25,7 +26,7 @@ fun MessageItem(message: String, isUserMessage: Boolean, modifier: Modifier = Mo
         ) {
             Text(
                 text = message,
-                style = customTypography().textBase,
+                style = customTypography().textBase.fixCenterTextOnAllPlatforms(),
                 color = LocalCustomColorsPalette.current.textBase,
                 modifier = Modifier.padding(12.dp),
             )
