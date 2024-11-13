@@ -26,7 +26,7 @@ import net.barrage.chatwhitelabel.ui.theme.CustomTheme
 import net.barrage.chatwhitelabel.utils.coreComponent
 
 @Composable
-fun App(modifier: Modifier = Modifier) {
+fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = null) {
     var deepLink by remember { mutableStateOf<DeepLink?>(null) }
     DeepLinkListener { deepLink = it }
     var isDarkTheme by remember { mutableStateOf(true) }
@@ -40,6 +40,7 @@ fun App(modifier: Modifier = Modifier) {
         selectedVariant = coreComponent.appPreferences.getThemeVariant()
         isThemeLoaded = true
     }
+    LaunchedEffect(isDarkTheme) { onThemeChange?.invoke(isDarkTheme) }
     AnimatedVisibility(isThemeLoaded) {
         CustomTheme(
             seedColor = selectedTheme,
