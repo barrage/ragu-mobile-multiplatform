@@ -19,7 +19,8 @@ class HistoryRepositoryImpl(private val api: Api) : HistoryRepository {
 
     override suspend fun getChatById(chatId: String): Response<List<HistoryChatMessagesItem>> {
         return when (val response = api.getHistoryChatById(chatId)) {
-            is Response.Success -> Response.Success(response.data.map { it.toDomain() })
+            is Response.Success ->
+                Response.Success(response.data.map { it.toDomain() }.sortedBy { it.updatedAt })
             is Response.Failure -> response
             is Response.Loading -> Response.Loading
         }
