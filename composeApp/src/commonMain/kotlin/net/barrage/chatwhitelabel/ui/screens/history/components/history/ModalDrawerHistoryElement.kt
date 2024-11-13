@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import net.barrage.chatwhitelabel.domain.model.HistoryElement
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
@@ -36,6 +37,8 @@ fun ModalDrawerHistoryElement(
             modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth().padding(start = 12.dp),
             style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
             text = viewState.title,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
