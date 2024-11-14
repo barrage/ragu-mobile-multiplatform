@@ -79,7 +79,7 @@ fun ChatInput(state: ChatInputState, modifier: Modifier = Modifier) {
                                 state.focusManager.clearFocus()
                             },
                             modifier = Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp),
-                            enabled = state.isSendEnabled,
+                            enabled = state.isEnabled,
                         ) {
                             Icon(
                                 if (state.isReceivingMessage) Icons.Filled.Close
@@ -89,6 +89,7 @@ fun ChatInput(state: ChatInputState, modifier: Modifier = Modifier) {
                         }
                     }
                 },
+                enabled = state.isEnabled,
             )
         }
     }

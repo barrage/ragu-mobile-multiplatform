@@ -144,7 +144,9 @@ fun ChatScreen(
                                 onStopReceivingMessage = {
                                     viewModel.webSocketChatClient?.stopMessageStream()
                                 },
-                                isSendEnabled = chatScreenState.isSendEnabled,
+                                isEnabled =
+                                    chatScreenState.isSendEnabled &&
+                                        chatScreenState.agents.isNotEmpty(),
                                 isReceivingMessage = chatScreenState.isReceivingMessage,
                                 focusManager = focusManager,
                                 chatInteractionSource = chatInteractionSource,

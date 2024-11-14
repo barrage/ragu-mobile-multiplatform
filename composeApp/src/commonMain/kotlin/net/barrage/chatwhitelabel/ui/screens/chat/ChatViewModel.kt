@@ -307,29 +307,32 @@ class ChatViewModel(
         }
     }
 
-    suspend fun updateHistory() {
-        historyViewState =
-            when (val response = historyUseCase.invoke(1, 50)) {
-                is Response.Success -> {
-                    historyViewState.copy(
-                        history =
-                            HistoryScreenStates.Success(
-                                HistoryViewState(
-                                    elements =
-                                        mapElementsByTimePeriod(
-                                                response.data.elements,
-                                                webSocketChatClient?.currentChatId?.value,
-                                            )
-                                            .toImmutableMap(),
-                                    itemsNum = response.data.itemsNum,
+    fun updateHistory() {
+        viewModelScope.launch {
+            historyViewState =
+                when (val response = historyUseCase.invoke(1, 50)) {
+                    is Response.Success -> {
+                        historyViewState.copy(
+                            history =
+                                HistoryScreenStates.Success(
+                                    HistoryViewState(
+                                        elements =
+                                            mapElementsByTimePeriod(
+                                                    response.data.elements,
+                                                    webSocketChatClient?.currentChatId?.value,
+                                                )
+                                                .toImmutableMap(),
+                                        itemsNum = response.data.itemsNum,
+                                    )
                                 )
-                            )
-                    )
-                }
+                        )
+                    }
 
-                is Response.Failure -> historyViewState.copy(history = HistoryScreenStates.Error)
-                Response.Loading -> historyViewState.copy(history = HistoryScreenStates.Loading)
-            }
+                    is Response.Failure ->
+                        historyViewState.copy(history = HistoryScreenStates.Error)
+                    Response.Loading -> historyViewState.copy(history = HistoryScreenStates.Loading)
+                }
+        }
     }
 
     private suspend fun updateCurrentUser() {

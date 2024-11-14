@@ -103,7 +103,7 @@ fun LoginScreen(
                                         onClick = {
                                             scope.launch {
                                                 val codeVerifier = viewModel.generateCodeVerifier()
-                                                codeVerifier.let { rememberedOnGoogleLogin(it) }
+                                                rememberedOnGoogleLogin(codeVerifier)
                                             }
                                         }
                                     ) {
