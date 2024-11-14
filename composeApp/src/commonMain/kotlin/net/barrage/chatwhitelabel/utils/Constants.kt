@@ -12,13 +12,15 @@ object Constants {
         private const val SCOPE =
             "https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email%20openid"
 
-        fun getGoogleAuthUrl(): String {
+        suspend fun getGoogleAuthUrl(codeVerifier: String): String {
             return buildString {
                 append(GOOGLE_AUTH_URL)
                 append("?client_id=").append(CLIENT_ID)
                 append("&redirect_uri=").append(REDIRECT_URI)
                 append("&response_type=").append(RESPONSE_TYPE)
                 append("&scope=").append(SCOPE)
+                append("&code_challenge=").append(PKCEUtil.generateCodeChallenge(codeVerifier))
+                append("&code_challenge_method=").append("S256")
             }
         }
     }

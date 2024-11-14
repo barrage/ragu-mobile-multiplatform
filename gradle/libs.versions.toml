@@ -32,6 +32,9 @@ rinku = "1.2.0"
 rinkuComposeExt = "1.2.0"
 kotlinx-coroutines = "1.9.0"
 androidx-startup = "1.2.0"
+#KotlinCrypto
+kotlinCryptoBom = "0.5.3"
+kotlinSecureCrypto = "0.3.2"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -73,6 +76,11 @@ gitlive-firebase-kotlin-crashlytics = { module = "dev.gitlive:firebase-crashlyti
 gitlive-firebase-kotlin-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseGitLiveSdk" }
 rinku = { module = "dev.theolm:rinku", version.ref = "rinku" }
 rinku-compose-ext = { module = "dev.theolm:rinku-compose-ext", version.ref = "rinkuComposeExt" }
+
+#KotlinCrypto
+kotlin-crypto-hash-bom = { module = "org.kotlincrypto.hash:bom", version.ref = "kotlinCryptoBom" }
+kotlin-crypto-hash-sha2 = { module = "org.kotlincrypto.hash:sha2" }
+kotlin-crypto-secure-random = { module = "org.kotlincrypto:secure-random", version.ref = "kotlinSecureCrypto" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

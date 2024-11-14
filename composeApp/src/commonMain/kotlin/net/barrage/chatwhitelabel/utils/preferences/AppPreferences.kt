@@ -13,7 +13,7 @@ import com.materialkolor.PaletteStyle
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-interface AppPreferences {
+interface ThemePreferences {
     suspend fun isDarkModeEnabled(): Boolean
 
     suspend fun getThemeColor(): Color
@@ -25,28 +25,45 @@ interface AppPreferences {
     suspend fun saveThemeVariant(variant: PaletteStyle): Preferences
 
     suspend fun changeDarkMode(isEnabled: Boolean): Preferences
+}
 
+interface AuthPreferences {
     suspend fun saveCookie(cookie: String): Preferences
 
     suspend fun getCookie(): String?
 
     suspend fun clearCookie(): Preferences
 
+    suspend fun saveCodeVerifier(codeVerifier: String): Preferences
+
+    suspend fun getCodeVerifier(): String?
+
+    suspend fun clearCodeVerifier(): Preferences
+}
+
+interface AppPreferences : ThemePreferences, AuthPreferences {
     suspend fun clear(): Preferences
 }
 
-internal class AppPreferencesImpl(private val dataStore: DataStore<Preferences>) : AppPreferences {
+internal class AppPreferencesImpl(private val dataStore: DataStore<Preferences>) :
+    AppPreferences,
+    ThemePreferences by ThemePreferencesImpl(dataStore),
+    AuthPreferences by AuthPreferencesImpl(dataStore) {
 
+    override suspend fun clear(): Preferences =
+        dataStore.edit { preferences -> preferences.clear() }
+}
+
+private class ThemePreferencesImpl(private val dataStore: DataStore<Preferences>) :
+    ThemePreferences {
     private companion object {
         private const val PREFS_TAG_KEY = "AppPreferences"
         private const val IS_DARK_MODE_ENABLED = "darkMode"
-        private const val COOKIE = "cookie"
         private const val THEME = "theme"
         private const val VARIANT = "variant"
     }
 
     private val darkModeKey = booleanPreferencesKey("$PREFS_TAG_KEY$IS_DARK_MODE_ENABLED")
-    private val cookieKey = stringPreferencesKey("$PREFS_TAG_KEY$COOKIE")
     private val themeKey = intPreferencesKey("$PREFS_TAG_KEY$THEME")
     private val variantKey = stringPreferencesKey("$PREFS_TAG_KEY$VARIANT")
 
@@ -76,6 +93,17 @@ internal class AppPreferencesImpl(private val dataStore: DataStore<Preferences>)
 
     override suspend fun changeDarkMode(isEnabled: Boolean) =
         dataStore.edit { preferences -> preferences[darkModeKey] = isEnabled }
+}
+
+private class AuthPreferencesImpl(private val dataStore: DataStore<Preferences>) : AuthPreferences {
+    private companion object {
+        private const val PREFS_TAG_KEY = "AppPreferences"
+        private const val COOKIE = "cookie"
+        private const val CODE_VERIFIER = "codeVerifier"
+    }
+
+    private val cookieKey = stringPreferencesKey("$PREFS_TAG_KEY$COOKIE")
+    private val codeVerifierKey = stringPreferencesKey("$PREFS_TAG_KEY$CODE_VERIFIER")
 
     override suspend fun saveCookie(cookie: String) =
         dataStore.edit { preferences -> preferences[cookieKey] = cookie }
@@ -86,6 +114,12 @@ internal class AppPreferencesImpl(private val dataStore: DataStore<Preferences>)
     override suspend fun clearCookie() =
         dataStore.edit { preferences -> preferences.remove(cookieKey) }
 
-    override suspend fun clear(): Preferences =
-        dataStore.edit { preferences -> preferences.clear() }
+    override suspend fun saveCodeVerifier(codeVerifier: String) =
+        dataStore.edit { preferences -> preferences[codeVerifierKey] = codeVerifier }
+
+    override suspend fun getCodeVerifier(): String? =
+        dataStore.data.map { preferences -> preferences[codeVerifierKey] }.first()
+
+    override suspend fun clearCodeVerifier() =
+        dataStore.edit { preferences -> preferences.remove(codeVerifierKey) }
 }

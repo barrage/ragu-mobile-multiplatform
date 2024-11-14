@@ -119,8 +119,7 @@ fun ChatScreen(
                     }
 
                     if (
-                        chatScreenState.agents.isNotEmpty() &&
-                            chatScreenState.messages.isEmpty() &&
+                        chatScreenState.messages.isEmpty() &&
                             viewModel.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
                     ) {
                         AgentContent(

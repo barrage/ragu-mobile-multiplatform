@@ -8,16 +8,17 @@ import net.barrage.chatwhitelabel.domain.repository.AuthRepository
 import net.barrage.chatwhitelabel.utils.Constants
 
 class LoginUseCase(private val authRepository: AuthRepository) {
-    suspend operator fun invoke(code: String): Response<AuthToken> =
-        authRepository.login(createLoginParameters(code))
+    suspend operator fun invoke(code: String, codeVerifier: String): Response<AuthToken> =
+        authRepository.login(createLoginParameters(code, codeVerifier))
 
-    private fun createLoginParameters(code: String): Parameters {
+    private fun createLoginParameters(code: String, codeVerifier: String): Parameters {
         return parameters {
             append("code", code)
             append("redirect_uri", Constants.Auth.REDIRECT_URI)
             append("grant_type", "authorization_code")
             append("source", "android")
             append("provider", "google")
+            append("code_verifier", codeVerifier)
         }
     }
 }

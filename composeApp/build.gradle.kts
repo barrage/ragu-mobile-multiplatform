@@ -92,6 +92,9 @@ kotlin {
             implementation(libs.rinku.compose.ext)
             implementation(libs.androidx.datastore.preferences.core)
             implementation(libs.multiplatform.settings.datastore)
+            implementation(project.dependencies.platform(libs.kotlin.crypto.hash.bom))
+            implementation(libs.kotlin.crypto.hash.sha2)
+            implementation(libs.kotlin.crypto.secure.random)
         }
 
         desktopMain.dependencies {

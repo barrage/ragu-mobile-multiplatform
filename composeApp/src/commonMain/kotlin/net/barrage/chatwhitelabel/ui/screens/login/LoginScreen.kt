@@ -21,17 +21,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.ic_google
 import dev.theolm.rinku.DeepLink
+import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.ui.components.AppIconCard
 import net.barrage.chatwhitelabel.ui.components.ErrorDialog
 import net.barrage.chatwhitelabel.ui.components.ErrorDialogState
-import net.barrage.chatwhitelabel.utils.Constants
 import net.barrage.chatwhitelabel.utils.DeepLinkParser
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 import net.barrage.chatwhitelabel.utils.isDebug
@@ -40,17 +43,20 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LoginScreen(
-    onGoogleLogin: () -> Unit,
+    onGoogleLogin: (String) -> Unit,
     navigateToChat: () -> Unit,
     deepLink: DeepLink?,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = koinViewModel(),
 ) {
-    val loginState = viewModel.loginState
-    val uriHandler = LocalUriHandler.current
+    val loginState by viewModel.loginState.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    val rememberedOnGoogleLogin by rememberUpdatedState(onGoogleLogin)
+    val rememberedNavigateToChat by rememberUpdatedState(navigateToChat)
 
     LaunchedEffect(deepLink) {
-        if (deepLink != null && viewModel.loginState is LoginScreenState.Idle) {
+        if (deepLink != null && loginState is LoginScreenState.Idle) {
             val code = DeepLinkParser.extractCodeFromDeepLink(deepLink.data)
             if (code != null) {
                 viewModel.login(code)
@@ -61,7 +67,14 @@ fun LoginScreen(
     Box(modifier = modifier.fillMaxSize().padding(20.dp), contentAlignment = Alignment.Center) {
         when (loginState) {
             is LoginScreenState.Idle -> {
-                LoginContent(onGoogleLogin)
+                LoginContent(
+                    onGoogleLogin = {
+                        scope.launch {
+                            val codeVerifier = viewModel.generateCodeVerifier()
+                            codeVerifier.let { rememberedOnGoogleLogin(it) }
+                        }
+                    }
+                )
             }
 
             is LoginScreenState.Loading -> {
@@ -69,7 +82,7 @@ fun LoginScreen(
             }
 
             is LoginScreenState.Success -> {
-                navigateToChat()
+                LaunchedEffect(Unit) { rememberedNavigateToChat() }
             }
 
             is LoginScreenState.Error -> {
@@ -79,12 +92,19 @@ fun LoginScreen(
                             ErrorDialogState(
                                 title = "Login Error",
                                 description =
-                                    "Failed to log in${if (isDebug) ": ${loginState.message}" else ""}",
+                                    "Failed to log in${
+                                if (isDebug)
+                                    ": ${(loginState as LoginScreenState.Error).message}"
+                                else ""
+                            }",
                                 onDismissRequest = {},
                                 confirmButton = {
                                     Button(
                                         onClick = {
-                                            uriHandler.openUri(Constants.Auth.getGoogleAuthUrl())
+                                            scope.launch {
+                                                val codeVerifier = viewModel.generateCodeVerifier()
+                                                codeVerifier.let { rememberedOnGoogleLogin(it) }
+                                            }
                                         }
                                     ) {
                                         Text("Retry")

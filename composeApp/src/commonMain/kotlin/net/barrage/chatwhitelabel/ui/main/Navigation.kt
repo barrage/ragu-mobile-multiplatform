@@ -91,7 +91,14 @@ fun AppNavHost(
             composable(Login.route) {
                 val uriHandler = LocalUriHandler.current
                 LoginScreen(
-                    onGoogleLogin = { uriHandler.openUri(Constants.Auth.getGoogleAuthUrl()) },
+                    onGoogleLogin = { codeVerifier ->
+                        appState.coroutineScope.launch {
+                            codeVerifier.let {
+                                val googleUrl = Constants.Auth.getGoogleAuthUrl(it)
+                                uriHandler.openUri(googleUrl)
+                            }
+                        }
+                    },
                     deepLink = deepLink,
                     navigateToChat = { appState.navController.navigateSingleTopTo(Chat.route) },
                     modifier = Modifier.fillMaxSize(),
