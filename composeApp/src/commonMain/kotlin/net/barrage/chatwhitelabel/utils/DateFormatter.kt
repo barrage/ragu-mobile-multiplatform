@@ -11,3 +11,14 @@ fun timestampToHhMm(timestamp: Long): String {
         ":" +
         localDateTime.minute.toString().padStart(2, '0')
 }
+
+fun formatIsoDateToReadable(instant: Instant): String {
+
+    val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+
+    val month = localDateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }
+    val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
+    val year = localDateTime.year.toString()
+
+    return "$month $day, $year"
+}

@@ -9,7 +9,11 @@ interface ReceiveMessageCallback {
 
     fun stopReceivingMessage()
 
+    fun onError(errorMessage: String)
+
     fun setTtsLanguage(language: String)
 
-    fun setChatId(chatId: String)
+    fun setChatTitle(title: String)
+
+    fun closeChat()
 }

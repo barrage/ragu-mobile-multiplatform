@@ -1,6 +1,7 @@
 package net.barrage.chatwhitelabel.ui.main
 
 import ChatScreen
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,8 @@ import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.navigation.Chat
+import net.barrage.chatwhitelabel.navigation.Empty
+import net.barrage.chatwhitelabel.navigation.FellowNavigation
 import net.barrage.chatwhitelabel.navigation.Login
 import net.barrage.chatwhitelabel.ui.components.keyboardAsState
 import net.barrage.chatwhitelabel.ui.screens.login.LoginScreen
@@ -29,17 +32,25 @@ import net.barrage.chatwhitelabel.utils.getAndroidVersion
 import org.koin.compose.koinInject
 
 @Composable
-fun AppNavHost(appState: AppState, deepLink: DeepLink?, modifier: Modifier = Modifier) {
+fun AppNavHost(
+    appState: AppState,
+    deepLink: DeepLink?,
+    profileVisible: Boolean,
+    onLogoutSuccess: () -> Unit,
+    modifier: Modifier = Modifier,
+    changeProfileVisibility: () -> Unit,
+) {
     val currentUserUseCase: CurrentUserUseCase = koinInject()
     var startDestination by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(appState.networkAvailable.value) {
+        if (!appState.networkAvailable.value || startDestination != null) return@LaunchedEffect
         appState.coroutineScope.launch {
             startDestination =
                 if (currentUserUseCase() is Response.Success) {
                     Chat.route
                 } else {
-                    Login.route
+                    FellowNavigation.startDestination
                 }
         }
     }
@@ -47,7 +58,7 @@ fun AppNavHost(appState: AppState, deepLink: DeepLink?, modifier: Modifier = Mod
     if (startDestination != null) {
         NavHost(
             appState.navController,
-            startDestination = startDestination!!,
+            startDestination = startDestination ?: Empty.route,
             modifier = modifier,
         ) {
             composable(Chat.route) {
@@ -55,22 +66,48 @@ fun AppNavHost(appState: AppState, deepLink: DeepLink?, modifier: Modifier = Mod
                     viewModel = appState.chatViewModel,
                     isKeyboardOpen = keyboardAsState().value,
                     scope = appState.coroutineScope,
+                    profileVisible = profileVisible,
                     modifier =
                         Modifier.then(
                             if (getAndroidVersion() != -1)
                                 Modifier.consumeWindowInsets(PaddingValues())
                             else Modifier
                         ),
+                    changeProfileVisibility = changeProfileVisibility,
+                    onLogoutClick = {
+                        appState.navController.navigate(Login.route) {
+                            popUpTo(
+                                appState.navController.graph.findStartDestination().route
+                                    ?: return@navigate
+                            ) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                        onLogoutSuccess()
+                    },
                 )
             }
             composable(Login.route) {
                 val uriHandler = LocalUriHandler.current
                 LoginScreen(
-                    onGoogleLogin = { uriHandler.openUri(Constants.Auth.getGoogleAuthUrl()) },
+                    onGoogleLogin = { codeVerifier ->
+                        appState.coroutineScope.launch {
+                            codeVerifier.let {
+                                val googleUrl = Constants.Auth.getGoogleAuthUrl(it)
+                                uriHandler.openUri(googleUrl)
+                            }
+                        }
+                    },
                     deepLink = deepLink,
                     navigateToChat = { appState.navController.navigateSingleTopTo(Chat.route) },
                     modifier = Modifier.fillMaxSize(),
                 )
+            }
+            composable(Empty.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    // EmptyScreen()
+                }
             }
         }
     }

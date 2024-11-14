@@ -27,7 +27,7 @@ actual val restClient: HttpClient
             }
             defaultRequest {
                 header("Content-Type", "application/json")
-                url("https://llmao-kotlin-api-staging.m2.barrage.beer/")
+                url("https://${Constants.BASE_URL}/")
             }
             install(ContentNegotiation) {
                 json(

@@ -4,6 +4,8 @@ android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
 androidx-activityCompose = "1.9.3"
+coilCompose = "3.0.1"
+coilNetworkOkhttp = "3.0.1"
 compose-plugin = "1.7.0"
 datastorePreferencesCore = "1.1.1"
 konnection = "1.4.3"
@@ -30,14 +32,20 @@ rinku = "1.2.0"
 rinkuComposeExt = "1.2.0"
 kotlinx-coroutines = "1.9.0"
 androidx-startup = "1.2.0"
+#KotlinCrypto
+kotlinCryptoBom = "0.5.3"
+kotlinSecureCrypto = "0.3.2"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastorePreferencesCore" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 konnection = { module = "dev.tmapps:konnection", version.ref = "konnection" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 landscapist-coil = { module = "com.github.skydoves:landscapist-coil3", version.ref = "landscapistCoil" }
@@ -69,12 +77,18 @@ gitlive-firebase-kotlin-auth = { module = "dev.gitlive:firebase-auth", version.r
 rinku = { module = "dev.theolm:rinku", version.ref = "rinku" }
 rinku-compose-ext = { module = "dev.theolm:rinku-compose-ext", version.ref = "rinkuComposeExt" }
 
+#KotlinCrypto
+kotlin-crypto-hash-bom = { module = "org.kotlincrypto.hash:bom", version.ref = "kotlinCryptoBom" }
+kotlin-crypto-hash-sha2 = { module = "org.kotlincrypto.hash:sha2" }
+kotlin-crypto-secure-random = { module = "org.kotlincrypto:secure-random", version.ref = "kotlinSecureCrypto" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 prekommit = { id = "net.barrage.prekommit", version.ref = "prekommit" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "gradlePlugins-crashlytics" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }

@@ -11,7 +11,7 @@ plugins {
     alias(libs.plugins.prekommit)
     alias(libs.plugins.google.services)
     alias(libs.plugins.crashlytics)
-    kotlin("plugin.serialization") version libs.versions.kotlin.get()
+    alias(libs.plugins.kotlinSerialization)
 }
 
 preKommitConfig {
@@ -92,6 +92,9 @@ kotlin {
             implementation(libs.rinku.compose.ext)
             implementation(libs.androidx.datastore.preferences.core)
             implementation(libs.multiplatform.settings.datastore)
+            implementation(project.dependencies.platform(libs.kotlin.crypto.hash.bom))
+            implementation(libs.kotlin.crypto.hash.sha2)
+            implementation(libs.kotlin.crypto.secure.random)
         }
 
         desktopMain.dependencies {
@@ -101,7 +104,7 @@ kotlin {
         }
         getByName("commonMain") {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
     }

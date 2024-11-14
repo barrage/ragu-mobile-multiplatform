@@ -1,23 +1,26 @@
 package net.barrage.chatwhitelabel.utils
 
 object Constants {
+    const val BASE_URL = "llmao-kotlin-api-staging.m2.barrage.beer"
+
     object Auth {
         private const val GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
         private const val CLIENT_ID =
             "983914104581-ndgb7tsdc9eio8rfu1ohsrdprihk7mqi.apps.googleusercontent.com"
-        private const val REDIRECT_URI =
-            "https://llmao-kotlin-api-staging.m2.barrage.beer/auth/callback"
+        const val REDIRECT_URI = "https://llmao-kotlin-api-staging.m2.barrage.beer/oauthredirect"
         private const val RESPONSE_TYPE = "code"
         private const val SCOPE =
-            "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid"
+            "https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email%20openid"
 
-        fun getGoogleAuthUrl(): String {
+        suspend fun getGoogleAuthUrl(codeVerifier: String): String {
             return buildString {
                 append(GOOGLE_AUTH_URL)
                 append("?client_id=").append(CLIENT_ID)
                 append("&redirect_uri=").append(REDIRECT_URI)
                 append("&response_type=").append(RESPONSE_TYPE)
                 append("&scope=").append(SCOPE)
+                append("&code_challenge=").append(PKCEUtil.generateCodeChallenge(codeVerifier))
+                append("&code_challenge_method=").append("S256")
             }
         }
     }

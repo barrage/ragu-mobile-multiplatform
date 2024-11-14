@@ -4,7 +4,8 @@
 <dict>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>llmao-kotlin-api-staging.m2.barrage.beer</string>
+        <string>applinks:llmao-kotlin-api-staging.m2.barrage.beer/oauthredirect</string>
+
 	</array>
 </dict>
 </plist>

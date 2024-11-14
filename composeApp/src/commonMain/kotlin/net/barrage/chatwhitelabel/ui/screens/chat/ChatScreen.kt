@@ -1,203 +1,208 @@
+@file:Suppress("CyclomaticComplexMethod")
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.selection.LocalTextSelectionColors
-import androidx.compose.foundation.text.selection.TextSelectionColors
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
+import net.barrage.chatwhitelabel.ui.components.chat.AgentContent
+import net.barrage.chatwhitelabel.ui.components.chat.ChatInput
+import net.barrage.chatwhitelabel.ui.components.chat.ChatInputState
+import net.barrage.chatwhitelabel.ui.components.chat.ChatTitle
+import net.barrage.chatwhitelabel.ui.components.chat.ChatTitleState
+import net.barrage.chatwhitelabel.ui.components.chat.ErrorContent
+import net.barrage.chatwhitelabel.ui.components.chat.MessageList
+import net.barrage.chatwhitelabel.ui.screens.chat.ChatScreenState
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
 import net.barrage.chatwhitelabel.ui.screens.chat.ReceiveMessageCallback
-import net.barrage.chatwhitelabel.ui.theme.GlobalsPrimary
-import net.barrage.chatwhitelabel.ui.theme.LocalCustomColorsPalette
-import net.barrage.chatwhitelabel.ui.theme.customTypography
+import net.barrage.chatwhitelabel.ui.screens.profile.ProfileCard
 
 @Composable
 fun ChatScreen(
     viewModel: ChatViewModel,
     isKeyboardOpen: Boolean,
+    profileVisible: Boolean,
     scope: CoroutineScope,
+    onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
+    changeProfileVisibility: () -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
     val chatInteractionSource = remember { MutableInteractionSource() }
     val chatInputFocused by chatInteractionSource.collectIsFocusedAsState()
+    var menuVisible by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isKeyboardOpen, viewModel.messages) {
-        if (viewModel.messages.isNotEmpty()) {
-            lazyListState.animateScrollToItem(viewModel.messages.lastIndex)
+    val chatScreenState = viewModel.chatScreenState
+    val density = LocalDensity.current
+    var width by remember { mutableStateOf(0.dp) }
+
+    LaunchedEffect(isKeyboardOpen, chatScreenState) {
+        if (chatScreenState is ChatScreenState.Success && chatScreenState.messages.isNotEmpty()) {
+            lazyListState.animateScrollToItem(chatScreenState.messages.lastIndex)
             lazyListState.animateScrollBy(lazyListState.layoutInfo.viewportEndOffset.toFloat())
         }
     }
 
-    LaunchedEffect(Unit) { initializeWebSocketClient(viewModel, scope) }
-
-    Column(modifier = modifier.fillMaxSize().imePadding()) {
-        MessageList(
-            messages = viewModel.messages.toImmutableList(),
-            lazyListState = lazyListState,
-            chatInteractionSource = chatInteractionSource,
-            chatInputFocused = chatInputFocused,
-            focusManager = focusManager,
-            modifier = Modifier.weight(1f),
-        )
-        ChatInput(
-            inputText = viewModel.inputText,
-            onInputTextChange = { viewModel.updateInputText(it) },
-            onSendMessage = { viewModel.sendMessage() },
-            isSendEnabled = viewModel.isSendEnabled,
-            focusManager = focusManager,
-            chatInteractionSource = chatInteractionSource,
-        )
+    LaunchedEffect(Unit) {
+        viewModel.loadAllData()
+        initializeWebSocketClient(viewModel, scope)
     }
-}
 
-@Composable
-private fun MessageList(
-    messages: ImmutableList<String>,
-    lazyListState: LazyListState,
-    chatInteractionSource: MutableInteractionSource,
-    chatInputFocused: Boolean,
-    focusManager: FocusManager,
-    modifier: Modifier = Modifier,
-) {
-    LazyColumn(
+    Box(
         modifier =
-            modifier.fillMaxSize().clickable(chatInteractionSource, null) {
-                if (chatInputFocused) focusManager.clearFocus()
-            },
-        contentPadding = PaddingValues(20.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        state = lazyListState,
+            modifier.fillMaxSize().onGloballyPositioned {
+                with(density) { width = it.size.width.toDp() - 80.dp }
+            }
     ) {
-        itemsIndexed(messages) { index, item ->
-            MessageItem(message = item, isUserMessage = index % 2 == 0)
-        }
-    }
-}
-
-@Composable
-private fun MessageItem(message: String, isUserMessage: Boolean, modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxWidth()) {
-        Card(
+        Column(
             modifier =
-                Modifier.align(if (isUserMessage) Alignment.CenterEnd else Alignment.CenterStart)
-                    .widthIn(min = 0.dp, max = 300.dp),
-            shape = RoundedCornerShape(12.dp),
+                Modifier.fillMaxSize()
+                    .clickable(chatInteractionSource, null) {
+                        if (chatInputFocused) focusManager.clearFocus()
+                    }
+                    .imePadding()
         ) {
-            Text(
-                text = message,
-                style = customTypography().textBase,
-                color = LocalCustomColorsPalette.current.textBase,
-                modifier = Modifier.padding(12.dp),
-            )
+            when (chatScreenState) {
+                is ChatScreenState.Success -> {
+                    if (
+                        chatScreenState.messages.isNotEmpty() ||
+                            viewModel.webSocketChatClient?.currentChatId?.value != null
+                    ) {
+                        ChatTitle(
+                            state =
+                                ChatTitleState(
+                                    title = chatScreenState.chatTitle,
+                                    isMenuVisible = menuVisible,
+                                    isEditingTitle = chatScreenState.isEditingTitle,
+                                    onThreeDotsClick = { menuVisible = true },
+                                    onEditTitleClick = {
+                                        viewModel.setEditingTitle(true)
+                                        menuVisible = false
+                                    },
+                                    onDeleteChatClick = {
+                                        showDeleteConfirmation = true
+                                        menuVisible = false
+                                    },
+                                    onDismiss = { menuVisible = false },
+                                    onTitleChange = { viewModel.setChatTitle(it) },
+                                    onTitleChangeConfirmation = { viewModel.updateTitle() },
+                                ),
+                            maxWidth = width,
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                        )
+                    }
+
+                    if (
+                        chatScreenState.messages.isEmpty() &&
+                            viewModel.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
+                    ) {
+                        AgentContent(
+                            agents = chatScreenState.agents.toImmutableList(),
+                            selectedAgent = viewModel.selectedAgent.value,
+                            onAgentClick = { selectedAgent -> viewModel.setAgent(selectedAgent) },
+                            modifier = Modifier.weight(1f),
+                        )
+                    } else {
+                        MessageList(
+                            messages = chatScreenState.messages.toImmutableList(),
+                            lazyListState = lazyListState,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                    ChatInput(
+                        state =
+                            ChatInputState(
+                                inputText = chatScreenState.inputText,
+                                onInputTextChange = { viewModel.updateInputText(it) },
+                                onSendMessage = { viewModel.sendMessage() },
+                                onStopReceivingMessage = {
+                                    viewModel.webSocketChatClient?.stopMessageStream()
+                                },
+                                isEnabled =
+                                    chatScreenState.isSendEnabled &&
+                                        chatScreenState.agents.isNotEmpty(),
+                                isReceivingMessage = chatScreenState.isReceivingMessage,
+                                focusManager = focusManager,
+                                chatInteractionSource = chatInteractionSource,
+                            )
+                    )
+                }
+
+                is ChatScreenState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is ChatScreenState.Error ->
+                    ErrorContent(
+                        errorMessage = chatScreenState.message,
+                        onRetry = { viewModel.loadAllData() },
+                    )
+
+                is ChatScreenState.Idle -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+        }
+        if (profileVisible) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                ProfileCard(
+                    viewState = viewModel.currentUserViewState,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                    onCloseClick = changeProfileVisibility,
+                    onLogoutClick = { viewModel.logout(onLogoutClick) },
+                )
+            }
         }
     }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun ChatInput(
-    inputText: String,
-    onInputTextChange: (String) -> Unit,
-    onSendMessage: () -> Unit,
-    isSendEnabled: Boolean,
-    focusManager: FocusManager,
-    chatInteractionSource: MutableInteractionSource,
-) {
-    Row(
-        verticalAlignment = Alignment.Bottom,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-    ) {
-        val customTextSelectionColors =
-            TextSelectionColors(
-                handleColor = GlobalsPrimary,
-                backgroundColor = GlobalsPrimary.copy(alpha = 0.4f),
-            )
-
-        CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
-            TextField(
-                value = inputText,
-                onValueChange = onInputTextChange,
-                textStyle = customTypography().textBase,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions =
-                    KeyboardActions(
-                        onDone = {
-                            onSendMessage()
-                            focusManager.clearFocus()
-                        }
-                    ),
-                modifier = Modifier.weight(1f),
-                interactionSource = chatInteractionSource,
-                shape = RoundedCornerShape(12.dp),
-                colors =
-                    TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                    ),
-                suffix = {
-                    CompositionLocalProvider(
-                        LocalMinimumInteractiveComponentEnforcement provides false
-                    ) {
-                        IconButton(
-                            onClick = {
-                                onSendMessage()
-                                focusManager.clearFocus()
-                            },
-                            modifier = Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp),
-                            enabled = isSendEnabled,
-                        ) {
-                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null)
-                        }
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = { Text("Delete Chat") },
+            text = { Text("Are you sure you want to delete this chat?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteChat()
+                        showDeleteConfirmation = false
                     }
-                },
-            )
-        }
+                ) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) { Text("No") }
+            },
+        )
     }
 }
 
@@ -208,7 +213,6 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                 var addNewMessage = true
 
                 override fun receiveMessage(message: String) {
-                    disableSending()
                     if (addNewMessage) {
                         viewModel.addMessage(message)
                     } else {
@@ -217,6 +221,7 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                     if (addNewMessage) {
                         addNewMessage = false
                     }
+                    viewModel.setReceivingMessage(true)
                 }
 
                 override fun enableSending() {
@@ -230,14 +235,23 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                 override fun stopReceivingMessage() {
                     addNewMessage = true
                     enableSending()
+                    viewModel.setReceivingMessage(false)
                 }
 
                 override fun setTtsLanguage(language: String) {
                     // Set TTS language
                 }
 
-                override fun setChatId(chatId: String) {
-                    // Set chat ID
+                override fun setChatTitle(title: String) {
+                    viewModel.setChatTitle(title)
+                }
+
+                override fun onError(errorMessage: String) {
+                    // Handle error
+                }
+
+                override fun closeChat() {
+                    viewModel.onChatClosed()
                 }
             },
             scope = scope,

@@ -1,9 +1,9 @@
 package net.barrage.chatwhitelabel.data.repository
 
-import net.barrage.chatwhitelabel.data.remote.ktor.Api
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.mapper.toDomain
 import net.barrage.chatwhitelabel.domain.model.CurrentUser
+import net.barrage.chatwhitelabel.domain.remote.ktor.Api
 import net.barrage.chatwhitelabel.domain.repository.UserRepository
 
 class UserRepositoryImpl(private val api: Api) : UserRepository {
