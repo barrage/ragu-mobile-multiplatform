@@ -217,7 +217,7 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
 
                 override fun receiveMessage(message: String) {
                     if (addNewMessage) {
-                        viewModel.addMessage(message)
+                        viewModel.addMessage(message, senderType = "agent")
                     } else {
                         viewModel.updateLastMessage(message)
                     }

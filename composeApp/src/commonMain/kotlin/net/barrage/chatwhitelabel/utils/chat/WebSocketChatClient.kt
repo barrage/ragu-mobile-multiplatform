@@ -82,10 +82,13 @@ class WebSocketChatClient(
         }
     }
 
-    fun sendMessage(message: String, chatId: String? = null) {
+    fun sendMessage(message: String) {
+        debugLog("Sending message: $message")
+        debugLog("Chat is open: ${isChatOpen.value}")
+        debugLog("Current Chat ID: ${currentChatId.value}")
         if (!isChatOpen.value) {
-            if (chatId != null) {
-                openExistingChat(chatId)
+            if (currentChatId.value != null) {
+                openExistingChat(currentChatId.value!!)
             } else {
                 openNewChat()
             }
@@ -108,6 +111,7 @@ class WebSocketChatClient(
     }
 
     private fun openNewChat() {
+        debugLog("Opening new chat")
         if (currentChatId.value != null) {
             closeChat()
         }
@@ -128,7 +132,8 @@ class WebSocketChatClient(
     }
 
     private fun openExistingChat(chatId: String) {
-        if (currentChatId.value != null) {
+        debugLog("Opening existing chat: $chatId")
+        if (currentChatId.value != chatId) {
             closeChat()
         }
         val openChatMessage = buildJsonObject {
@@ -162,6 +167,7 @@ class WebSocketChatClient(
 
     fun closeChat() {
         if (currentChatId.value != null) {
+            debugLog("Closing chat")
             val closeChatMessage = buildJsonObject {
                 put("type", "system")
                 put("payload", buildJsonObject { put("type", "chat_close") })
@@ -181,9 +187,11 @@ class WebSocketChatClient(
     }
 
     fun setChatId(chatId: String?) {
-        if (isChatOpen.value) {
+        debugLog("Set Chat ID: $chatId")
+        /*if (isChatOpen.value) {
+            debugLog("Chat is open, closing it")
             closeChat()
-        }
+        }*/
         currentChatId.value = chatId
     }
 }

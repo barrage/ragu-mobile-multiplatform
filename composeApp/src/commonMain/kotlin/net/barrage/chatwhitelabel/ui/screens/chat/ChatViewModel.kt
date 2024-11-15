@@ -118,11 +118,11 @@ class ChatViewModel(
         }
     }
 
-    fun addMessage(messageContent: String) {
+    fun addMessage(messageContent: String, senderType: String) {
         updateChatScreenState { currentState ->
             when (currentState) {
                 is ChatScreenState.Success -> {
-                    val message = ChatMessageItem(content = messageContent, senderType = "user")
+                    val message = ChatMessageItem(content = messageContent, senderType = senderType)
                     currentState.copy(
                         messages = (currentState.messages + message).toImmutableList()
                     )
@@ -154,7 +154,7 @@ class ChatViewModel(
     fun sendMessage() {
         val currentState = chatScreenState
         if (currentState is ChatScreenState.Success && currentState.inputText.isNotEmpty()) {
-            addMessage(currentState.inputText)
+            addMessage(currentState.inputText, "user")
             webSocketChatClient?.sendMessage(currentState.inputText)
             updateInputText("")
         }
