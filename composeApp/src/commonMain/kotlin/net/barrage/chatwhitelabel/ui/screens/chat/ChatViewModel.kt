@@ -25,6 +25,7 @@ import kotlinx.datetime.toLocalDateTime
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.model.Agent
 import net.barrage.chatwhitelabel.domain.model.ChatHistoryItem
+import net.barrage.chatwhitelabel.domain.model.ChatMessageItem
 import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
@@ -45,8 +46,8 @@ import net.barrage.chatwhitelabel.utils.coreComponent
 
 class ChatViewModel(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
-    private val historyUseCase: GetChatHistoryUseCase,
-    private val historyByIdUseCase: GetChatByIdUseCase,
+    private val getChatHistoryUseCase: GetChatHistoryUseCase,
+    private val getChatByIdUseCase: GetChatByIdUseCase,
     private val currentUserUseCase: CurrentUserUseCase,
     private val updateChatTitleUseCase: UpdateChatTitleUseCase,
     private val deleteChatUseCase: DeleteChatUseCase,
@@ -117,13 +118,15 @@ class ChatViewModel(
         }
     }
 
-    fun addMessage(message: String) {
+    fun addMessage(messageContent: String) {
         updateChatScreenState { currentState ->
             when (currentState) {
-                is ChatScreenState.Success ->
+                is ChatScreenState.Success -> {
+                    val message = ChatMessageItem(content = messageContent, senderType = "user")
                     currentState.copy(
                         messages = (currentState.messages + message).toImmutableList()
                     )
+                }
 
                 else -> currentState
             }
@@ -162,9 +165,13 @@ class ChatViewModel(
             when (currentState) {
                 is ChatScreenState.Success -> {
                     if (currentState.messages.isNotEmpty()) {
-                        val updatedMessages = currentState.messages.toMutableList()
-                        updatedMessages[updatedMessages.lastIndex] += message
-                        currentState.copy(messages = updatedMessages.toImmutableList())
+                        val tempMessages = currentState.messages.toMutableList()
+                        val tempMessage = tempMessages[tempMessages.lastIndex].content + message
+                        tempMessages[tempMessages.lastIndex] =
+                            currentState.messages[tempMessages.lastIndex].copy(
+                                content = tempMessage
+                            )
+                        currentState.copy(messages = tempMessages.toImmutableList())
                     } else {
                         currentState
                     }
@@ -253,23 +260,23 @@ class ChatViewModel(
         clearChat()
     }
 
-    fun getHistoryChatById(id: String, title: String) {
+    fun getChatById(id: String, title: String) {
         viewModelScope.launch {
-            val response = historyByIdUseCase.invoke(id)
+            val response = getChatByIdUseCase.invoke(id)
             if (response is Response.Success) {
                 webSocketChatClient?.setChatId(id)
                 updateChatScreenState { currentState ->
                     when (currentState) {
                         is ChatScreenState.Success ->
                             currentState.copy(
-                                messages = response.data.map { it.content }.toImmutableList(),
+                                messages = response.data.toImmutableList(),
                                 chatTitle = title,
                             )
 
                         else ->
                             ChatScreenState.Success(
                                 agents = persistentListOf(),
-                                messages = response.data.map { it.content }.toImmutableList(),
+                                messages = response.data.toImmutableList(),
                                 chatTitle = title,
                             )
                     }
@@ -325,7 +332,7 @@ class ChatViewModel(
     fun updateHistory() {
         viewModelScope.launch {
             historyViewState =
-                when (val response = historyUseCase.invoke(1, 50)) {
+                when (val response = getChatHistoryUseCase.invoke(1, 50)) {
                     is Response.Success -> {
                         historyViewState.copy(
                             history =
