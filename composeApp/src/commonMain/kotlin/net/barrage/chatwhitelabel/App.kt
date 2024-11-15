@@ -33,6 +33,7 @@ fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = nul
     var selectedTheme by remember { mutableStateOf(White) }
     var selectedVariant by remember { mutableStateOf(PaletteStyle.TonalSpot) }
     var isThemeLoaded by remember { mutableStateOf(false) }
+    var profileVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         isDarkTheme = coreComponent.appPreferences.isDarkModeEnabled()
@@ -57,6 +58,7 @@ fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = nul
                         currentTheme = selectedTheme,
                         currentVariant = selectedVariant,
                         isDarkMode = isDarkTheme,
+                        profileVisible = profileVisible,
                         onSelectThemeClick = {
                             selectedTheme = it
                             CoroutineScope(Dispatchers.IO).launch {
@@ -78,7 +80,15 @@ fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = nul
                         onLogoutSuccess = {
                             selectedTheme = White
                             selectedVariant = PaletteStyle.TonalSpot
+                            isDarkTheme = false
+                            deepLink = null
+                            CoroutineScope(Dispatchers.IO).launch {
+                                coreComponent.appPreferences.saveThemeColor(selectedTheme)
+                                coreComponent.appPreferences.saveThemeVariant(selectedVariant)
+                                coreComponent.appPreferences.changeDarkMode(isDarkTheme)
+                            }
                         },
+                        onProfileVisibilityChange = { profileVisible = !profileVisible },
                     )
                     Overlays(appState)
                 }

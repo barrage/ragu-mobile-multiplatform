@@ -42,6 +42,7 @@ fun AppNavHost(
 ) {
     val currentUserUseCase: CurrentUserUseCase = koinInject()
     var startDestination by remember { mutableStateOf<String?>(null) }
+    val loginViewModel = appState.loginViewModel
 
     LaunchedEffect(appState.networkAvailable.value) {
         if (!appState.networkAvailable.value || startDestination != null) return@LaunchedEffect
@@ -74,16 +75,9 @@ fun AppNavHost(
                             else Modifier
                         ),
                     changeProfileVisibility = changeProfileVisibility,
-                    onLogoutClick = {
-                        appState.navController.navigate(Login.route) {
-                            popUpTo(
-                                appState.navController.graph.findStartDestination().route
-                                    ?: return@navigate
-                            ) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        }
+                    onLogoutSuccess = {
+                        appState.loginViewModel.clearViewModel()
+                        appState.navController.navigateSingleTopTo(Login.route)
                         onLogoutSuccess()
                     },
                 )
@@ -101,6 +95,7 @@ fun AppNavHost(
                     },
                     deepLink = deepLink,
                     navigateToChat = { appState.navController.navigateSingleTopTo(Chat.route) },
+                    viewModel = loginViewModel,
                     modifier = Modifier.fillMaxSize(),
                 )
             }

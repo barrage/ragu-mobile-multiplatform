@@ -21,12 +21,14 @@ import net.barrage.chatwhitelabel.navigation.Chat
 import net.barrage.chatwhitelabel.navigation.FellowNavigation
 import net.barrage.chatwhitelabel.navigation.NavDestination
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
+import net.barrage.chatwhitelabel.ui.screens.login.LoginViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 data class AppState(
     val navController: NavHostController,
     val coroutineScope: CoroutineScope,
     val chatViewModel: ChatViewModel,
+    val loginViewModel: LoginViewModel,
     val networkAvailable: State<Boolean>,
     val currentScreen: NavDestination,
     val drawerState: DrawerState,
@@ -37,6 +39,7 @@ fun rememberAppState(): AppState {
     val navController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
     val chatViewModel = koinViewModel<ChatViewModel>()
+    val loginViewModel = koinViewModel<LoginViewModel>()
     val networkAvailable = remember { mutableStateOf(true) }
     val konnection = Konnection.instance
 
@@ -62,6 +65,7 @@ fun rememberAppState(): AppState {
             navController,
             coroutineScope,
             chatViewModel,
+            loginViewModel,
             networkAvailable,
             currentScreen,
             drawerState,

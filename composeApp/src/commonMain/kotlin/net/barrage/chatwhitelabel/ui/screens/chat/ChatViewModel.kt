@@ -301,8 +301,26 @@ class ChatViewModel(
         viewModelScope.launch {
             val response = logoutUseCase()
             if (response is Response.Success) {
+                // Clear all relevant state
+                chatScreenState = ChatScreenState.Idle
+                webSocketChatClient?.disconnect()
+                webSocketChatClient = null
+                historyViewState =
+                    HistoryModalDrawerContentViewState(
+                        ThemeColors,
+                        PaletteVariants,
+                        HistoryScreenStates.Idle,
+                    )
+                selectedAgent.value = null
+                currentUserViewState = HistoryScreenStates.Idle
+
+                // Clear preferences
                 coreComponent.appPreferences.clear()
+
                 onLogoutSuccess()
+            } else {
+                // Handle logout failure
+                // You might want to show an error message to the user
             }
         }
     }
@@ -330,6 +348,7 @@ class ChatViewModel(
 
                     is Response.Failure ->
                         historyViewState.copy(history = HistoryScreenStates.Error)
+
                     Response.Loading -> historyViewState.copy(history = HistoryScreenStates.Loading)
                 }
         }

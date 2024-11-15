@@ -47,7 +47,7 @@ fun ChatScreen(
     isKeyboardOpen: Boolean,
     profileVisible: Boolean,
     scope: CoroutineScope,
-    onLogoutClick: () -> Unit,
+    onLogoutSuccess: () -> Unit,
     modifier: Modifier = Modifier,
     changeProfileVisibility: () -> Unit,
 ) {
@@ -179,7 +179,10 @@ fun ChatScreen(
                     viewState = viewModel.currentUserViewState,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
                     onCloseClick = changeProfileVisibility,
-                    onLogoutClick = { viewModel.logout(onLogoutClick) },
+                    onLogoutClick = {
+                        changeProfileVisibility()
+                        viewModel.logout(onLogoutSuccess)
+                    },
                 )
             }
         }
