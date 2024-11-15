@@ -30,8 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupPositionProvider
 import com.materialkolor.PaletteStyle
 import kotlinx.collections.immutable.ImmutableList
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
@@ -53,8 +57,19 @@ fun ThemePopup(
     var areVariantsVisible by remember { mutableStateOf(false) }
     val rotation = animateFloatAsState(if (areVariantsVisible) 180f else 0f, label = "rotation")
     Popup(
-        alignment = Alignment.TopCenter,
-        offset = IntOffset(x = 0, y = 50),
+        popupPositionProvider =
+            object : PopupPositionProvider {
+                override fun calculatePosition(
+                    anchorBounds: IntRect,
+                    windowSize: IntSize,
+                    layoutDirection: LayoutDirection,
+                    popupContentSize: IntSize,
+                ): IntOffset {
+                    val x = anchorBounds.center.x - (popupContentSize.width / 2)
+                    val y = anchorBounds.bottom
+                    return IntOffset(x, y)
+                }
+            },
         onDismissRequest = onDismissRequest,
     ) {
         AnimatedVisibility(
