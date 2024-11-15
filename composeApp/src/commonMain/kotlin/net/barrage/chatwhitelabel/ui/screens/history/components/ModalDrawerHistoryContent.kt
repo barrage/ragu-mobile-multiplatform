@@ -61,7 +61,10 @@ fun ModalDrawerHistoryContent(
                                             text = timePeriod,
                                             style =
                                                 MaterialTheme.typography.labelMedium
-                                                    .fixCenterTextOnAllPlatforms(),
+                                                    .fixCenterTextOnAllPlatforms()
+                                                    .copy(
+                                                        color = MaterialTheme.colorScheme.outline
+                                                    ),
                                             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
                                         )
                                     }

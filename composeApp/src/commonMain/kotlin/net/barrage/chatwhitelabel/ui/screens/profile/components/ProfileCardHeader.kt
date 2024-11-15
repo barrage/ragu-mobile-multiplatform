@@ -28,7 +28,7 @@ fun ProfileCardHeader(viewState: ProfileHeaderViewState, modifier: Modifier = Mo
                 ImageOptions(alignment = Alignment.Center, contentScale = ContentScale.Crop),
             modifier =
                 Modifier.size(50.dp)
-                    .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
                     .clip(CircleShape),
         )
         Column(modifier = Modifier.padding(start = 16.dp)) {

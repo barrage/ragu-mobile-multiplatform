@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -50,7 +52,7 @@ fun DarkLightThemeSwitcher(
             modifier
                 .width(movingDistance + iconSize + 8.dp)
                 .clip(RoundedCornerShape(90.dp))
-                .border(2.dp, Gray, RoundedCornerShape(90.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
                 .background(if (isDarkTheme) Black else White)
                 .clickable { onClick() }
     ) {

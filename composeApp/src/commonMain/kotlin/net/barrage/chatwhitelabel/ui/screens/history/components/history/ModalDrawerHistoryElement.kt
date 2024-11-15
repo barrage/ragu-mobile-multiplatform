@@ -31,10 +31,10 @@ fun ModalDrawerHistoryElement(
                     }
                 )
                 .clickable { onClick(viewState) }
-                .padding(4.dp)
+                .padding(8.dp)
     ) {
         Text(
-            modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth().padding(start = 12.dp),
+            modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth().padding(start = 16.dp),
             style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
             text = viewState.title,
             maxLines = 1,

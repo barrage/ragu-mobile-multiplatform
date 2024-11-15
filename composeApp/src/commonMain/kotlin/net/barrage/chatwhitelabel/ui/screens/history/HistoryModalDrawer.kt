@@ -51,7 +51,8 @@ fun ModalDrawer(
                 currentTheme = currentTheme,
                 currentVariant = currentVariant,
                 isDarkMode = isDarkMode,
-                modifier = Modifier.padding(vertical = 16.dp),
+                onChangeDrawerVisibility = changeDrawerVisibility,
+                modifier = Modifier.padding(start = 10.dp, bottom = 16.dp, end = 20.dp),
                 onSelectThemeClick = onSelectThemeClick,
                 onSelectVariantClick = onSelectVariantClick,
                 onDarkLightModeClick = onDarkLightModeClick,
@@ -64,7 +65,7 @@ fun ModalDrawer(
                             viewModel.newChat()
                             changeDrawerVisibility()
                         }
-                        .padding(16.dp),
+                        .padding(24.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(painter = painterResource(Res.drawable.ic_brain), null)

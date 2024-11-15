@@ -1,6 +1,8 @@
 package net.barrage.chatwhitelabel.ui.components
 
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,7 +55,7 @@ fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
                 },
                 textStyle =
                     state.textStyle.copy(color = state.textColor).fixCenterTextOnAllPlatforms(),
-                modifier = Modifier.focusRequester(focusRequester),
+                modifier = Modifier.width(IntrinsicSize.Min).focusRequester(focusRequester),
                 enabled = true,
                 singleLine = true,
             )

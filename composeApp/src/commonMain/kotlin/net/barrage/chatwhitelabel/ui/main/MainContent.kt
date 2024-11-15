@@ -55,7 +55,10 @@ fun MainContent(
         },
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            TopBar(modifier = Modifier.padding(top = 40.dp).padding(horizontal = 20.dp))
+            TopBar(
+                onMenuClick = { scope.launch { drawerState.open() } },
+                modifier = Modifier.padding(top = 56.dp).padding(horizontal = 10.dp),
+            )
             AppNavHost(
                 appState = appState,
                 deepLink = deepLink,
