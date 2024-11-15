@@ -23,6 +23,6 @@ object Empty : NavDestination {
 }
 
 object FellowNavigation {
-    val screens = persistentListOf(Chat)
+    val screens = persistentListOf(Chat, Login, Empty)
     val startDestination = Login.route
 }
