@@ -1,6 +1,6 @@
 package net.barrage.chatwhitelabel.domain.model
 
-data class HistoryChatMessagesItem(
+data class ChatMessageItem(
     val chatId: String,
     val content: String,
     val createdAt: String,

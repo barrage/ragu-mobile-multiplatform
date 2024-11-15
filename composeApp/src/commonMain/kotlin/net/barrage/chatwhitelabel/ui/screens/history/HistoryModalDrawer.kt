@@ -23,7 +23,7 @@ import chatwhitelabel.composeapp.generated.resources.ic_brain
 import com.materialkolor.PaletteStyle
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
-import net.barrage.chatwhitelabel.domain.model.HistoryElement
+import net.barrage.chatwhitelabel.domain.model.ChatHistoryItem
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerContentTopBar
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerHistoryContent
@@ -95,7 +95,7 @@ fun ModalDrawer(
     }
 }
 
-fun updateHistory(selectedElement: HistoryElement, viewModel: ChatViewModel) {
+fun updateHistory(selectedElement: ChatHistoryItem, viewModel: ChatViewModel) {
     val updatedElements =
         viewModel.historyViewState.history.let { historyState ->
             when (historyState) {

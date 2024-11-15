@@ -24,12 +24,12 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.model.Agent
-import net.barrage.chatwhitelabel.domain.model.HistoryElement
+import net.barrage.chatwhitelabel.domain.model.ChatHistoryItem
 import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryByIdUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatByIdUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatHistoryUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
@@ -45,8 +45,8 @@ import net.barrage.chatwhitelabel.utils.coreComponent
 
 class ChatViewModel(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
-    private val historyUseCase: HistoryUseCase,
-    private val historyByIdUseCase: HistoryByIdUseCase,
+    private val historyUseCase: GetChatHistoryUseCase,
+    private val historyByIdUseCase: GetChatByIdUseCase,
     private val currentUserUseCase: CurrentUserUseCase,
     private val updateChatTitleUseCase: UpdateChatTitleUseCase,
     private val deleteChatUseCase: DeleteChatUseCase,
@@ -301,7 +301,6 @@ class ChatViewModel(
         viewModelScope.launch {
             val response = logoutUseCase()
             if (response is Response.Success) {
-                // Clear all relevant state
                 chatScreenState = ChatScreenState.Idle
                 webSocketChatClient?.disconnect()
                 webSocketChatClient = null
@@ -314,13 +313,11 @@ class ChatViewModel(
                 selectedAgent.value = null
                 currentUserViewState = HistoryScreenStates.Idle
 
-                // Clear preferences
                 coreComponent.appPreferences.clear()
 
                 onLogoutSuccess()
             } else {
                 // Handle logout failure
-                // You might want to show an error message to the user
             }
         }
     }
@@ -336,11 +333,10 @@ class ChatViewModel(
                                     HistoryViewState(
                                         elements =
                                             mapElementsByTimePeriod(
-                                                    response.data.elements,
+                                                    response.data,
                                                     webSocketChatClient?.currentChatId?.value,
                                                 )
-                                                .toImmutableMap(),
-                                        itemsNum = response.data.itemsNum,
+                                                .toImmutableMap()
                                     )
                                 )
                         )
@@ -370,9 +366,9 @@ class ChatViewModel(
     }
 
     private fun mapElementsByTimePeriod(
-        elements: List<HistoryElement>,
+        elements: List<ChatHistoryItem>,
         currentChatId: String?,
-    ): ImmutableMap<String?, ImmutableList<HistoryElement>> {
+    ): ImmutableMap<String?, ImmutableList<ChatHistoryItem>> {
         val now: Instant = Clock.System.now()
         val today: LocalDate = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
         val yesterday: LocalDate = today.minus(1, DateTimeUnit.DAY)

@@ -13,8 +13,8 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Parameters
 import net.barrage.chatwhitelabel.data.remote.dto.agent.AgentResponse
-import net.barrage.chatwhitelabel.data.remote.dto.history.HistoryChatMessagesItemDTO
-import net.barrage.chatwhitelabel.data.remote.dto.history.HistoryResponseDTO
+import net.barrage.chatwhitelabel.data.remote.dto.history.ChatHistoryResponseDTO
+import net.barrage.chatwhitelabel.data.remote.dto.history.ChatMessageItemDTO
 import net.barrage.chatwhitelabel.data.remote.dto.user.CurrentUserDTO
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.remote.ktor.Api
@@ -44,7 +44,7 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
         }
     }
 
-    override suspend fun getHistory(parameters: Parameters): Response<HistoryResponseDTO> {
+    override suspend fun getHistory(parameters: Parameters): Response<ChatHistoryResponseDTO> {
         return safeApiCall {
             val response =
                 httpClient.get("chats") {
@@ -55,9 +55,7 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
         }
     }
 
-    override suspend fun getHistoryChatById(
-        chatId: String
-    ): Response<List<HistoryChatMessagesItemDTO>> {
+    override suspend fun getHistoryChatById(chatId: String): Response<List<ChatMessageItemDTO>> {
         return safeApiCall {
             val response = httpClient.get("chats/$chatId/messages") { addCookieHeader() }
             response

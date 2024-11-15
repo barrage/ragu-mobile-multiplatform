@@ -2,7 +2,7 @@ package net.barrage.chatwhitelabel.domain.model
 
 import kotlinx.datetime.Instant
 
-data class HistoryElement(
+data class ChatHistoryItem(
     val id: String,
     val agentId: String,
     val createdAt: Instant,

@@ -4,7 +4,7 @@ import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class HistoryElementDTO(
+data class ChatHistoryItemDTO(
     val id: String,
     val agentId: String,
     val createdAt: Instant,

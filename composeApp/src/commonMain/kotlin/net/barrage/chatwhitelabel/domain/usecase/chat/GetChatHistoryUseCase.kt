@@ -4,7 +4,7 @@ import io.ktor.http.Parameters
 import io.ktor.http.parameters
 import net.barrage.chatwhitelabel.domain.repository.HistoryRepository
 
-class HistoryUseCase(private val historyRepository: HistoryRepository) {
+class GetChatHistoryUseCase(private val historyRepository: HistoryRepository) {
     suspend fun invoke(
         page: Int,
         perPage: Int,

@@ -18,8 +18,8 @@ import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LoginUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryByIdUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatByIdUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatHistoryUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
@@ -37,8 +37,8 @@ val useCaseModule = module {
     single<LoginUseCase> { LoginUseCase(get()) }
     single<LogoutUseCase> { LogoutUseCase(get()) }
     single<CurrentUserUseCase> { CurrentUserUseCase(get()) }
-    single<HistoryUseCase> { HistoryUseCase(get()) }
-    single<HistoryByIdUseCase> { HistoryByIdUseCase(get()) }
+    single<GetChatHistoryUseCase> { GetChatHistoryUseCase(get()) }
+    single<GetChatByIdUseCase> { GetChatByIdUseCase(get()) }
     single<WebSocketTokenUseCase> { WebSocketTokenUseCase(get()) }
     single<UpdateChatTitleUseCase> { UpdateChatTitleUseCase(get()) }
     single<DeleteChatUseCase> { DeleteChatUseCase(get()) }

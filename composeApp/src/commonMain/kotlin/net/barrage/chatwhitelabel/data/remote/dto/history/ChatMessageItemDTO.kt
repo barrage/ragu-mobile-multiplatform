@@ -3,7 +3,7 @@ package net.barrage.chatwhitelabel.data.remote.dto.history
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class HistoryChatMessagesItemDTO(
+data class ChatMessageItemDTO(
     val chatId: String,
     val content: String,
     val createdAt: String,

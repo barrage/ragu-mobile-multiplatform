@@ -11,14 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import net.barrage.chatwhitelabel.domain.model.HistoryElement
+import net.barrage.chatwhitelabel.domain.model.ChatHistoryItem
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun ModalDrawerHistoryElement(
-    viewState: HistoryElement,
+    viewState: ChatHistoryItem,
     modifier: Modifier = Modifier,
-    onClick: (HistoryElement) -> Unit,
+    onClick: (ChatHistoryItem) -> Unit,
 ) {
     Box(
         modifier =
