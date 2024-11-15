@@ -77,8 +77,8 @@ fun ThemePopup(
             enter = expandVertically(),
             exit = shrinkVertically(),
         ) {
-            Card(modifier = Modifier.padding(end = 16.dp).wrapContentSize().padding(8.dp)) {
-                Column(modifier = Modifier.padding(10.dp).widthIn(max = 160.dp)) {
+            Card(modifier = Modifier.wrapContentSize().padding(12.dp)) {
+                Column(modifier = Modifier.padding(12.dp).widthIn(max = 160.dp)) {
                     for (row in 0 until themeRows) {
                         ThemeRow(
                             row = row,

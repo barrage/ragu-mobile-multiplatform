@@ -48,7 +48,7 @@ fun ChatPopupMenu(state: ChatPopupMenuState, modifier: Modifier = Modifier) {
         ) {
             Card(
                 shape = RoundedCornerShape(12.dp),
-                modifier = modifier.widthIn(min = 0.dp, max = 300.dp).padding(12.dp),
+                modifier = modifier.widthIn(min = 0.dp, max = 160.dp).padding(12.dp),
             ) {
                 Column(
                     modifier = Modifier.width(IntrinsicSize.Max).padding(12.dp),
