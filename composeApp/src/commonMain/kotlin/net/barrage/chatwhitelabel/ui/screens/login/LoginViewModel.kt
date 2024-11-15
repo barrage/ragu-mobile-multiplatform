@@ -78,6 +78,11 @@ class LoginViewModel(
         }
     }
 
+    fun clearViewModel() {
+        _loginState.value = LoginScreenState.Idle
+        clearCodeVerifier()
+    }
+
     private fun clearCodeVerifier() {
         viewModelScope.launch { tokenStorage.clearCodeVerifier() }
     }
