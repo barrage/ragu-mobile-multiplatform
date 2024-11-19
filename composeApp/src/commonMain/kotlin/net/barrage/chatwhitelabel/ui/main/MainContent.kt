@@ -55,10 +55,12 @@ fun MainContent(
         },
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            TopBar(
-                onMenuClick = { scope.launch { drawerState.open() } },
-                modifier = Modifier.padding(top = 56.dp).padding(horizontal = 10.dp),
-            )
+            if (appState.currentScreen == Chat) {
+                TopBar(
+                    onMenuClick = { scope.launch { drawerState.open() } },
+                    modifier = Modifier.padding(top = 56.dp).padding(horizontal = 10.dp),
+                )
+            }
             AppNavHost(
                 appState = appState,
                 deepLink = deepLink,
