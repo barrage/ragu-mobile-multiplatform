@@ -7,4 +7,10 @@ interface ChatRepository {
     suspend fun updateChatTitle(chatId: String, title: String): Response<HttpResponse>
 
     suspend fun deleteChat(chatId: String): Response<HttpResponse>
+
+    suspend fun evaluateMessage(
+        chatId: String,
+        messageId: String,
+        evaluation: Boolean,
+    ): Response<HttpResponse>
 }

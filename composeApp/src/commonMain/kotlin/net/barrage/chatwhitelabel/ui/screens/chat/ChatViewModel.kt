@@ -22,6 +22,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
+import net.barrage.chatwhitelabel.data.remote.dto.history.SenderType
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.model.Agent
 import net.barrage.chatwhitelabel.domain.model.ChatHistoryItem
@@ -29,6 +30,7 @@ import net.barrage.chatwhitelabel.domain.model.ChatMessageItem
 import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.EvaluateMessageUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatByIdUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatHistoryUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
@@ -43,6 +45,7 @@ import net.barrage.chatwhitelabel.utils.PaletteVariants
 import net.barrage.chatwhitelabel.utils.ThemeColors
 import net.barrage.chatwhitelabel.utils.chat.WebSocketChatClient
 import net.barrage.chatwhitelabel.utils.coreComponent
+import net.barrage.chatwhitelabel.utils.debugLog
 
 class ChatViewModel(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
@@ -53,6 +56,7 @@ class ChatViewModel(
     private val deleteChatUseCase: DeleteChatUseCase,
     private val getAgentsUseCase: GetAgentsUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val evaluateMessageUseCase: EvaluateMessageUseCase,
 ) : ViewModel() {
 
     var chatScreenState by mutableStateOf<ChatScreenState>(ChatScreenState.Idle)
@@ -118,7 +122,7 @@ class ChatViewModel(
         }
     }
 
-    fun addMessage(messageContent: String, senderType: String) {
+    fun addMessage(messageContent: String, senderType: SenderType) {
         updateChatScreenState { currentState ->
             when (currentState) {
                 is ChatScreenState.Success -> {
@@ -154,7 +158,7 @@ class ChatViewModel(
     fun sendMessage() {
         val currentState = chatScreenState
         if (currentState is ChatScreenState.Success && currentState.inputText.isNotEmpty()) {
-            addMessage(currentState.inputText, "user")
+            addMessage(currentState.inputText, SenderType.USER)
             webSocketChatClient?.sendMessage(currentState.inputText)
             updateInputText("")
         }
@@ -405,5 +409,14 @@ class ChatViewModel(
             groupedElements.mapValues { entry -> entry.value.toImmutableList() }
 
         return finalGroupedElements.toImmutableMap().toImmutableMap()
+    }
+
+    fun evaluateMessage(message: ChatMessageItem, evaluation: Boolean) {
+        viewModelScope.launch {
+            if (!message.chatId.isNullOrEmpty() && !message.id.isNullOrEmpty()) {
+                val result = evaluateMessageUseCase(message.chatId, message.id, evaluation)
+                debugLog("Evaluation result: $result")
+            }
+        }
     }
 }

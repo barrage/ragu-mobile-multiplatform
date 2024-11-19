@@ -26,4 +26,10 @@ interface Api {
     suspend fun deleteChat(chatId: String): Response<HttpResponse>
 
     suspend fun getAgents(): Response<AgentResponse>
+
+    suspend fun evaluateMessage(
+        chatId: String,
+        messageId: String,
+        evaluation: Boolean,
+    ): Response<HttpResponse>
 }

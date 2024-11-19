@@ -16,6 +16,9 @@ import net.barrage.chatwhitelabel.domain.model.ChatMessageItem
 fun MessageList(
     messages: ImmutableList<ChatMessageItem>,
     lazyListState: LazyListState,
+    onCopy: (ChatMessageItem) -> Unit,
+    onPositiveEvaluation: (ChatMessageItem) -> Unit,
+    onNegativeEvaluation: (ChatMessageItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -24,6 +27,14 @@ fun MessageList(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         state = lazyListState,
     ) {
-        items(messages) { item -> MessageItem(message = item) }
+        items(messages) { item ->
+            MessageItem(
+                chatMessage = item,
+                onCopy = onCopy,
+                onPositiveEvaluation = onPositiveEvaluation,
+                onNegativeEvaluation = onNegativeEvaluation,
+                modifier = Modifier,
+            )
+        }
     }
 }

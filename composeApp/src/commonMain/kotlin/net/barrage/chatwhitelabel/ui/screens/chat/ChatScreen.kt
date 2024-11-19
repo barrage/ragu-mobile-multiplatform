@@ -24,11 +24,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
+import net.barrage.chatwhitelabel.data.remote.dto.history.SenderType
 import net.barrage.chatwhitelabel.ui.components.chat.AgentContent
 import net.barrage.chatwhitelabel.ui.components.chat.ChatInput
 import net.barrage.chatwhitelabel.ui.components.chat.ChatInputState
@@ -61,6 +64,7 @@ fun ChatScreen(
     val chatScreenState = viewModel.chatScreenState
     val density = LocalDensity.current
     var width by remember { mutableStateOf(0.dp) }
+    val clipboardManager = LocalClipboardManager.current
 
     LaunchedEffect(isKeyboardOpen, chatScreenState) {
         if (chatScreenState is ChatScreenState.Success && chatScreenState.messages.isNotEmpty()) {
@@ -132,6 +136,13 @@ fun ChatScreen(
                         MessageList(
                             messages = chatScreenState.messages.toImmutableList(),
                             lazyListState = lazyListState,
+                            onCopy = {
+                                clipboardManager.setText(
+                                    buildAnnotatedString { append(it.content) }
+                                )
+                            },
+                            onPositiveEvaluation = { viewModel.evaluateMessage(it, true) },
+                            onNegativeEvaluation = { viewModel.evaluateMessage(it, false) },
                             modifier = Modifier.weight(1f),
                         )
                     }
@@ -217,7 +228,7 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
 
                 override fun receiveMessage(message: String) {
                     if (addNewMessage) {
-                        viewModel.addMessage(message, senderType = "agent")
+                        viewModel.addMessage(message, senderType = SenderType.ASSISTANT)
                     } else {
                         viewModel.updateLastMessage(message)
                     }

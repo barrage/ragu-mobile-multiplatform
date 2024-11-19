@@ -18,6 +18,7 @@ import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LoginUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.EvaluateMessageUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatByIdUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatHistoryUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
@@ -43,6 +44,7 @@ val useCaseModule = module {
     single<UpdateChatTitleUseCase> { UpdateChatTitleUseCase(get()) }
     single<DeleteChatUseCase> { DeleteChatUseCase(get()) }
     single<GetAgentsUseCase> { GetAgentsUseCase(get()) }
+    single<EvaluateMessageUseCase> { EvaluateMessageUseCase(get()) }
 }
 
 // Module for mappers
@@ -68,7 +70,7 @@ val appModule = module {
 // Module for view models
 val viewModelModule = module {
     viewModel { LoginViewModel(get(), get(), get()) }
-    viewModel { ChatViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { ChatViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 
 // Combine all modules into a single module list for Koin initialization
