@@ -34,7 +34,10 @@ fun ModalDrawerHistoryElement(
                 .padding(8.dp)
     ) {
         Text(
-            modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth().padding(start = 16.dp),
+            modifier =
+                Modifier.padding(vertical = 8.dp)
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 12.dp),
             style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
             text = viewState.title,
             maxLines = 1,

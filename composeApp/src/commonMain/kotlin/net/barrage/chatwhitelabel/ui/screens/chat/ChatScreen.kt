@@ -116,6 +116,10 @@ fun ChatScreen(
                                     onDismiss = { menuVisible = false },
                                     onTitleChange = { viewModel.setChatTitle(it) },
                                     onTitleChangeConfirmation = { viewModel.updateTitle() },
+                                    onTitleChangeDismiss = {
+                                        viewModel.setEditingTitle(false)
+                                        menuVisible = false
+                                    },
                                 ),
                             maxWidth = width,
                             modifier = Modifier.align(Alignment.CenterHorizontally),

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
@@ -46,7 +47,7 @@ fun ChatTitle(state: ChatTitleState, maxWidth: Dp, modifier: Modifier = Modifier
                     textStyle = MaterialTheme.typography.titleMedium,
                     textColor = MaterialTheme.colorScheme.onSurface,
                 ),
-            modifier = Modifier.widthIn(min = 0.dp, max = maxWidth),
+            modifier = Modifier.widthIn(min = 0.dp, max = maxWidth - 24.dp),
         )
         Column {
             CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
@@ -88,6 +89,21 @@ fun ChatTitle(state: ChatTitleState, maxWidth: Dp, modifier: Modifier = Modifier
                             ),
                     )
             )
+        }
+        if (state.isEditingTitle) {
+            CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+                IconButton(
+                    onClick = state.onTitleChangeDismiss,
+                    modifier =
+                        Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp),
+                ) {
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = null,
+                        modifier = Modifier.padding(2.dp),
+                    )
+                }
+            }
         }
     }
 }

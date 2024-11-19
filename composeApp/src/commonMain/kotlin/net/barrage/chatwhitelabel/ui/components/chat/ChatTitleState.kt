@@ -10,4 +10,5 @@ data class ChatTitleState(
     val onDismiss: () -> Unit,
     val onTitleChange: (String) -> Unit,
     val onTitleChangeConfirmation: () -> Unit,
+    val onTitleChangeDismiss: () -> Unit,
 )
