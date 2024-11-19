@@ -44,7 +44,7 @@ fun ModalDrawer(
     changeDrawerVisibility: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ModalDrawerSheet(modifier = modifier.fillMaxWidth().padding(end = 75.dp)) {
+    ModalDrawerSheet(modifier = modifier) {
         Column {
             ModalDrawerContentTopBar(
                 viewState = viewModel.historyViewState,
