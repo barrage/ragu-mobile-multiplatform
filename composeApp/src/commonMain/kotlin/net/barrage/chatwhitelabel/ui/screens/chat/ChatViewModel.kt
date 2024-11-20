@@ -79,6 +79,8 @@ class ChatViewModel(
         mutableStateOf<HistoryScreenStates<ProfileViewState>>(HistoryScreenStates.Idle)
         private set
 
+    private var shouldUpdateHistory = true
+
     fun loadAllData() {
         viewModelScope.launch {
             chatScreenState = ChatScreenState.Loading
@@ -168,32 +170,22 @@ class ChatViewModel(
 
     fun updateLastMessage(message: String) {
         updateChatScreenState { currentState ->
-            when (currentState) {
-                is ChatScreenState.Success -> {
-                    if (currentState.messages.isNotEmpty()) {
-                        val tempMessages = currentState.messages.toMutableList()
-                        if (currentState.messages.last().senderType == SenderType.ASSISTANT) {
-                            val tempMessage = tempMessages[tempMessages.lastIndex].content + message
-                            tempMessages[tempMessages.lastIndex] =
-                                currentState.messages[tempMessages.lastIndex].copy(
-                                    content = tempMessage
-                                )
-                            currentState.copy(messages = tempMessages.toImmutableList())
-                        } else {
-                            tempMessages.add(
-                                ChatMessageItem(
-                                    content = message,
-                                    senderType = SenderType.ASSISTANT,
-                                )
-                            )
-                            currentState.copy(messages = tempMessages.toImmutableList())
-                        }
-                    } else {
-                        currentState
-                    }
+            if (currentState is ChatScreenState.Success && currentState.messages.isNotEmpty()) {
+                val lastMessage = currentState.messages.last()
+                val updatedMessages = currentState.messages.toMutableList()
+
+                if (lastMessage.senderType == SenderType.ASSISTANT) {
+                    updatedMessages[updatedMessages.lastIndex] =
+                        lastMessage.copy(content = lastMessage.content + message)
+                } else {
+                    updatedMessages.add(
+                        ChatMessageItem(content = message, senderType = SenderType.ASSISTANT)
+                    )
                 }
 
-                else -> currentState
+                currentState.copy(messages = updatedMessages.toImmutableList())
+            } else {
+                currentState
             }
         }
     }
@@ -283,12 +275,17 @@ class ChatViewModel(
             val response = getChatByIdUseCase.invoke(id)
             if (response is Response.Success) {
                 webSocketChatClient?.setChatId(id)
+                updateHistory()
+                shouldUpdateHistory = false
                 updateChatScreenState {
                     when (tempChatScreenState) {
                         is ChatScreenState.Success ->
                             tempChatScreenState.copy(
                                 messages = response.data.toImmutableList(),
                                 chatTitle = title,
+                                isEditingTitle = false,
+                                isReceivingMessage = false,
+                                inputText = "",
                             )
 
                         else ->
@@ -296,6 +293,9 @@ class ChatViewModel(
                                 agents = persistentListOf(),
                                 messages = response.data.toImmutableList(),
                                 chatTitle = title,
+                                isEditingTitle = false,
+                                isReceivingMessage = false,
+                                inputText = "",
                             )
                     }
                 }
@@ -321,6 +321,8 @@ class ChatViewModel(
                 else -> currentState
             }
         }
+        updateHistory()
+        shouldUpdateHistory = false
     }
 
     fun logout(onLogoutSuccess: () -> Unit) {
@@ -349,27 +351,34 @@ class ChatViewModel(
     }
 
     fun updateHistory() {
-        viewModelScope.launch {
-            historyViewState = historyViewState.copy(history = HistoryScreenStates.Loading)
-            when (val response = getChatHistoryUseCase.invoke(1, 50)) {
-                is Response.Success -> {
-                    val mappedElements =
-                        mapElementsByTimePeriod(
-                            response.data,
-                            webSocketChatClient?.currentChatId?.value,
-                        )
-                    historyViewState =
-                        historyViewState.copy(
-                            history =
-                                HistoryScreenStates.Success(
-                                    HistoryViewState(elements = mappedElements)
-                                )
-                        )
+        if (shouldUpdateHistory) {
+            viewModelScope.launch {
+                // historyViewState = historyViewState.copy(history = HistoryScreenStates.Loading)
+                when (val response = getChatHistoryUseCase.invoke(1, 50)) {
+                    is Response.Success -> {
+                        val mappedElements =
+                            mapElementsByTimePeriod(
+                                response.data,
+                                webSocketChatClient?.currentChatId?.value,
+                            )
+                        historyViewState =
+                            historyViewState.copy(
+                                history =
+                                    HistoryScreenStates.Success(
+                                        HistoryViewState(elements = mappedElements)
+                                    )
+                            )
+                    }
+
+                    is Response.Failure ->
+                        historyViewState =
+                            historyViewState.copy(history = HistoryScreenStates.Error)
+
+                    Response.Loading -> {}
                 }
-                is Response.Failure ->
-                    historyViewState = historyViewState.copy(history = HistoryScreenStates.Error)
-                Response.Loading -> {}
             }
+        } else {
+            shouldUpdateHistory = true
         }
     }
 

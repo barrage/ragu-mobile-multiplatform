@@ -80,7 +80,6 @@ fun ModalDrawer(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 viewState = viewModel.historyViewState.history,
                 onElementClick = {
-                    updateHistory(it, viewModel)
                     viewModel.getChatById(id = it.id, title = it.title)
                     changeDrawerVisibility()
                 },
