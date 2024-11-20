@@ -296,6 +296,7 @@ class ChatViewModel(
     }
 
     private fun clearChat() {
+        webSocketChatClient?.setChatId(null)
         updateChatScreenState { currentState ->
             when (currentState) {
                 is ChatScreenState.Success ->
