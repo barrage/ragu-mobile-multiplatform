@@ -17,8 +17,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
@@ -352,29 +350,26 @@ class ChatViewModel(
 
     fun updateHistory() {
         viewModelScope.launch {
-            historyViewState =
-                when (val response = getChatHistoryUseCase.invoke(1, 50)) {
-                    is Response.Success -> {
+            historyViewState = historyViewState.copy(history = HistoryScreenStates.Loading)
+            when (val response = getChatHistoryUseCase.invoke(1, 50)) {
+                is Response.Success -> {
+                    val mappedElements =
+                        mapElementsByTimePeriod(
+                            response.data,
+                            webSocketChatClient?.currentChatId?.value,
+                        )
+                    historyViewState =
                         historyViewState.copy(
                             history =
                                 HistoryScreenStates.Success(
-                                    HistoryViewState(
-                                        elements =
-                                            mapElementsByTimePeriod(
-                                                    response.data,
-                                                    webSocketChatClient?.currentChatId?.value,
-                                                )
-                                                .toImmutableMap()
-                                    )
+                                    HistoryViewState(elements = mappedElements)
                                 )
                         )
-                    }
-
-                    is Response.Failure ->
-                        historyViewState.copy(history = HistoryScreenStates.Error)
-
-                    Response.Loading -> historyViewState.copy(history = HistoryScreenStates.Loading)
                 }
+                is Response.Failure ->
+                    historyViewState = historyViewState.copy(history = HistoryScreenStates.Error)
+                Response.Loading -> {}
+            }
         }
     }
 
@@ -397,35 +392,27 @@ class ChatViewModel(
         elements: List<ChatHistoryItem>,
         currentChatId: String?,
     ): ImmutableMap<String?, ImmutableList<ChatHistoryItem>> {
-        val now: Instant = Clock.System.now()
-        val today: LocalDate = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
-        val yesterday: LocalDate = today.minus(1, DateTimeUnit.DAY)
-        val last7days: LocalDate = today.minus(7, DateTimeUnit.DAY)
-        val last30days: LocalDate = today.minus(1, DateTimeUnit.MONTH)
-        val lastYear: LocalDate = today.minus(1, DateTimeUnit.YEAR)
+        val now = Clock.System.now()
+        val today = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val timePeriods =
+            listOf(
+                HistoryTimePeriod.TODAY to today,
+                HistoryTimePeriod.YESTERDAY to today.minus(1, DateTimeUnit.DAY),
+                HistoryTimePeriod.LAST_7_DAYS to today.minus(7, DateTimeUnit.DAY),
+                HistoryTimePeriod.LAST_30_DAYS to today.minus(1, DateTimeUnit.MONTH),
+                HistoryTimePeriod.LAST_YEAR to today.minus(1, DateTimeUnit.YEAR),
+            )
 
-        val groupedElements =
-            elements
-                .map { it.copy(isSelected = it.id == currentChatId) }
-                .groupBy { element ->
-                    val currentElement =
-                        element.updatedAt.toLocalDateTime(TimeZone.currentSystemDefault()).date
-                    when {
-                        currentElement >= today -> HistoryTimePeriod.TODAY.label
-                        currentElement >= yesterday -> HistoryTimePeriod.YESTERDAY.label
-                        currentElement >= last7days -> HistoryTimePeriod.LAST_7_DAYS.label
-                        currentElement >= last30days -> HistoryTimePeriod.LAST_30_DAYS.label
-                        currentElement >= lastYear -> HistoryTimePeriod.LAST_YEAR.label
-                        else -> null
-                    }
-                }
-                .filterKeys { it != null }
-                .mapKeys { it.key }
-
-        val finalGroupedElements =
-            groupedElements.mapValues { entry -> entry.value.toImmutableList() }
-
-        return finalGroupedElements.toImmutableMap().toImmutableMap()
+        return elements
+            .asSequence()
+            .map { it.copy(isSelected = it.id == currentChatId) }
+            .groupBy { element ->
+                val elementDate =
+                    element.updatedAt.toLocalDateTime(TimeZone.currentSystemDefault()).date
+                timePeriods.firstOrNull { (_, date) -> elementDate >= date }?.first?.label
+            }
+            .mapValues { (_, value) -> value.toImmutableList() }
+            .toImmutableMap()
     }
 
     fun evaluateMessage(message: ChatMessageItem, evaluation: Boolean) {
