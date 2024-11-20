@@ -280,13 +280,15 @@ class ChatViewModel(
 
     fun getChatById(id: String, title: String) {
         viewModelScope.launch {
+            val tempChatScreenState = chatScreenState
+            chatScreenState = ChatScreenState.Loading
             val response = getChatByIdUseCase.invoke(id)
             if (response is Response.Success) {
                 webSocketChatClient?.setChatId(id)
-                updateChatScreenState { currentState ->
-                    when (currentState) {
+                updateChatScreenState {
+                    when (tempChatScreenState) {
                         is ChatScreenState.Success ->
-                            currentState.copy(
+                            tempChatScreenState.copy(
                                 messages = response.data.toImmutableList(),
                                 chatTitle = title,
                             )

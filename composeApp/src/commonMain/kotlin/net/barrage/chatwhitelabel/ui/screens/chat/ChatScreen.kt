@@ -67,8 +67,11 @@ fun ChatScreen(
     val clipboardManager = LocalClipboardManager.current
 
     LaunchedEffect(isKeyboardOpen, chatScreenState) {
-        if (chatScreenState is ChatScreenState.Success && chatScreenState.messages.isNotEmpty()) {
-            lazyListState.animateScrollToItem(chatScreenState.messages.lastIndex)
+        if (
+            chatScreenState is ChatScreenState.Success &&
+                chatScreenState.messages.isNotEmpty() &&
+                isKeyboardOpen
+        ) {
             lazyListState.animateScrollBy(lazyListState.layoutInfo.viewportEndOffset.toFloat())
         }
     }
