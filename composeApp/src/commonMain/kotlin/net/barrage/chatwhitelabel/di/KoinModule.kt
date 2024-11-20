@@ -21,6 +21,7 @@ import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.EvaluateMessageUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatByIdUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatHistoryUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatMessagesByIdUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
@@ -39,12 +40,13 @@ val useCaseModule = module {
     single<LogoutUseCase> { LogoutUseCase(get()) }
     single<CurrentUserUseCase> { CurrentUserUseCase(get()) }
     single<GetChatHistoryUseCase> { GetChatHistoryUseCase(get()) }
-    single<GetChatByIdUseCase> { GetChatByIdUseCase(get()) }
+    single<GetChatMessagesByIdUseCase> { GetChatMessagesByIdUseCase(get()) }
     single<WebSocketTokenUseCase> { WebSocketTokenUseCase(get()) }
     single<UpdateChatTitleUseCase> { UpdateChatTitleUseCase(get()) }
     single<DeleteChatUseCase> { DeleteChatUseCase(get()) }
     single<GetAgentsUseCase> { GetAgentsUseCase(get()) }
     single<EvaluateMessageUseCase> { EvaluateMessageUseCase(get()) }
+    single<GetChatByIdUseCase> { GetChatByIdUseCase(get()) }
 }
 
 // Module for mappers
@@ -70,7 +72,9 @@ val appModule = module {
 // Module for view models
 val viewModelModule = module {
     viewModel { LoginViewModel(get(), get(), get()) }
-    viewModel { ChatViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel {
+        ChatViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+    }
 }
 
 // Combine all modules into a single module list for Koin initialization

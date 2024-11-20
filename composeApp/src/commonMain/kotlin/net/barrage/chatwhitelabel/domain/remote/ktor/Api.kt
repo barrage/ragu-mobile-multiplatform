@@ -1,8 +1,11 @@
+@file:Suppress("TooManyFunctions")
+
 package net.barrage.chatwhitelabel.domain.remote.ktor
 
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Parameters
 import net.barrage.chatwhitelabel.data.remote.dto.agent.AgentResponse
+import net.barrage.chatwhitelabel.data.remote.dto.chat.ChatItemDTO
 import net.barrage.chatwhitelabel.data.remote.dto.history.ChatHistoryResponseDTO
 import net.barrage.chatwhitelabel.data.remote.dto.history.ChatMessageItemDTO
 import net.barrage.chatwhitelabel.data.remote.dto.user.CurrentUserDTO
@@ -17,7 +20,7 @@ interface Api {
 
     suspend fun getHistory(parameters: Parameters): Response<ChatHistoryResponseDTO>
 
-    suspend fun getHistoryChatById(chatId: String): Response<List<ChatMessageItemDTO>>
+    suspend fun getChatMessagesById(chatId: String): Response<List<ChatMessageItemDTO>>
 
     suspend fun getWebSocketToken(): Response<String>
 
@@ -32,4 +35,6 @@ interface Api {
         messageId: String,
         evaluation: Boolean,
     ): Response<HttpResponse>
+
+    suspend fun getChatById(chatId: String): Response<ChatItemDTO>
 }

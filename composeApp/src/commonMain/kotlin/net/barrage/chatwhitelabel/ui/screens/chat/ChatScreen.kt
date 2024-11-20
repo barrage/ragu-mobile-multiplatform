@@ -11,8 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -155,23 +159,43 @@ fun ChatScreen(
                             modifier = Modifier.weight(1f),
                         )
                     }
-                    ChatInput(
-                        state =
-                            ChatInputState(
-                                inputText = chatScreenState.inputText,
-                                onInputTextChange = { viewModel.updateInputText(it) },
-                                onSendMessage = { viewModel.sendMessage() },
-                                onStopReceivingMessage = {
-                                    viewModel.webSocketChatClient?.stopMessageStream()
-                                },
-                                isEnabled =
-                                    chatScreenState.isSendEnabled &&
-                                        chatScreenState.agents.isNotEmpty(),
-                                isReceivingMessage = chatScreenState.isReceivingMessage,
-                                focusManager = focusManager,
-                                chatInteractionSource = chatInteractionSource,
-                            )
-                    )
+                    if (chatScreenState.isAgentActive) {
+                        ChatInput(
+                            state =
+                                ChatInputState(
+                                    inputText = chatScreenState.inputText,
+                                    onInputTextChange = { viewModel.updateInputText(it) },
+                                    onSendMessage = { viewModel.sendMessage() },
+                                    onStopReceivingMessage = {
+                                        viewModel.webSocketChatClient?.stopMessageStream()
+                                    },
+                                    isEnabled =
+                                        chatScreenState.isSendEnabled &&
+                                            chatScreenState.agents.isNotEmpty(),
+                                    isReceivingMessage = chatScreenState.isReceivingMessage,
+                                    focusManager = focusManager,
+                                    chatInteractionSource = chatInteractionSource,
+                                )
+                        )
+                    } else {
+                        Card(
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            colors =
+                                CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                                ),
+                            border = CardDefaults.outlinedCardBorder(enabled = true),
+                        ) {
+                            Box(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    "This agent is no longer active. " +
+                                        "Please select an active agent to begin a new conversation.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                        }
+                    }
                 }
 
                 is ChatScreenState.Loading -> {

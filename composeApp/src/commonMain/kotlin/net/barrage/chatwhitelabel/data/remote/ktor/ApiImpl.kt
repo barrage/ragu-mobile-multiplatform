@@ -16,6 +16,7 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Parameters
 import net.barrage.chatwhitelabel.data.remote.dto.agent.AgentResponse
+import net.barrage.chatwhitelabel.data.remote.dto.chat.ChatItemDTO
 import net.barrage.chatwhitelabel.data.remote.dto.history.ChatHistoryResponseDTO
 import net.barrage.chatwhitelabel.data.remote.dto.history.ChatMessageItemDTO
 import net.barrage.chatwhitelabel.data.remote.dto.user.CurrentUserDTO
@@ -58,7 +59,7 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
         }
     }
 
-    override suspend fun getHistoryChatById(chatId: String): Response<List<ChatMessageItemDTO>> {
+    override suspend fun getChatMessagesById(chatId: String): Response<List<ChatMessageItemDTO>> {
         return safeApiCall {
             val response = httpClient.get("chats/$chatId/messages") { addCookieHeader() }
             response
@@ -108,6 +109,13 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
                     addCookieHeader()
                     setBody(mapOf("evaluation" to evaluation))
                 }
+            response
+        }
+    }
+
+    override suspend fun getChatById(chatId: String): Response<ChatItemDTO> {
+        return safeApiCall {
+            val response = httpClient.get("chats/$chatId") { addCookieHeader() }
             response
         }
     }

@@ -17,6 +17,7 @@ sealed class ChatScreenState {
         val isReceivingMessage: Boolean = false,
         val isEditingTitle: Boolean = false,
         val chatTitle: String = "New chat",
+        val isAgentActive: Boolean,
     ) : ChatScreenState()
 
     data class Error(val message: String) : ChatScreenState()

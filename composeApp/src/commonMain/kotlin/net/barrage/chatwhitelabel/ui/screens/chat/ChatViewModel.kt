@@ -31,6 +31,7 @@ import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.EvaluateMessageUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatByIdUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatHistoryUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatMessagesByIdUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
@@ -48,13 +49,14 @@ import net.barrage.chatwhitelabel.utils.debugLog
 class ChatViewModel(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
     private val getChatHistoryUseCase: GetChatHistoryUseCase,
-    private val getChatByIdUseCase: GetChatByIdUseCase,
+    private val getChatMessagesByIdUseCase: GetChatMessagesByIdUseCase,
     private val currentUserUseCase: CurrentUserUseCase,
     private val updateChatTitleUseCase: UpdateChatTitleUseCase,
     private val deleteChatUseCase: DeleteChatUseCase,
     private val getAgentsUseCase: GetAgentsUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val evaluateMessageUseCase: EvaluateMessageUseCase,
+    private val getChatByIdUseCase: GetChatByIdUseCase,
 ) : ViewModel() {
 
     var chatScreenState by mutableStateOf<ChatScreenState>(ChatScreenState.Idle)
@@ -95,7 +97,10 @@ class ChatViewModel(
                     when (currentState) {
                         is ChatScreenState.Success -> {
                             selectedAgent.value = agentsResponse.data.firstOrNull()
-                            currentState.copy(agents = agentsResponse.data.toImmutableList())
+                            currentState.copy(
+                                agents = agentsResponse.data.toImmutableList(),
+                                isAgentActive = true,
+                            )
                         }
 
                         else -> {
@@ -103,6 +108,7 @@ class ChatViewModel(
                             ChatScreenState.Success(
                                 agents = agentsResponse.data.toImmutableList(),
                                 messages = persistentListOf(),
+                                isAgentActive = true,
                             )
                         }
                     }
@@ -272,8 +278,9 @@ class ChatViewModel(
         viewModelScope.launch {
             val tempChatScreenState = chatScreenState
             chatScreenState = ChatScreenState.Loading
-            val response = getChatByIdUseCase.invoke(id)
-            if (response is Response.Success) {
+            val chatMessagesResponse = getChatMessagesByIdUseCase.invoke(id)
+            val chatResponse = getChatByIdUseCase.invoke(id)
+            if (chatMessagesResponse is Response.Success && chatResponse is Response.Success) {
                 webSocketChatClient?.setChatId(id)
                 updateHistory()
                 shouldUpdateHistory = false
@@ -281,21 +288,23 @@ class ChatViewModel(
                     when (tempChatScreenState) {
                         is ChatScreenState.Success ->
                             tempChatScreenState.copy(
-                                messages = response.data.toImmutableList(),
+                                messages = chatMessagesResponse.data.toImmutableList(),
                                 chatTitle = title,
                                 isEditingTitle = false,
                                 isReceivingMessage = false,
                                 inputText = "",
+                                isAgentActive = chatResponse.data.agent.active,
                             )
 
                         else ->
                             ChatScreenState.Success(
                                 agents = persistentListOf(),
-                                messages = response.data.toImmutableList(),
+                                messages = chatMessagesResponse.data.toImmutableList(),
                                 chatTitle = title,
                                 isEditingTitle = false,
                                 isReceivingMessage = false,
                                 inputText = "",
+                                isAgentActive = true,
                             )
                     }
                 }
@@ -316,6 +325,7 @@ class ChatViewModel(
                         isEditingTitle = false,
                         isReceivingMessage = false,
                         inputText = "",
+                        isAgentActive = true,
                     )
 
                 else -> currentState
