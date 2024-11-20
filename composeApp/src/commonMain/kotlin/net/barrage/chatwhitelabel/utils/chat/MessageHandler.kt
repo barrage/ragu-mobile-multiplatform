@@ -48,7 +48,6 @@ class MessageHandler(
         val chatId = jsonMessage["chatId"]?.toString()?.trim('"')
         debugLog("WebSocket Chat Opened: $chatId")
         handleChatId(chatId)
-        receiveMessageCallback.enableSending()
         handleChatOpen(true)
         sendFirstMessage()
     }

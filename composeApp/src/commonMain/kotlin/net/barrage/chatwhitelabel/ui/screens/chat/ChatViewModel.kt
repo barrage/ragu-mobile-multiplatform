@@ -123,6 +123,10 @@ class ChatViewModel(
     }
 
     fun addMessage(messageContent: String, senderType: SenderType) {
+        when (senderType) {
+            SenderType.ASSISTANT -> setSendEnabled(true)
+            SenderType.USER -> setSendEnabled(false)
+        }
         updateChatScreenState { currentState ->
             when (currentState) {
                 is ChatScreenState.Success -> {

@@ -252,7 +252,6 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
 
                 override fun stopReceivingMessage() {
                     addNewMessage = true
-                    enableSending()
                     viewModel.setReceivingMessage(false)
                 }
 
