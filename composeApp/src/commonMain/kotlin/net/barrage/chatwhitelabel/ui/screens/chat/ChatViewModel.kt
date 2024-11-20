@@ -174,12 +174,22 @@ class ChatViewModel(
                 is ChatScreenState.Success -> {
                     if (currentState.messages.isNotEmpty()) {
                         val tempMessages = currentState.messages.toMutableList()
-                        val tempMessage = tempMessages[tempMessages.lastIndex].content + message
-                        tempMessages[tempMessages.lastIndex] =
-                            currentState.messages[tempMessages.lastIndex].copy(
-                                content = tempMessage
+                        if (currentState.messages.last().senderType == SenderType.ASSISTANT) {
+                            val tempMessage = tempMessages[tempMessages.lastIndex].content + message
+                            tempMessages[tempMessages.lastIndex] =
+                                currentState.messages[tempMessages.lastIndex].copy(
+                                    content = tempMessage
+                                )
+                            currentState.copy(messages = tempMessages.toImmutableList())
+                        } else {
+                            tempMessages.add(
+                                ChatMessageItem(
+                                    content = message,
+                                    senderType = SenderType.ASSISTANT,
+                                )
                             )
-                        currentState.copy(messages = tempMessages.toImmutableList())
+                            currentState.copy(messages = tempMessages.toImmutableList())
+                        }
                     } else {
                         currentState
                     }
