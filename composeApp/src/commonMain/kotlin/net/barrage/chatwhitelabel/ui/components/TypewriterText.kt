@@ -18,6 +18,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import kotlinx.coroutines.delay
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
@@ -56,7 +57,9 @@ fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
                     state.onTextChange(it.text)
                 },
                 textStyle =
-                    state.textStyle.copy(color = state.textColor).fixCenterTextOnAllPlatforms(),
+                    state.textStyle
+                        .copy(color = state.textColor, textAlign = TextAlign.End)
+                        .fixCenterTextOnAllPlatforms(),
                 modifier = Modifier.width(IntrinsicSize.Min).focusRequester(focusRequester),
                 enabled = true,
                 singleLine = true,
