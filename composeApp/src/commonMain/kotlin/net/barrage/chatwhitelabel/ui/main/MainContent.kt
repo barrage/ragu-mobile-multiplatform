@@ -2,6 +2,7 @@ package net.barrage.chatwhitelabel.ui.main
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.runtime.Composable
@@ -65,7 +66,7 @@ fun MainContent(
                 appState = appState,
                 deepLink = deepLink,
                 profileVisible = profileVisible,
-                modifier = Modifier.weight(1f).padding(bottom = 20.dp),
+                modifier = Modifier.weight(1f).padding(bottom = 20.dp).navigationBarsPadding(),
                 changeProfileVisibility = onProfileVisibilityChange,
                 onLogoutSuccess = onLogoutSuccess,
             )
