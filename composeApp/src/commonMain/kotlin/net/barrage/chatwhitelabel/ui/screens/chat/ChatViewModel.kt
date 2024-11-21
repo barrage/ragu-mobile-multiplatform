@@ -248,9 +248,11 @@ class ChatViewModel(
     fun deleteChat() {
         viewModelScope.launch {
             if (!webSocketChatClient?.currentChatId?.value.isNullOrEmpty()) {
+                val tempChatScreenState = chatScreenState
+                chatScreenState = ChatScreenState.Loading
                 val response = deleteChatUseCase(webSocketChatClient?.currentChatId?.value!!)
                 if (response is Response.Success) {
-                    clearChat()
+                    clearChat(tempChatScreenState)
                 } else {
                     // Handle error
                 }
@@ -314,12 +316,13 @@ class ChatViewModel(
         }
     }
 
-    private fun clearChat() {
-        webSocketChatClient?.setChatId(null)
+    private fun clearChat(tempChatScreenState: ChatScreenState? = null) {
+        val stateToUse = tempChatScreenState ?: chatScreenState
+        chatScreenState = ChatScreenState.Loading
         updateChatScreenState { currentState ->
-            when (currentState) {
+            when (stateToUse) {
                 is ChatScreenState.Success ->
-                    currentState.copy(
+                    stateToUse.copy(
                         messages = persistentListOf(),
                         chatTitle = "New Chat",
                         isEditingTitle = false,
@@ -331,8 +334,8 @@ class ChatViewModel(
                 else -> currentState
             }
         }
+        webSocketChatClient?.setChatId(null)
         updateHistory()
-        shouldUpdateHistory = false
     }
 
     fun logout(onLogoutSuccess: () -> Unit) {
