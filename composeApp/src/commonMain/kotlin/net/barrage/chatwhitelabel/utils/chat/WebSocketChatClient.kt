@@ -5,7 +5,6 @@ package net.barrage.chatwhitelabel.utils.chat
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
-import io.ktor.client.plugins.websocket.WebSocketException
 import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
@@ -17,9 +16,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.io.IOException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -44,23 +40,22 @@ import net.barrage.chatwhitelabel.utils.wsClient
  *
  * @property receiveMessageCallback Callback for handling received messages and connection status
  * @property scope CoroutineScope for managing asynchronous operations
- * @property wsToken WebSocket authentication token
  * @property selectedAgent Currently selected chat agent
  */
 class WebSocketChatClient(
     private val receiveMessageCallback: ReceiveMessageCallback,
     private val scope: CoroutineScope,
-    private val wsToken: WebSocketToken,
     private val selectedAgent: MutableState<Agent?>,
 ) {
-    // Mutex for thread-safe access to shared resources
-    private val mutex = Mutex()
+    var wsToken: WebSocketToken? = null
+        set(value) {
+            field = value
+            if (connectionJob?.isActive == true) connectionJob?.cancel()
+            connectionJob = scope.launch { connectWithRetry() }
+        }
 
     // Current WebSocket session
-    private var session: WebSocketSession? = null
-
-    // Flag to prevent multiple simultaneous connection attempts
-    private var isConnecting = false
+    var session: WebSocketSession? = null
 
     // Job for managing the connection process
     private var connectionJob: Job? = null
@@ -78,11 +73,6 @@ class WebSocketChatClient(
             handleChatId = { currentChatId.value = it },
             handleChatOpen = { isChatOpen.value = it },
         )
-
-    init {
-        // Initiate the connection process when the client is created
-        connectionJob = scope.launch { connectWithRetry() }
-    }
 
     /**
      * Attempts to connect to the WebSocket server with a retry mechanism. Implements an exponential
@@ -108,19 +98,15 @@ class WebSocketChatClient(
      * attempt at a time.
      */
     private suspend fun connect() {
-        mutex.withLock {
-            if (isConnecting) return
-            isConnecting = true
-        }
         try {
-            val serverUri = "wss://${Constants.BASE_URL}/?token=${wsToken.value}"
+            val serverUri = "wss://${Constants.BASE_URL}/?token=${wsToken?.value}"
             wsClient.webSocket(serverUri) {
                 receiveMessageCallback.enableSending()
                 session = this
                 handleIncomingMessages(this)
             }
-        } finally {
-            mutex.withLock { isConnecting = false }
+        } catch (e: Exception) {
+            debugLogError("Connection failed", e)
         }
     }
 
@@ -129,28 +115,13 @@ class WebSocketChatClient(
      * connection status.
      */
     private suspend fun handleIncomingMessages(wsSession: DefaultClientWebSocketSession) {
-        try {
-            for (frame in wsSession.incoming) {
-                when (frame) {
-                    is Frame.Text -> messageHandler.handleTextFrame(frame)
-                    is Frame.Close -> debugLog("WebSocket Closed: ${frame.readReason()}")
-                    else -> debugLog("WebSocket Unsupported frame: ${frame::class.simpleName}")
-                }
+        for (frame in wsSession.incoming) {
+            when (frame) {
+                is Frame.Text -> messageHandler.handleTextFrame(frame)
+                is Frame.Close -> debugLog("WebSocket Closed: ${frame.readReason()}")
+                else -> debugLog("WebSocket Unsupported frame: ${frame::class.simpleName}")
             }
-        } catch (e: WebSocketException) {
-            debugLogError("WebSocket Error", e)
-        } catch (e: IOException) {
-            debugLogError("Network Error", e)
-        } finally {
-            debugLog("WebSocket Connection closed")
-            reconnect()
         }
-    }
-
-    /** Initiates a reconnection attempt when the WebSocket connection is closed. */
-    private fun reconnect() {
-        connectionJob?.cancel()
-        connectionJob = scope.launch { connectWithRetry() }
     }
 
     /**
@@ -181,10 +152,8 @@ class WebSocketChatClient(
 
     /** Ensures that a WebSocket connection is established before sending messages. */
     private suspend fun ensureConnected() {
-        mutex.withLock {
-            if (session == null || !session!!.isActive) {
-                connectWithRetry()
-            }
+        if (session == null || !session!!.isActive) {
+            connectWithRetry()
         }
     }
 
@@ -251,15 +220,11 @@ class WebSocketChatClient(
     /** Disconnects the WebSocket client and closes the current chat. */
     fun disconnect() {
         scope.launch {
-            closeChat()
             connectionJob?.cancel()
-            mutex.withLock {
-                session?.close()
-                session = null
-            }
-            currentChatId.value = null
-            debugLog("WebSocket Disconnected")
+            session?.close()
+            session = null
             isChatOpen.value = false
+            debugLog("WebSocket Disconnected")
         }
     }
 

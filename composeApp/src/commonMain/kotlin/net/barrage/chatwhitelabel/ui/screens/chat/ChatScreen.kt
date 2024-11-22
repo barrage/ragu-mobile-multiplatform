@@ -35,6 +35,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
 import net.barrage.chatwhitelabel.data.remote.dto.history.SenderType
 import net.barrage.chatwhitelabel.ui.components.chat.AgentContent
 import net.barrage.chatwhitelabel.ui.components.chat.ChatInput
@@ -53,6 +54,7 @@ fun ChatScreen(
     viewModel: ChatViewModel,
     isKeyboardOpen: Boolean,
     profileVisible: Boolean,
+    networkAvailable: Boolean,
     scope: CoroutineScope,
     onLogoutSuccess: () -> Unit,
     modifier: Modifier = Modifier,
@@ -79,6 +81,13 @@ fun ChatScreen(
                     )
                 else lazyListState.animateScrollToItem(chatScreenState.messages.size - 1)
             }
+        }
+    }
+    LaunchedEffect(networkAvailable, viewModel.webSocketChatClient?.session?.isActive) {
+        when {
+            !networkAvailable -> viewModel.webSocketChatClient?.disconnect()
+            viewModel.webSocketChatClient?.session?.isActive != true -> viewModel.updateWsToken()
+            else -> viewModel.updateWsToken()
         }
     }
 
