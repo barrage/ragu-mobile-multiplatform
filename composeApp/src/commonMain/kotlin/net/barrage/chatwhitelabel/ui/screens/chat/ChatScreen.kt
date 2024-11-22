@@ -135,7 +135,7 @@ fun ChatScreen(
                                     onTitleChange = { viewModel.setChatTitle(it) },
                                     onTitleChangeConfirmation = { viewModel.updateTitle() },
                                     onTitleChangeDismiss = {
-                                        viewModel.setEditingTitle(false)
+                                        viewModel.cancelTitleEdit()
                                         menuVisible = false
                                     },
                                 ),

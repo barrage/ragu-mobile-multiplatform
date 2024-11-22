@@ -82,6 +82,7 @@ class ChatViewModel(
         private set
 
     private var shouldUpdateHistory = true
+    private var tempChatTitle: String = ""
 
     fun loadAllData() {
         viewModelScope.launch {
@@ -229,7 +230,12 @@ class ChatViewModel(
     fun setEditingTitle(editing: Boolean) {
         updateChatScreenState { currentState ->
             when (currentState) {
-                is ChatScreenState.Success -> currentState.copy(isEditingTitle = editing)
+                is ChatScreenState.Success -> {
+                    if (editing) {
+                        tempChatTitle = currentState.chatTitle
+                    }
+                    currentState.copy(isEditingTitle = editing)
+                }
                 else -> currentState
             }
         }
@@ -249,11 +255,24 @@ class ChatViewModel(
                     )
                 if (response is Response.Success) {
                     setEditingTitle(false)
+                    tempChatTitle = "" // Clear temporary title after successful update
                 } else {
                     // Handle error
                 }
             }
         }
+    }
+
+    fun cancelTitleEdit() {
+        updateChatScreenState { currentState ->
+            when (currentState) {
+                is ChatScreenState.Success -> {
+                    currentState.copy(chatTitle = tempChatTitle, isEditingTitle = false)
+                }
+                else -> currentState
+            }
+        }
+        tempChatTitle = "" // Clear temporary title
     }
 
     fun deleteChat() {

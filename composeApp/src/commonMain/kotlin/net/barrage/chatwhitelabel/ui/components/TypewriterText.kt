@@ -67,7 +67,7 @@ fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
             )
         } else {
             Text(
-                text = textFieldValue.text,
+                text = state.text,
                 style = state.textStyle.copy(color = state.textColor).fixCenterTextOnAllPlatforms(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
