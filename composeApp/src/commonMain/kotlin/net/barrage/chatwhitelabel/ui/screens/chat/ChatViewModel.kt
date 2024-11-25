@@ -1,4 +1,4 @@
-@file:Suppress("TooManyFunctions", "LongParameterList")
+@file:Suppress("TooManyFunctions")
 
 package net.barrage.chatwhitelabel.ui.screens.chat
 
@@ -25,14 +25,8 @@ import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.model.Agent
 import net.barrage.chatwhitelabel.domain.model.ChatHistoryItem
 import net.barrage.chatwhitelabel.domain.model.ChatMessageItem
-import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.EvaluateMessageUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatByIdUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatHistoryUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatMessagesByIdUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.ChatUseCase
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryModalDrawerContentViewState
@@ -48,15 +42,9 @@ import net.barrage.chatwhitelabel.utils.debugLog
 
 class ChatViewModel(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
-    private val getChatHistoryUseCase: GetChatHistoryUseCase,
-    private val getChatMessagesByIdUseCase: GetChatMessagesByIdUseCase,
+    private val chatUseCase: ChatUseCase,
     private val currentUserUseCase: CurrentUserUseCase,
-    private val updateChatTitleUseCase: UpdateChatTitleUseCase,
-    private val deleteChatUseCase: DeleteChatUseCase,
-    private val getAgentsUseCase: GetAgentsUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val evaluateMessageUseCase: EvaluateMessageUseCase,
-    private val getChatByIdUseCase: GetChatByIdUseCase,
 ) : ViewModel() {
 
     var chatScreenState by mutableStateOf<ChatScreenState>(ChatScreenState.Idle)
@@ -92,7 +80,7 @@ class ChatViewModel(
             launch { updateHistory() }
             launch { updateCurrentUser() }
 
-            val agentsResponse = getAgentsUseCase()
+            val agentsResponse = chatUseCase.getAgents()
             if (agentsResponse is Response.Success) {
                 updateChatScreenState { currentState ->
                     when (currentState) {
@@ -236,6 +224,7 @@ class ChatViewModel(
                     }
                     currentState.copy(isEditingTitle = editing)
                 }
+
                 else -> currentState
             }
         }
@@ -249,7 +238,7 @@ class ChatViewModel(
                     !webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
             ) {
                 val response =
-                    updateChatTitleUseCase(
+                    chatUseCase.updateChatTitle(
                         webSocketChatClient?.currentChatId?.value!!,
                         currentState.chatTitle,
                     )
@@ -269,6 +258,7 @@ class ChatViewModel(
                 is ChatScreenState.Success -> {
                     currentState.copy(chatTitle = tempChatTitle, isEditingTitle = false)
                 }
+
                 else -> currentState
             }
         }
@@ -280,7 +270,7 @@ class ChatViewModel(
             if (!webSocketChatClient?.currentChatId?.value.isNullOrEmpty()) {
                 val tempChatScreenState = chatScreenState
                 chatScreenState = ChatScreenState.Loading
-                val response = deleteChatUseCase(webSocketChatClient?.currentChatId?.value!!)
+                val response = chatUseCase.deleteChat(webSocketChatClient?.currentChatId?.value!!)
                 if (response is Response.Success) {
                     clearChat(tempChatScreenState)
                 } else {
@@ -310,8 +300,8 @@ class ChatViewModel(
         viewModelScope.launch {
             val tempChatScreenState = chatScreenState
             chatScreenState = ChatScreenState.Loading
-            val chatMessagesResponse = getChatMessagesByIdUseCase.invoke(id)
-            val chatResponse = getChatByIdUseCase.invoke(id)
+            val chatMessagesResponse = chatUseCase.getChatMessagesById(id)
+            val chatResponse = chatUseCase.getChatById(id)
             if (chatMessagesResponse is Response.Success && chatResponse is Response.Success) {
                 webSocketChatClient?.setChatId(id)
                 updateHistory()
@@ -397,7 +387,7 @@ class ChatViewModel(
         if (shouldUpdateHistory) {
             viewModelScope.launch {
                 // historyViewState = historyViewState.copy(history = HistoryScreenStates.Loading)
-                when (val response = getChatHistoryUseCase.invoke(1, 50)) {
+                when (val response = chatUseCase.getChatHistory(1, 50)) {
                     is Response.Success -> {
                         val mappedElements =
                             mapElementsByTimePeriod(
@@ -470,7 +460,7 @@ class ChatViewModel(
     fun evaluateMessage(message: ChatMessageItem, evaluation: Boolean) {
         viewModelScope.launch {
             if (!message.chatId.isNullOrEmpty() && !message.id.isNullOrEmpty()) {
-                val result = evaluateMessageUseCase(message.chatId, message.id, evaluation)
+                val result = chatUseCase.evaluateMessage(message.chatId, message.id, evaluation)
                 debugLog("Evaluation result: $result")
             }
         }

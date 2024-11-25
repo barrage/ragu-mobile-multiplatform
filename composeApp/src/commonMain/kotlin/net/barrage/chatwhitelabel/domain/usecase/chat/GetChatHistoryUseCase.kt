@@ -5,7 +5,7 @@ import io.ktor.http.parameters
 import net.barrage.chatwhitelabel.domain.repository.HistoryRepository
 
 class GetChatHistoryUseCase(private val historyRepository: HistoryRepository) {
-    suspend fun invoke(
+    suspend operator fun invoke(
         page: Int,
         perPage: Int,
         sortBy: String = "updatedAt",
