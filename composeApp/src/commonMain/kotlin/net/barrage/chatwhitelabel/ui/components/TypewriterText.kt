@@ -25,19 +25,22 @@ import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
+    var displayText by remember { mutableStateOf("") }
     var textFieldValue by remember { mutableStateOf(TextFieldValue(text = "")) }
     val focusRequester = remember { FocusRequester() }
     var previousText by remember { mutableStateOf("") }
 
     LaunchedEffect(state.text) {
         if (state.text != previousText && !state.isEditing) {
-            textFieldValue = TextFieldValue("")
+            displayText = ""
             state.text.forEachIndexed { charIndex, _ ->
                 val partialText = state.text.substring(startIndex = 0, endIndex = charIndex + 1)
-                textFieldValue = TextFieldValue(text = partialText)
+                displayText = partialText
                 delay(80)
             }
             previousText = state.text
+        } else {
+            displayText = state.text
         }
     }
 
@@ -67,7 +70,7 @@ fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
             )
         } else {
             Text(
-                text = state.text,
+                text = displayText,
                 style = state.textStyle.copy(color = state.textColor).fixCenterTextOnAllPlatforms(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
