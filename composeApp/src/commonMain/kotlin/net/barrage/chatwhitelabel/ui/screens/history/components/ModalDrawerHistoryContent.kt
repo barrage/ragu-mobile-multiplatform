@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import net.barrage.chatwhitelabel.domain.model.HistoryElement
+import net.barrage.chatwhitelabel.domain.model.ChatHistoryItem
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryViewState
 import net.barrage.chatwhitelabel.ui.screens.history.components.history.ModalDrawerHistoryElement
@@ -22,7 +22,7 @@ import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 fun ModalDrawerHistoryContent(
     viewState: HistoryScreenStates<HistoryViewState>,
     modifier: Modifier = Modifier,
-    onElementClick: (HistoryElement) -> Unit,
+    onElementClick: (ChatHistoryItem) -> Unit,
 ) {
     Box(modifier = modifier) {
         when (viewState) {
@@ -61,7 +61,10 @@ fun ModalDrawerHistoryContent(
                                             text = timePeriod,
                                             style =
                                                 MaterialTheme.typography.labelMedium
-                                                    .fixCenterTextOnAllPlatforms(),
+                                                    .fixCenterTextOnAllPlatforms()
+                                                    .copy(
+                                                        color = MaterialTheme.colorScheme.outline
+                                                    ),
                                             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
                                         )
                                     }

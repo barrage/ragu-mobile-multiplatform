@@ -29,7 +29,13 @@ class MainActivity : ComponentActivity() {
                                 SystemBarStyle.dark(Color.TRANSPARENT)
                             } else {
                                 SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-                            }
+                            },
+                        navigationBarStyle =
+                            if (isDarkTheme) {
+                                SystemBarStyle.dark(Color.TRANSPARENT)
+                            } else {
+                                SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                            },
                     )
                 }
                 App(onThemeChange = { darkTheme -> isDarkTheme = darkTheme })

@@ -75,6 +75,7 @@ fun AppNavHost(
                             else Modifier
                         ),
                     changeProfileVisibility = changeProfileVisibility,
+                    networkAvailable = appState.networkAvailable.value,
                     onLogoutSuccess = {
                         appState.loginViewModel.clearViewModel()
                         appState.navController.navigateSingleTopTo(Login.route)

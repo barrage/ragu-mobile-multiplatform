@@ -23,7 +23,7 @@ import chatwhitelabel.composeapp.generated.resources.ic_brain
 import com.materialkolor.PaletteStyle
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
-import net.barrage.chatwhitelabel.domain.model.HistoryElement
+import net.barrage.chatwhitelabel.domain.model.ChatHistoryItem
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerContentTopBar
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerHistoryContent
@@ -44,14 +44,15 @@ fun ModalDrawer(
     changeDrawerVisibility: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ModalDrawerSheet(modifier = modifier.fillMaxWidth().padding(end = 75.dp)) {
+    ModalDrawerSheet(modifier = modifier) {
         Column {
             ModalDrawerContentTopBar(
                 viewState = viewModel.historyViewState,
                 currentTheme = currentTheme,
                 currentVariant = currentVariant,
                 isDarkMode = isDarkMode,
-                modifier = Modifier.padding(vertical = 16.dp),
+                onChangeDrawerVisibility = changeDrawerVisibility,
+                modifier = Modifier.padding(start = 10.dp, bottom = 16.dp, end = 20.dp),
                 onSelectThemeClick = onSelectThemeClick,
                 onSelectVariantClick = onSelectVariantClick,
                 onDarkLightModeClick = onDarkLightModeClick,
@@ -64,7 +65,7 @@ fun ModalDrawer(
                             viewModel.newChat()
                             changeDrawerVisibility()
                         }
-                        .padding(16.dp),
+                        .padding(24.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(painter = painterResource(Res.drawable.ic_brain), null)
@@ -79,8 +80,7 @@ fun ModalDrawer(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 viewState = viewModel.historyViewState.history,
                 onElementClick = {
-                    updateHistory(it, viewModel)
-                    viewModel.getHistoryChatById(id = it.id, title = it.title)
+                    viewModel.getChatById(id = it.id, title = it.title)
                     changeDrawerVisibility()
                 },
             )
@@ -94,7 +94,7 @@ fun ModalDrawer(
     }
 }
 
-fun updateHistory(selectedElement: HistoryElement, viewModel: ChatViewModel) {
+fun updateHistory(selectedElement: ChatHistoryItem, viewModel: ChatViewModel) {
     val updatedElements =
         viewModel.historyViewState.history.let { historyState ->
             when (historyState) {

@@ -11,8 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -24,11 +28,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
+import net.barrage.chatwhitelabel.data.remote.dto.history.SenderType
 import net.barrage.chatwhitelabel.ui.components.chat.AgentContent
 import net.barrage.chatwhitelabel.ui.components.chat.ChatInput
 import net.barrage.chatwhitelabel.ui.components.chat.ChatInputState
@@ -46,6 +53,7 @@ fun ChatScreen(
     viewModel: ChatViewModel,
     isKeyboardOpen: Boolean,
     profileVisible: Boolean,
+    networkAvailable: Boolean,
     scope: CoroutineScope,
     onLogoutSuccess: () -> Unit,
     modifier: Modifier = Modifier,
@@ -61,11 +69,23 @@ fun ChatScreen(
     val chatScreenState = viewModel.chatScreenState
     val density = LocalDensity.current
     var width by remember { mutableStateOf(0.dp) }
+    val clipboardManager = LocalClipboardManager.current
 
-    LaunchedEffect(isKeyboardOpen, chatScreenState) {
-        if (chatScreenState is ChatScreenState.Success && chatScreenState.messages.isNotEmpty()) {
-            lazyListState.animateScrollToItem(chatScreenState.messages.lastIndex)
-            lazyListState.animateScrollBy(lazyListState.layoutInfo.viewportEndOffset.toFloat())
+    if (chatScreenState is ChatScreenState.Success) {
+        LaunchedEffect(isKeyboardOpen, chatScreenState.messages) {
+            if (chatScreenState.messages.isNotEmpty()) {
+                if (isKeyboardOpen)
+                    lazyListState.animateScrollBy(
+                        lazyListState.layoutInfo.viewportEndOffset.toFloat()
+                    )
+                else lazyListState.animateScrollToItem(chatScreenState.messages.size - 1)
+            }
+        }
+    }
+    LaunchedEffect(networkAvailable) {
+        when {
+            !networkAvailable -> viewModel.webSocketChatClient?.disconnect()
+            else -> viewModel.webSocketChatClient?.reconnect()
         }
     }
 
@@ -112,6 +132,10 @@ fun ChatScreen(
                                     onDismiss = { menuVisible = false },
                                     onTitleChange = { viewModel.setChatTitle(it) },
                                     onTitleChangeConfirmation = { viewModel.updateTitle() },
+                                    onTitleChangeDismiss = {
+                                        viewModel.cancelTitleEdit()
+                                        menuVisible = false
+                                    },
                                 ),
                             maxWidth = width,
                             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -132,26 +156,53 @@ fun ChatScreen(
                         MessageList(
                             messages = chatScreenState.messages.toImmutableList(),
                             lazyListState = lazyListState,
+                            onCopy = {
+                                clipboardManager.setText(
+                                    buildAnnotatedString { append(it.content) }
+                                )
+                            },
+                            onPositiveEvaluation = { viewModel.evaluateMessage(it, true) },
+                            onNegativeEvaluation = { viewModel.evaluateMessage(it, false) },
                             modifier = Modifier.weight(1f),
                         )
                     }
-                    ChatInput(
-                        state =
-                            ChatInputState(
-                                inputText = chatScreenState.inputText,
-                                onInputTextChange = { viewModel.updateInputText(it) },
-                                onSendMessage = { viewModel.sendMessage() },
-                                onStopReceivingMessage = {
-                                    viewModel.webSocketChatClient?.stopMessageStream()
-                                },
-                                isEnabled =
-                                    chatScreenState.isSendEnabled &&
-                                        chatScreenState.agents.isNotEmpty(),
-                                isReceivingMessage = chatScreenState.isReceivingMessage,
-                                focusManager = focusManager,
-                                chatInteractionSource = chatInteractionSource,
-                            )
-                    )
+                    if (chatScreenState.isAgentActive) {
+                        ChatInput(
+                            state =
+                                ChatInputState(
+                                    inputText = chatScreenState.inputText,
+                                    onInputTextChange = { viewModel.updateInputText(it) },
+                                    onSendMessage = { viewModel.sendMessage() },
+                                    onStopReceivingMessage = {
+                                        viewModel.webSocketChatClient?.stopMessageStream()
+                                    },
+                                    isEnabled =
+                                        chatScreenState.isSendEnabled &&
+                                            chatScreenState.agents.isNotEmpty(),
+                                    isReceivingMessage = chatScreenState.isReceivingMessage,
+                                    focusManager = focusManager,
+                                    chatInteractionSource = chatInteractionSource,
+                                )
+                        )
+                    } else {
+                        Card(
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            colors =
+                                CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                                ),
+                            border = CardDefaults.outlinedCardBorder(enabled = true),
+                        ) {
+                            Box(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    "This agent is no longer active. " +
+                                        "Please select an active agent to begin a new conversation.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                        }
+                    }
                 }
 
                 is ChatScreenState.Loading -> {
@@ -217,7 +268,7 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
 
                 override fun receiveMessage(message: String) {
                     if (addNewMessage) {
-                        viewModel.addMessage(message)
+                        viewModel.addMessage(message, senderType = SenderType.ASSISTANT)
                     } else {
                         viewModel.updateLastMessage(message)
                     }
@@ -237,7 +288,6 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
 
                 override fun stopReceivingMessage() {
                     addNewMessage = true
-                    enableSending()
                     viewModel.setReceivingMessage(false)
                 }
 

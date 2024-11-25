@@ -17,9 +17,12 @@ import net.barrage.chatwhitelabel.domain.repository.WebSocketRepository
 import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LoginUseCase
 import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.ChatUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryByIdUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.EvaluateMessageUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatByIdUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatHistoryUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.GetChatMessagesByIdUseCase
 import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
@@ -37,12 +40,14 @@ val useCaseModule = module {
     single<LoginUseCase> { LoginUseCase(get()) }
     single<LogoutUseCase> { LogoutUseCase(get()) }
     single<CurrentUserUseCase> { CurrentUserUseCase(get()) }
-    single<HistoryUseCase> { HistoryUseCase(get()) }
-    single<HistoryByIdUseCase> { HistoryByIdUseCase(get()) }
+    single<GetChatHistoryUseCase> { GetChatHistoryUseCase(get()) }
+    single<GetChatMessagesByIdUseCase> { GetChatMessagesByIdUseCase(get()) }
     single<WebSocketTokenUseCase> { WebSocketTokenUseCase(get()) }
     single<UpdateChatTitleUseCase> { UpdateChatTitleUseCase(get()) }
     single<DeleteChatUseCase> { DeleteChatUseCase(get()) }
     single<GetAgentsUseCase> { GetAgentsUseCase(get()) }
+    single<EvaluateMessageUseCase> { EvaluateMessageUseCase(get()) }
+    single<GetChatByIdUseCase> { GetChatByIdUseCase(get()) }
 }
 
 // Module for mappers
@@ -58,6 +63,7 @@ val repositoryModule = module {
     single<WebSocketRepository> { WebSocketRepositoryImpl(get()) }
     single<ChatRepository> { ChatRepositoryImpl(get()) }
     single<AgentRepository> { AgentRepositoryImpl(get()) }
+    single<ChatUseCase> { ChatUseCase(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 // Module for app
@@ -68,7 +74,7 @@ val appModule = module {
 // Module for view models
 val viewModelModule = module {
     viewModel { LoginViewModel(get(), get(), get()) }
-    viewModel { ChatViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { ChatViewModel(get(), get(), get(), get()) }
 }
 
 // Combine all modules into a single module list for Koin initialization

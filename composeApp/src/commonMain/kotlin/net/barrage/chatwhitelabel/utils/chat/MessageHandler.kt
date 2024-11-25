@@ -34,7 +34,7 @@ class MessageHandler(
                 "chat_open" -> handleChatOpen(jsonMessage)
                 "chat_title" -> handleChatTitle(jsonMessage)
                 "chat_closed" -> handleChatClosed()
-                "finish_event" -> handleFinishEvent(jsonMessage)
+                "finish_event" -> handleFinishEvent()
                 "error" -> handleError(jsonMessage)
                 else -> debugLog("Unhandled message type: ${jsonMessage["type"]}")
             }
@@ -48,7 +48,6 @@ class MessageHandler(
         val chatId = jsonMessage["chatId"]?.toString()?.trim('"')
         debugLog("WebSocket Chat Opened: $chatId")
         handleChatId(chatId)
-        receiveMessageCallback.enableSending()
         handleChatOpen(true)
         sendFirstMessage()
     }
@@ -65,9 +64,10 @@ class MessageHandler(
         handleChatOpen(false)
     }
 
-    private fun handleFinishEvent(jsonMessage: JsonObject) {
-        val content = jsonMessage["content"]?.toString()?.trim('"')
-        content?.let { receiveMessageCallback.receiveMessage(it) }
+    private fun handleFinishEvent() {
+        /* val content = jsonMessage["content"]?.toString()?.trim('"')
+        content?.let { receiveMessageCallback.receiveMessage(it) } */
+
         receiveMessageCallback.stopReceivingMessage()
     }
 

@@ -1,4 +1,4 @@
-@file:Suppress("TooManyFunctions", "LongParameterList")
+@file:Suppress("TooManyFunctions")
 
 package net.barrage.chatwhitelabel.ui.screens.chat
 
@@ -17,20 +17,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
+import net.barrage.chatwhitelabel.data.remote.dto.history.SenderType
 import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.model.Agent
-import net.barrage.chatwhitelabel.domain.model.HistoryElement
-import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase
+import net.barrage.chatwhitelabel.domain.model.ChatHistoryItem
+import net.barrage.chatwhitelabel.domain.model.ChatMessageItem
 import net.barrage.chatwhitelabel.domain.usecase.auth.LogoutUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.DeleteChatUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryByIdUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.HistoryUseCase
-import net.barrage.chatwhitelabel.domain.usecase.chat.UpdateChatTitleUseCase
+import net.barrage.chatwhitelabel.domain.usecase.chat.ChatUseCase
 import net.barrage.chatwhitelabel.domain.usecase.user.CurrentUserUseCase
 import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryModalDrawerContentViewState
@@ -42,15 +38,12 @@ import net.barrage.chatwhitelabel.utils.PaletteVariants
 import net.barrage.chatwhitelabel.utils.ThemeColors
 import net.barrage.chatwhitelabel.utils.chat.WebSocketChatClient
 import net.barrage.chatwhitelabel.utils.coreComponent
+import net.barrage.chatwhitelabel.utils.debugLog
 
 class ChatViewModel(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
-    private val historyUseCase: HistoryUseCase,
-    private val historyByIdUseCase: HistoryByIdUseCase,
+    private val chatUseCase: ChatUseCase,
     private val currentUserUseCase: CurrentUserUseCase,
-    private val updateChatTitleUseCase: UpdateChatTitleUseCase,
-    private val deleteChatUseCase: DeleteChatUseCase,
-    private val getAgentsUseCase: GetAgentsUseCase,
     private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
 
@@ -76,6 +69,9 @@ class ChatViewModel(
         mutableStateOf<HistoryScreenStates<ProfileViewState>>(HistoryScreenStates.Idle)
         private set
 
+    private var shouldUpdateHistory = true
+    private var tempChatTitle: String = ""
+
     fun loadAllData() {
         viewModelScope.launch {
             chatScreenState = ChatScreenState.Loading
@@ -84,13 +80,16 @@ class ChatViewModel(
             launch { updateHistory() }
             launch { updateCurrentUser() }
 
-            val agentsResponse = getAgentsUseCase()
+            val agentsResponse = chatUseCase.getAgents()
             if (agentsResponse is Response.Success) {
                 updateChatScreenState { currentState ->
                     when (currentState) {
                         is ChatScreenState.Success -> {
                             selectedAgent.value = agentsResponse.data.firstOrNull()
-                            currentState.copy(agents = agentsResponse.data.toImmutableList())
+                            currentState.copy(
+                                agents = agentsResponse.data.toImmutableList(),
+                                isAgentActive = true,
+                            )
                         }
 
                         else -> {
@@ -98,6 +97,7 @@ class ChatViewModel(
                             ChatScreenState.Success(
                                 agents = agentsResponse.data.toImmutableList(),
                                 messages = persistentListOf(),
+                                isAgentActive = true,
                             )
                         }
                     }
@@ -117,13 +117,19 @@ class ChatViewModel(
         }
     }
 
-    fun addMessage(message: String) {
+    fun addMessage(messageContent: String, senderType: SenderType) {
+        when (senderType) {
+            SenderType.ASSISTANT -> setSendEnabled(true)
+            SenderType.USER -> setSendEnabled(false)
+        }
         updateChatScreenState { currentState ->
             when (currentState) {
-                is ChatScreenState.Success ->
+                is ChatScreenState.Success -> {
+                    val message = ChatMessageItem(content = messageContent, senderType = senderType)
                     currentState.copy(
                         messages = (currentState.messages + message).toImmutableList()
                     )
+                }
 
                 else -> currentState
             }
@@ -151,7 +157,7 @@ class ChatViewModel(
     fun sendMessage() {
         val currentState = chatScreenState
         if (currentState is ChatScreenState.Success && currentState.inputText.isNotEmpty()) {
-            addMessage(currentState.inputText)
+            addMessage(currentState.inputText, SenderType.USER)
             webSocketChatClient?.sendMessage(currentState.inputText)
             updateInputText("")
         }
@@ -159,18 +165,22 @@ class ChatViewModel(
 
     fun updateLastMessage(message: String) {
         updateChatScreenState { currentState ->
-            when (currentState) {
-                is ChatScreenState.Success -> {
-                    if (currentState.messages.isNotEmpty()) {
-                        val updatedMessages = currentState.messages.toMutableList()
-                        updatedMessages[updatedMessages.lastIndex] += message
-                        currentState.copy(messages = updatedMessages.toImmutableList())
-                    } else {
-                        currentState
-                    }
+            if (currentState is ChatScreenState.Success && currentState.messages.isNotEmpty()) {
+                val lastMessage = currentState.messages.last()
+                val updatedMessages = currentState.messages.toMutableList()
+
+                if (lastMessage.senderType == SenderType.ASSISTANT) {
+                    updatedMessages[updatedMessages.lastIndex] =
+                        lastMessage.copy(content = lastMessage.content + message)
+                } else {
+                    updatedMessages.add(
+                        ChatMessageItem(content = message, senderType = SenderType.ASSISTANT)
+                    )
                 }
 
-                else -> currentState
+                currentState.copy(messages = updatedMessages.toImmutableList())
+            } else {
+                currentState
             }
         }
     }
@@ -179,8 +189,10 @@ class ChatViewModel(
         scope.launch {
             val token = webSocketTokenUseCase()
             if (token is Response.Success) {
-                webSocketChatClient =
-                    WebSocketChatClient(callback, scope, token.data, selectedAgent)
+                if (webSocketChatClient == null) {
+                    webSocketChatClient =
+                        WebSocketChatClient(callback, scope, selectedAgent, webSocketTokenUseCase)
+                }
             }
         }
     }
@@ -197,7 +209,13 @@ class ChatViewModel(
     fun setEditingTitle(editing: Boolean) {
         updateChatScreenState { currentState ->
             when (currentState) {
-                is ChatScreenState.Success -> currentState.copy(isEditingTitle = editing)
+                is ChatScreenState.Success -> {
+                    if (editing) {
+                        tempChatTitle = currentState.chatTitle
+                    }
+                    currentState.copy(isEditingTitle = editing)
+                }
+
                 else -> currentState
             }
         }
@@ -211,12 +229,13 @@ class ChatViewModel(
                     !webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
             ) {
                 val response =
-                    updateChatTitleUseCase(
+                    chatUseCase.updateChatTitle(
                         webSocketChatClient?.currentChatId?.value!!,
                         currentState.chatTitle,
                     )
                 if (response is Response.Success) {
                     setEditingTitle(false)
+                    tempChatTitle = "" // Clear temporary title after successful update
                 } else {
                     // Handle error
                 }
@@ -224,12 +243,27 @@ class ChatViewModel(
         }
     }
 
+    fun cancelTitleEdit() {
+        updateChatScreenState { currentState ->
+            when (currentState) {
+                is ChatScreenState.Success -> {
+                    currentState.copy(chatTitle = tempChatTitle, isEditingTitle = false)
+                }
+
+                else -> currentState
+            }
+        }
+        tempChatTitle = "" // Clear temporary title
+    }
+
     fun deleteChat() {
         viewModelScope.launch {
             if (!webSocketChatClient?.currentChatId?.value.isNullOrEmpty()) {
-                val response = deleteChatUseCase(webSocketChatClient?.currentChatId?.value!!)
+                val tempChatScreenState = chatScreenState
+                chatScreenState = ChatScreenState.Loading
+                val response = chatUseCase.deleteChat(webSocketChatClient?.currentChatId?.value!!)
                 if (response is Response.Success) {
-                    clearChat()
+                    clearChat(tempChatScreenState)
                 } else {
                     // Handle error
                 }
@@ -253,24 +287,37 @@ class ChatViewModel(
         clearChat()
     }
 
-    fun getHistoryChatById(id: String, title: String) {
+    fun getChatById(id: String, title: String) {
         viewModelScope.launch {
-            val response = historyByIdUseCase.invoke(id)
-            if (response is Response.Success) {
+            val tempChatScreenState = chatScreenState
+            chatScreenState = ChatScreenState.Loading
+            val chatMessagesResponse = chatUseCase.getChatMessagesById(id)
+            val chatResponse = chatUseCase.getChatById(id)
+            if (chatMessagesResponse is Response.Success && chatResponse is Response.Success) {
                 webSocketChatClient?.setChatId(id)
-                updateChatScreenState { currentState ->
-                    when (currentState) {
+                updateHistory()
+                shouldUpdateHistory = false
+                updateChatScreenState {
+                    when (tempChatScreenState) {
                         is ChatScreenState.Success ->
-                            currentState.copy(
-                                messages = response.data.map { it.content }.toImmutableList(),
+                            tempChatScreenState.copy(
+                                messages = chatMessagesResponse.data.toImmutableList(),
                                 chatTitle = title,
+                                isEditingTitle = false,
+                                isReceivingMessage = false,
+                                inputText = "",
+                                isAgentActive = chatResponse.data.agent.active,
                             )
 
                         else ->
                             ChatScreenState.Success(
                                 agents = persistentListOf(),
-                                messages = response.data.map { it.content }.toImmutableList(),
+                                messages = chatMessagesResponse.data.toImmutableList(),
                                 chatTitle = title,
+                                isEditingTitle = false,
+                                isReceivingMessage = false,
+                                inputText = "",
+                                isAgentActive = true,
                             )
                     }
                 }
@@ -280,28 +327,32 @@ class ChatViewModel(
         }
     }
 
-    private fun clearChat() {
+    private fun clearChat(tempChatScreenState: ChatScreenState? = null) {
+        val stateToUse = tempChatScreenState ?: chatScreenState
+        chatScreenState = ChatScreenState.Loading
         updateChatScreenState { currentState ->
-            when (currentState) {
+            when (stateToUse) {
                 is ChatScreenState.Success ->
-                    currentState.copy(
+                    stateToUse.copy(
                         messages = persistentListOf(),
                         chatTitle = "New Chat",
                         isEditingTitle = false,
                         isReceivingMessage = false,
                         inputText = "",
+                        isAgentActive = true,
                     )
 
                 else -> currentState
             }
         }
+        webSocketChatClient?.setChatId(null)
+        updateHistory()
     }
 
     fun logout(onLogoutSuccess: () -> Unit) {
         viewModelScope.launch {
             val response = logoutUseCase()
             if (response is Response.Success) {
-                // Clear all relevant state
                 chatScreenState = ChatScreenState.Idle
                 webSocketChatClient?.disconnect()
                 webSocketChatClient = null
@@ -314,43 +365,44 @@ class ChatViewModel(
                 selectedAgent.value = null
                 currentUserViewState = HistoryScreenStates.Idle
 
-                // Clear preferences
                 coreComponent.appPreferences.clear()
 
                 onLogoutSuccess()
             } else {
                 // Handle logout failure
-                // You might want to show an error message to the user
             }
         }
     }
 
     fun updateHistory() {
-        viewModelScope.launch {
-            historyViewState =
-                when (val response = historyUseCase.invoke(1, 50)) {
+        if (shouldUpdateHistory) {
+            viewModelScope.launch {
+                // historyViewState = historyViewState.copy(history = HistoryScreenStates.Loading)
+                when (val response = chatUseCase.getChatHistory(1, 50)) {
                     is Response.Success -> {
-                        historyViewState.copy(
-                            history =
-                                HistoryScreenStates.Success(
-                                    HistoryViewState(
-                                        elements =
-                                            mapElementsByTimePeriod(
-                                                    response.data.elements,
-                                                    webSocketChatClient?.currentChatId?.value,
-                                                )
-                                                .toImmutableMap(),
-                                        itemsNum = response.data.itemsNum,
+                        val mappedElements =
+                            mapElementsByTimePeriod(
+                                response.data,
+                                webSocketChatClient?.currentChatId?.value,
+                            )
+                        historyViewState =
+                            historyViewState.copy(
+                                history =
+                                    HistoryScreenStates.Success(
+                                        HistoryViewState(elements = mappedElements)
                                     )
-                                )
-                        )
+                            )
                     }
 
                     is Response.Failure ->
-                        historyViewState.copy(history = HistoryScreenStates.Error)
+                        historyViewState =
+                            historyViewState.copy(history = HistoryScreenStates.Error)
 
-                    Response.Loading -> historyViewState.copy(history = HistoryScreenStates.Loading)
+                    Response.Loading -> {}
                 }
+            }
+        } else {
+            shouldUpdateHistory = true
         }
     }
 
@@ -370,37 +422,38 @@ class ChatViewModel(
     }
 
     private fun mapElementsByTimePeriod(
-        elements: List<HistoryElement>,
+        elements: List<ChatHistoryItem>,
         currentChatId: String?,
-    ): ImmutableMap<String?, ImmutableList<HistoryElement>> {
-        val now: Instant = Clock.System.now()
-        val today: LocalDate = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
-        val yesterday: LocalDate = today.minus(1, DateTimeUnit.DAY)
-        val last7days: LocalDate = today.minus(7, DateTimeUnit.DAY)
-        val last30days: LocalDate = today.minus(1, DateTimeUnit.MONTH)
-        val lastYear: LocalDate = today.minus(1, DateTimeUnit.YEAR)
+    ): ImmutableMap<String?, ImmutableList<ChatHistoryItem>> {
+        val now = Clock.System.now()
+        val today = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val timePeriods =
+            listOf(
+                HistoryTimePeriod.TODAY to today,
+                HistoryTimePeriod.YESTERDAY to today.minus(1, DateTimeUnit.DAY),
+                HistoryTimePeriod.LAST_7_DAYS to today.minus(7, DateTimeUnit.DAY),
+                HistoryTimePeriod.LAST_30_DAYS to today.minus(1, DateTimeUnit.MONTH),
+                HistoryTimePeriod.LAST_YEAR to today.minus(1, DateTimeUnit.YEAR),
+            )
 
-        val groupedElements =
-            elements
-                .map { it.copy(isSelected = it.id == currentChatId) }
-                .groupBy { element ->
-                    val currentElement =
-                        element.updatedAt.toLocalDateTime(TimeZone.currentSystemDefault()).date
-                    when {
-                        currentElement >= today -> HistoryTimePeriod.TODAY.label
-                        currentElement >= yesterday -> HistoryTimePeriod.YESTERDAY.label
-                        currentElement >= last7days -> HistoryTimePeriod.LAST_7_DAYS.label
-                        currentElement >= last30days -> HistoryTimePeriod.LAST_30_DAYS.label
-                        currentElement >= lastYear -> HistoryTimePeriod.LAST_YEAR.label
-                        else -> null
-                    }
-                }
-                .filterKeys { it != null }
-                .mapKeys { it.key }
+        return elements
+            .asSequence()
+            .map { it.copy(isSelected = it.id == currentChatId) }
+            .groupBy { element ->
+                val elementDate =
+                    element.updatedAt.toLocalDateTime(TimeZone.currentSystemDefault()).date
+                timePeriods.firstOrNull { (_, date) -> elementDate >= date }?.first?.label
+            }
+            .mapValues { (_, value) -> value.toImmutableList() }
+            .toImmutableMap()
+    }
 
-        val finalGroupedElements =
-            groupedElements.mapValues { entry -> entry.value.toImmutableList() }
-
-        return finalGroupedElements.toImmutableMap().toImmutableMap()
+    fun evaluateMessage(message: ChatMessageItem, evaluation: Boolean) {
+        viewModelScope.launch {
+            if (!message.chatId.isNullOrEmpty() && !message.id.isNullOrEmpty()) {
+                val result = chatUseCase.evaluateMessage(message.chatId, message.id, evaluation)
+                debugLog("Evaluation result: $result")
+            }
+        }
     }
 }

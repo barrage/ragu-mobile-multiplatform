@@ -2,6 +2,8 @@ package net.barrage.chatwhitelabel.ui.main
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.runtime.Composable
@@ -51,16 +53,22 @@ fun MainContent(
                     onProfileVisibilityChange()
                     scope.launch { drawerState.close() }
                 },
+                modifier = Modifier.fillMaxWidth(0.8f),
             )
         },
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            TopBar(modifier = Modifier.padding(top = 40.dp).padding(horizontal = 20.dp))
+            if (appState.currentScreen == Chat) {
+                TopBar(
+                    onMenuClick = { scope.launch { drawerState.open() } },
+                    modifier = Modifier.padding(top = 56.dp).padding(horizontal = 10.dp),
+                )
+            }
             AppNavHost(
                 appState = appState,
                 deepLink = deepLink,
                 profileVisible = profileVisible,
-                modifier = Modifier.weight(1f).padding(bottom = 20.dp),
+                modifier = Modifier.weight(1f).padding(bottom = 20.dp).navigationBarsPadding(),
                 changeProfileVisibility = onProfileVisibilityChange,
                 onLogoutSuccess = onLogoutSuccess,
             )

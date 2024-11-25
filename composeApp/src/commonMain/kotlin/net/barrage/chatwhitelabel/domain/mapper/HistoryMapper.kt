@@ -1,18 +1,16 @@
 package net.barrage.chatwhitelabel.domain.mapper
 
 import kotlinx.collections.immutable.toImmutableList
-import net.barrage.chatwhitelabel.data.remote.dto.history.HistoryChatMessagesItemDTO
-import net.barrage.chatwhitelabel.data.remote.dto.history.HistoryElementDTO
-import net.barrage.chatwhitelabel.data.remote.dto.history.HistoryResponseDTO
-import net.barrage.chatwhitelabel.domain.model.History
-import net.barrage.chatwhitelabel.domain.model.HistoryChatMessagesItem
-import net.barrage.chatwhitelabel.domain.model.HistoryElement
+import net.barrage.chatwhitelabel.data.remote.dto.history.ChatHistoryItemDTO
+import net.barrage.chatwhitelabel.data.remote.dto.history.ChatHistoryResponseDTO
+import net.barrage.chatwhitelabel.data.remote.dto.history.ChatMessageItemDTO
+import net.barrage.chatwhitelabel.domain.model.ChatHistoryItem
+import net.barrage.chatwhitelabel.domain.model.ChatMessageItem
 
-fun HistoryResponseDTO.toDomain() =
-    History(elements = items.map { it.toDomain() }.toImmutableList(), itemsNum = this.total)
+fun ChatHistoryResponseDTO.toDomain() = items.map { it.toDomain() }.toImmutableList()
 
-fun HistoryElementDTO.toDomain() =
-    HistoryElement(
+fun ChatHistoryItemDTO.toDomain() =
+    ChatHistoryItem(
         id = id,
         agentId = agentId,
         createdAt = createdAt,
@@ -21,8 +19,8 @@ fun HistoryElementDTO.toDomain() =
         userId = userId,
     )
 
-fun HistoryChatMessagesItemDTO.toDomain() =
-    HistoryChatMessagesItem(
+fun ChatMessageItemDTO.toDomain() =
+    ChatMessageItem(
         id = id,
         createdAt = createdAt,
         updatedAt = updatedAt,

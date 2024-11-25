@@ -10,4 +10,10 @@ class ChatRepositoryImpl(private val api: Api) : ChatRepository {
         api.updateChatTitle(chatId, title)
 
     override suspend fun deleteChat(chatId: String): Response<HttpResponse> = api.deleteChat(chatId)
+
+    override suspend fun evaluateMessage(
+        chatId: String,
+        messageId: String,
+        evaluation: Boolean,
+    ): Response<HttpResponse> = api.evaluateMessage(chatId, messageId, evaluation)
 }

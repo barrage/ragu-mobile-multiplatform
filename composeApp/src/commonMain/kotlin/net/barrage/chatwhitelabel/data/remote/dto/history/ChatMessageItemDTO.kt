@@ -1,9 +1,10 @@
 package net.barrage.chatwhitelabel.data.remote.dto.history
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class HistoryChatMessagesItemDTO(
+data class ChatMessageItemDTO(
     val chatId: String,
     val content: String,
     val createdAt: String,
@@ -11,6 +12,13 @@ data class HistoryChatMessagesItemDTO(
     val id: String,
     val responseTo: String? = null,
     val sender: String,
-    val senderType: String,
+    val senderType: SenderType,
     val updatedAt: String,
 )
+
+@Serializable
+enum class SenderType {
+    @SerialName("assistant") ASSISTANT,
+    @SerialName("user") USER,
+    // Add other roles as needed
+}

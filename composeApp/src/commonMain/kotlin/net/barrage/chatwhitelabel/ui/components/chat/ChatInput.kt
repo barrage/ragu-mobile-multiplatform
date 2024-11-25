@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.selection.LocalTextSelectionColors
-import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
@@ -26,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import net.barrage.chatwhitelabel.ui.theme.GlobalsPrimary
 import net.barrage.chatwhitelabel.ui.theme.customTypography
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -35,62 +32,58 @@ fun ChatInput(state: ChatInputState, modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp),
+        modifier = modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 8.dp),
     ) {
-        val customTextSelectionColors =
-            TextSelectionColors(
-                handleColor = GlobalsPrimary,
-                backgroundColor = GlobalsPrimary.copy(alpha = 0.4f),
-            )
-
-        CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
-            TextField(
-                value = state.inputText,
-                onValueChange = state.onInputTextChange,
-                textStyle = customTypography().textBase,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions =
-                    KeyboardActions(
-                        onDone = {
-                            state.onSendMessage()
-                            state.focusManager.clearFocus()
-                        }
-                    ),
-                modifier = Modifier.weight(1f),
-                interactionSource = state.chatInteractionSource,
-                shape = RoundedCornerShape(12.dp),
-                colors =
-                    TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                    ),
-                suffix = {
-                    CompositionLocalProvider(
-                        LocalMinimumInteractiveComponentEnforcement provides false
-                    ) {
-                        IconButton(
-                            onClick = {
-                                if (state.isReceivingMessage) {
-                                    state.onStopReceivingMessage()
-                                } else {
-                                    state.onSendMessage()
-                                }
-                                state.focusManager.clearFocus()
-                            },
-                            modifier = Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp),
-                            enabled = state.isEnabled,
-                        ) {
-                            Icon(
-                                if (state.isReceivingMessage) Icons.Filled.Close
-                                else Icons.AutoMirrored.Filled.Send,
-                                contentDescription = null,
-                            )
-                        }
+        TextField(
+            value = state.inputText,
+            onValueChange = state.onInputTextChange,
+            textStyle = customTypography().textBase,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions =
+                KeyboardActions(
+                    onDone = {
+                        state.onSendMessage()
+                        state.focusManager.clearFocus()
                     }
-                },
-                enabled = state.isEnabled,
-            )
-        }
+                ),
+            modifier = Modifier.weight(1f),
+            interactionSource = state.chatInteractionSource,
+            shape = RoundedCornerShape(12.dp),
+            colors =
+                TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    unfocusedContainerColor =
+                        TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.4f),
+                    disabledContainerColor =
+                        TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.2f),
+                ),
+            suffix = {
+                CompositionLocalProvider(
+                    LocalMinimumInteractiveComponentEnforcement provides false
+                ) {
+                    IconButton(
+                        onClick = {
+                            if (state.isReceivingMessage) {
+                                state.onStopReceivingMessage()
+                            } else {
+                                state.onSendMessage()
+                            }
+                            state.focusManager.clearFocus()
+                        },
+                        modifier = Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp),
+                        enabled = state.isEnabled,
+                    ) {
+                        Icon(
+                            if (state.isReceivingMessage) Icons.Filled.Close
+                            else Icons.AutoMirrored.Filled.Send,
+                            contentDescription = null,
+                        )
+                    }
+                }
+            },
+            enabled = state.isEnabled,
+        )
     }
 }

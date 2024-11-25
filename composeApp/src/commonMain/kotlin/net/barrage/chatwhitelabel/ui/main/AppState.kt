@@ -17,7 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import dev.tmapps.konnection.Konnection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import net.barrage.chatwhitelabel.navigation.Chat
+import net.barrage.chatwhitelabel.navigation.Empty
 import net.barrage.chatwhitelabel.navigation.FellowNavigation
 import net.barrage.chatwhitelabel.navigation.NavDestination
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
@@ -40,13 +40,13 @@ fun rememberAppState(): AppState {
     val coroutineScope = rememberCoroutineScope()
     val chatViewModel = koinViewModel<ChatViewModel>()
     val loginViewModel = koinViewModel<LoginViewModel>()
-    val networkAvailable = remember { mutableStateOf(true) }
+    val networkAvailable = remember { mutableStateOf(false) }
     val konnection = Konnection.instance
 
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
     val currentScreen =
-        FellowNavigation.screens.find { it.route == currentDestination?.route } ?: Chat
+        FellowNavigation.screens.find { it.route == currentDestination?.route } ?: Empty
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     LaunchedEffect(Unit) {
