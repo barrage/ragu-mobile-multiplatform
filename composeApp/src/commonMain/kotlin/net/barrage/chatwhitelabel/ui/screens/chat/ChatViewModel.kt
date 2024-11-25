@@ -190,18 +190,9 @@ class ChatViewModel(
             val token = webSocketTokenUseCase()
             if (token is Response.Success) {
                 if (webSocketChatClient == null) {
-                    webSocketChatClient = WebSocketChatClient(callback, scope, selectedAgent)
-                    webSocketChatClient?.wsToken = token.data
+                    webSocketChatClient =
+                        WebSocketChatClient(callback, scope, selectedAgent, webSocketTokenUseCase)
                 }
-            }
-        }
-    }
-
-    fun updateWsToken() {
-        viewModelScope.launch {
-            val token = webSocketTokenUseCase()
-            if (token is Response.Success) {
-                webSocketChatClient?.wsToken = token.data
             }
         }
     }

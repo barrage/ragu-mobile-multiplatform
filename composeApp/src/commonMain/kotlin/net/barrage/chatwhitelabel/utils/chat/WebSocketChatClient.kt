@@ -1,4 +1,4 @@
-@file:Suppress("TooManyFunctions", "TooGenericExceptionCaught")
+@file:Suppress("TooManyFunctions", "TooGenericExceptionCaught", "TooGenericExceptionThrown")
 
 package net.barrage.chatwhitelabel.utils.chat
 
@@ -6,6 +6,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.webSocket
+import io.ktor.utils.io.CancellationException
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
@@ -13,16 +14,18 @@ import io.ktor.websocket.readReason
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import net.barrage.chatwhitelabel.domain.Response
 import net.barrage.chatwhitelabel.domain.model.Agent
 import net.barrage.chatwhitelabel.domain.model.WebSocketToken
+import net.barrage.chatwhitelabel.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.chatwhitelabel.ui.screens.chat.ReceiveMessageCallback
 import net.barrage.chatwhitelabel.utils.Constants
 import net.barrage.chatwhitelabel.utils.debugLog
@@ -46,16 +49,16 @@ class WebSocketChatClient(
     private val receiveMessageCallback: ReceiveMessageCallback,
     private val scope: CoroutineScope,
     private val selectedAgent: MutableState<Agent?>,
+    private val webSocketTokenUseCase: WebSocketTokenUseCase,
 ) {
-    var wsToken: WebSocketToken? = null
-        set(value) {
-            field = value
-            if (connectionJob?.isActive == true) connectionJob?.cancel()
-            connectionJob = scope.launch { connectWithRetry() }
-        }
+    init {
+        scope.launch { reconnect() }
+    }
+
+    private var wsToken: WebSocketToken? = null
 
     // Current WebSocket session
-    var session: WebSocketSession? = null
+    private var session: WebSocketSession? = null
 
     // Job for managing the connection process
     private var connectionJob: Job? = null
@@ -74,6 +77,14 @@ class WebSocketChatClient(
             handleChatOpen = { isChatOpen.value = it },
         )
 
+    /** Public function to trigger reconnection from outside */
+    fun reconnect() {
+        scope.launch {
+            connectionJob?.cancel()
+            connectionJob = launch { connectWithRetry() }
+        }
+    }
+
     /**
      * Attempts to connect to the WebSocket server with a retry mechanism. Implements an exponential
      * backoff strategy for retries.
@@ -82,9 +93,13 @@ class WebSocketChatClient(
         var retryDelay = 1.seconds
         while (true) {
             try {
-                connect()
-                retryDelay = 1.seconds
-                break
+                if (getWsToken()) {
+                    connect()
+                    retryDelay = 1.seconds
+                    break
+                } else {
+                    throw Exception("Failed to obtain WebSocket token")
+                }
             } catch (e: Exception) {
                 debugLogError("Connection failed, retrying in $retryDelay", e)
                 delay(retryDelay)
@@ -93,10 +108,18 @@ class WebSocketChatClient(
         }
     }
 
-    /**
-     * Establishes a WebSocket connection to the server. Uses a mutex to ensure only one connection
-     * attempt at a time.
-     */
+    /** Fetches a new WebSocket token */
+    private suspend fun getWsToken(): Boolean {
+        val response = webSocketTokenUseCase()
+        return if (response is Response.Success) {
+            wsToken = response.data
+            true
+        } else {
+            false
+        }
+    }
+
+    /** Establishes a WebSocket connection to the server. */
     private suspend fun connect() {
         try {
             val serverUri = "wss://${Constants.BASE_URL}/?token=${wsToken?.value}"
@@ -107,6 +130,7 @@ class WebSocketChatClient(
             }
         } catch (e: Exception) {
             debugLogError("Connection failed", e)
+            throw e
         }
     }
 
@@ -115,12 +139,30 @@ class WebSocketChatClient(
      * connection status.
      */
     private suspend fun handleIncomingMessages(wsSession: DefaultClientWebSocketSession) {
-        for (frame in wsSession.incoming) {
-            when (frame) {
-                is Frame.Text -> messageHandler.handleTextFrame(frame)
-                is Frame.Close -> debugLog("WebSocket Closed: ${frame.readReason()}")
-                else -> debugLog("WebSocket Unsupported frame: ${frame::class.simpleName}")
+        try {
+            while (true) {
+                when (val frame = wsSession.incoming.receive()) {
+                    is Frame.Text -> messageHandler.handleTextFrame(frame)
+                    is Frame.Close -> {
+                        debugLog("WebSocket Closed: ${frame.readReason()}")
+                        break
+                    }
+
+                    else -> debugLog("WebSocket Unsupported frame: ${frame::class.simpleName}")
+                }
             }
+        } catch (e: ClosedReceiveChannelException) {
+            debugLog("WebSocket Closed: ${e.message}")
+            receiveMessageCallback.disableSending()
+            reconnect()
+        } catch (e: CancellationException) {
+            debugLog("WebSocket cancelled: ${e.message}")
+            receiveMessageCallback.disableSending()
+            reconnect()
+        } catch (e: Exception) {
+            debugLogError("Error handling incoming messages", e)
+            receiveMessageCallback.disableSending()
+            reconnect()
         }
     }
 
@@ -133,7 +175,6 @@ class WebSocketChatClient(
         debugLog("Chat is open: ${isChatOpen.value}")
         debugLog("Current Chat ID: ${currentChatId.value}")
         scope.launch {
-            ensureConnected()
             if (!isChatOpen.value) {
                 if (currentChatId.value != null) {
                     openExistingChat(currentChatId.value!!)
@@ -147,13 +188,6 @@ class WebSocketChatClient(
             } else {
                 sendChatMessage(message)
             }
-        }
-    }
-
-    /** Ensures that a WebSocket connection is established before sending messages. */
-    private suspend fun ensureConnected() {
-        if (session == null || !session!!.isActive) {
-            connectWithRetry()
         }
     }
 
@@ -211,10 +245,7 @@ class WebSocketChatClient(
     private fun sendJsonMessage(jsonObject: JsonObject) {
         val messageString = Json.encodeToString(jsonObject)
         debugLog("WebSocket Outgoing: $messageString")
-        scope.launch {
-            ensureConnected()
-            session?.send(Frame.Text(messageString))
-        }
+        scope.launch { session?.send(Frame.Text(messageString)) }
     }
 
     /** Disconnects the WebSocket client and closes the current chat. */
