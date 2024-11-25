@@ -27,6 +27,7 @@ import net.barrage.chatwhitelabel.utils.coreComponent
 
 @Composable
 fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = null) {
+    val appState = rememberAppState()
     var deepLink by remember { mutableStateOf<DeepLink?>(null) }
     DeepLinkListener { deepLink = it }
     var isDarkTheme by remember { mutableStateOf(true) }
@@ -48,8 +49,6 @@ fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = nul
             useDarkTheme = isDarkTheme,
             style = selectedVariant,
         ) {
-            val appState = rememberAppState()
-
             Surface(modifier = modifier) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     MainContent(
