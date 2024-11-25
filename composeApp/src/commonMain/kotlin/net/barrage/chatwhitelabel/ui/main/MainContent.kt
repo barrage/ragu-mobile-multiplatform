@@ -2,6 +2,7 @@ package net.barrage.chatwhitelabel.ui.main
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ModalNavigationDrawer
@@ -52,6 +53,7 @@ fun MainContent(
                     onProfileVisibilityChange()
                     scope.launch { drawerState.close() }
                 },
+                modifier = Modifier.fillMaxWidth(0.8f),
             )
         },
     ) {
