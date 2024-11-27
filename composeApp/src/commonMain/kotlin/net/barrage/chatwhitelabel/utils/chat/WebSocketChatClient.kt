@@ -203,9 +203,6 @@ class WebSocketChatClient(
     /** Opens a new chat. */
     private fun openNewChat() {
         debugLog("Opening new chat")
-        if (currentChatId.value != null) {
-            closeChat()
-        }
         val openChatMessage = buildJsonObject {
             put("type", "system")
             put(
@@ -225,9 +222,6 @@ class WebSocketChatClient(
     /** Opens an existing chat. */
     private fun openExistingChat(chatId: String) {
         debugLog("Opening existing chat: $chatId")
-        if (currentChatId.value != chatId) {
-            closeChat()
-        }
         val openChatMessage = buildJsonObject {
             put("type", "system")
             put(

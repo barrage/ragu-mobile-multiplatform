@@ -121,6 +121,7 @@ class ChatViewModel(
         when (senderType) {
             SenderType.ASSISTANT,
             SenderType.ERROR -> setSendEnabled(true)
+
             SenderType.USER -> setSendEnabled(false)
         }
         updateChatScreenState { currentState ->
@@ -277,11 +278,11 @@ class ChatViewModel(
     }
 
     fun newChat() {
-        if (webSocketChatClient?.isChatOpen?.value == true) {
-            webSocketChatClient?.closeChat()
-        } else {
-            clearChat()
+        val currentState = chatScreenState
+        if (currentState is ChatScreenState.Success && currentState.isReceivingMessage) {
+            webSocketChatClient?.stopMessageStream()
         }
+        clearChat()
     }
 
     fun onChatClosed() {
@@ -291,10 +292,17 @@ class ChatViewModel(
     fun getChatById(id: String, title: String) {
         viewModelScope.launch {
             val tempChatScreenState = chatScreenState
+            if (
+                tempChatScreenState is ChatScreenState.Success &&
+                    tempChatScreenState.isReceivingMessage
+            ) {
+                webSocketChatClient?.stopMessageStream()
+            }
             chatScreenState = ChatScreenState.Loading
             val chatMessagesResponse = chatUseCase.getChatMessagesById(id)
             val chatResponse = chatUseCase.getChatById(id)
             if (chatMessagesResponse is Response.Success && chatResponse is Response.Success) {
+
                 webSocketChatClient?.setChatId(id)
                 updateHistory()
                 shouldUpdateHistory = false
