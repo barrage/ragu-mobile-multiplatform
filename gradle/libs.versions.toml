@@ -1,31 +1,29 @@
 [versions]
 agp = "8.5.2"
-android-compileSdk = "34"
+android-compileSdk = "35"
 android-minSdk = "24"
-android-targetSdk = "34"
+android-targetSdk = "35"
 androidx-activityCompose = "1.9.3"
-coilCompose = "3.0.1"
-coilNetworkOkhttp = "3.0.1"
-compose-plugin = "1.7.0"
+compose-plugin = "1.7.1"
 datastorePreferencesCore = "1.1.1"
 konnection = "1.4.3"
 kotlin = "2.0.21"
 koin = "4.0.0"
 kotlinxCollectionsImmutable = "0.3.8"
 kotlinxDatetime = "0.6.1"
-compottie = "2.0.0-rc01"
-landscapistCoil = "2.4.1"
+compottie = "2.0.0-rc02"
+landscapistCoil = "2.4.4"
 materialKolor = "2.0.0"
 multiplatformSettingsDatastore = "1.2.0"
 napier = "2.7.1"
 navigationCompose = "2.8.0-alpha10"
-ktor = "3.0.0"
+ktor = "3.0.1"
 prekommit = "0.0.3"
 #Gradle
 gradlePlugins-crashlytics = "3.0.2"
 googleServices = "4.4.2"
 #Firebase Android
-firebaseAndroidBom = "33.5.1"
+firebaseAndroidBom = "33.6.0"
 #Gitlive
 firebaseGitLiveSdk = "2.1.0"
 rinku = "1.2.0"
@@ -39,8 +37,6 @@ kotlinSecureCrypto = "0.3.2"
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastorePreferencesCore" }
-coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 konnection = { module = "dev.tmapps:konnection", version.ref = "konnection" }
@@ -67,13 +63,13 @@ androidx-startup = { module = "androidx.startup:startup-runtime", version.ref = 
 #Firebase Android
 firebase-android-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseAndroidBom" }
 firebase-android-crashlytics-ktx = { module = "com.google.firebase:firebase-crashlytics-ktx" }
-firebase-android-common-ktx = { module = "com.google.firebase:firebase-common-ktx" }
-firebase-android-firestore = { module = "com.google.firebase:firebase-firestore-ktx" }
-firebase-android-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
+#firebase-android-common-ktx = { module = "com.google.firebase:firebase-common-ktx" }
+#firebase-android-firestore = { module = "com.google.firebase:firebase-firestore-ktx" }
+#firebase-android-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
 
 #Gitlive
 gitlive-firebase-kotlin-crashlytics = { module = "dev.gitlive:firebase-crashlytics", version.ref = "firebaseGitLiveSdk" }
-gitlive-firebase-kotlin-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseGitLiveSdk" }
+#gitlive-firebase-kotlin-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseGitLiveSdk" }
 rinku = { module = "dev.theolm:rinku", version.ref = "rinku" }
 rinku-compose-ext = { module = "dev.theolm:rinku-compose-ext", version.ref = "rinkuComposeExt" }
 
