@@ -296,8 +296,8 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                     // Set TTS language
                 }
 
-                override fun setChatTitle(title: String) {
-                    viewModel.setChatTitle(title)
+                override fun setChatTitle(title: String, chatId: String) {
+                    viewModel.setChatTitle(title, chatId)
                 }
 
                 override fun onError(error: String) {

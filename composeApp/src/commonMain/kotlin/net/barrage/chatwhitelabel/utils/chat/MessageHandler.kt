@@ -55,8 +55,9 @@ class MessageHandler(
 
     private fun handleChatTitle(jsonMessage: JsonObject) {
         val title = jsonMessage["title"]?.jsonPrimitive?.content
-        if (!title.isNullOrEmpty()) {
-            receiveMessageCallback.setChatTitle(title)
+        val chatId = jsonMessage["chatId"]?.jsonPrimitive?.content
+        if (!title.isNullOrEmpty() && !chatId.isNullOrEmpty()) {
+            receiveMessageCallback.setChatTitle(title, chatId)
         }
     }
 
