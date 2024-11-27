@@ -199,11 +199,13 @@ class ChatViewModel(
         }
     }
 
-    fun setChatTitle(title: String) {
-        updateChatScreenState { currentState ->
-            when (currentState) {
-                is ChatScreenState.Success -> currentState.copy(chatTitle = title)
-                else -> currentState
+    fun setChatTitle(title: String, chatId: String? = null) {
+        if (webSocketChatClient?.currentChatId?.value == chatId || chatId.isNullOrEmpty()) {
+            updateChatScreenState { currentState ->
+                when (currentState) {
+                    is ChatScreenState.Success -> currentState.copy(chatTitle = title)
+                    else -> currentState
+                }
             }
         }
     }
@@ -298,6 +300,7 @@ class ChatViewModel(
             ) {
                 webSocketChatClient?.stopMessageStream()
             }
+            webSocketChatClient?.isChatOpen?.value = false
             chatScreenState = ChatScreenState.Loading
             val chatMessagesResponse = chatUseCase.getChatMessagesById(id)
             val chatResponse = chatUseCase.getChatById(id)
@@ -355,6 +358,7 @@ class ChatViewModel(
             }
         }
         webSocketChatClient?.setChatId(null)
+        webSocketChatClient?.isChatOpen?.value = false
         updateHistory()
     }
 
