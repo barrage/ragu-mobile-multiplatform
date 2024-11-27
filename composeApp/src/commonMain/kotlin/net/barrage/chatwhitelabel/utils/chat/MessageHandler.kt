@@ -20,7 +20,7 @@ class MessageHandler(
     fun handleTextFrame(frame: Frame.Text) {
         val message = frame.readText()
         debugLog("WebSocket Incoming: $message")
-        if (message.isNotBlank()) {
+        if (message.isNotEmpty()) {
             handleServerMessage(message)
         } else {
             debugLog("WebSocket Received empty message")
@@ -36,6 +36,7 @@ class MessageHandler(
                 "chat_closed" -> handleChatClosed()
                 "finish_event" -> handleFinishEvent()
                 "error" -> handleError(jsonMessage)
+                "API" -> handleError(jsonMessage)
                 else -> debugLog("Unhandled message type: ${jsonMessage["type"]}")
             }
         } catch (e: SerializationException) {

@@ -9,7 +9,7 @@ interface ReceiveMessageCallback {
 
     fun stopReceivingMessage()
 
-    fun onError(errorMessage: String)
+    fun onError(error: String)
 
     fun setTtsLanguage(language: String)
 

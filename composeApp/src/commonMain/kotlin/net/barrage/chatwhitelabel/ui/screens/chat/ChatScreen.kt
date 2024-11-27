@@ -47,6 +47,7 @@ import net.barrage.chatwhitelabel.ui.screens.chat.ChatScreenState
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
 import net.barrage.chatwhitelabel.ui.screens.chat.ReceiveMessageCallback
 import net.barrage.chatwhitelabel.ui.screens.profile.ProfileCard
+import net.barrage.chatwhitelabel.utils.isDebug
 
 @Composable
 fun ChatScreen(
@@ -299,8 +300,10 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                     viewModel.setChatTitle(title)
                 }
 
-                override fun onError(errorMessage: String) {
-                    // Handle error
+                override fun onError(error: String) {
+                    val errorMessage = if (isDebug) error else "An error occurred"
+                    viewModel.addMessage(errorMessage, senderType = SenderType.ERROR)
+                    viewModel.setReceivingMessage(false)
                 }
 
                 override fun closeChat() {

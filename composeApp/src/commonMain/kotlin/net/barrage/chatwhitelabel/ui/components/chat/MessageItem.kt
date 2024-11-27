@@ -51,7 +51,8 @@ fun MessageItem(
                 Modifier.align(
                         when (chatMessage.senderType) {
                             SenderType.USER -> Alignment.CenterEnd
-                            SenderType.ASSISTANT -> Alignment.CenterStart
+                            SenderType.ASSISTANT,
+                            SenderType.ERROR -> Alignment.CenterStart
                         }
                     )
                     .widthIn(min = 0.dp, max = 300.dp)
@@ -61,7 +62,8 @@ fun MessageItem(
                 verticalAlignment = Alignment.Bottom,
             ) {
                 when (chatMessage.senderType) {
-                    SenderType.ASSISTANT -> SenderIcon(SenderType.ASSISTANT)
+                    SenderType.ASSISTANT,
+                    SenderType.ERROR -> SenderIcon(SenderType.ASSISTANT)
                     SenderType.USER -> Unit
                 }
 
@@ -76,7 +78,8 @@ fun MessageItem(
 
                 when (chatMessage.senderType) {
                     SenderType.USER -> SenderIcon(SenderType.USER)
-                    SenderType.ASSISTANT -> Unit
+                    SenderType.ASSISTANT,
+                    SenderType.ERROR -> Unit
                 }
             }
             if (chatMessage.senderType == SenderType.ASSISTANT) {
@@ -135,7 +138,8 @@ private fun SenderIcon(senderType: SenderType, modifier: Modifier = Modifier) {
     Card(shape = CircleShape, modifier = modifier) {
         Box(modifier = Modifier.padding(4.dp)) {
             when (senderType) {
-                SenderType.ASSISTANT ->
+                SenderType.ASSISTANT,
+                SenderType.ERROR ->
                     Icon(
                         painterResource(Res.drawable.ic_brain),
                         contentDescription = "Assistant profile",

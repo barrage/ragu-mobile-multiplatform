@@ -38,7 +38,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
-            export("dev.theolm:rinku:1.2.0")
+            export(libs.rinku)
         }
     }
 
