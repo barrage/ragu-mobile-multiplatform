@@ -302,7 +302,7 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
 
                 override fun onError(error: String) {
                     val errorMessage = if (isDebug) error else "An error occurred"
-                    viewModel.addMessage(errorMessage, senderType = SenderType.ASSISTANT)
+                    viewModel.addMessage(errorMessage, senderType = SenderType.ERROR)
                     viewModel.setReceivingMessage(false)
                 }
 
