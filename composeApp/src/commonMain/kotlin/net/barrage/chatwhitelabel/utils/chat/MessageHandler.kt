@@ -20,7 +20,7 @@ class MessageHandler(
     fun handleTextFrame(frame: Frame.Text) {
         val message = frame.readText()
         debugLog("WebSocket Incoming: $message")
-        if (message.isNotBlank()) {
+        if (message.isNotEmpty()) {
             handleServerMessage(message)
         } else {
             debugLog("WebSocket Received empty message")
