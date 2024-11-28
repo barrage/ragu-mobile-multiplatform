@@ -9,8 +9,6 @@
 
     - [Tech Stack](#tech-stack)
 
-    - [Features](#features)
-
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
 
@@ -49,9 +47,6 @@ using Compose Multiplatform and Kotlin Multiplatform.
 - [**Kotlinx DateTime**](https://github.com/Kotlin/kotlinx-datetime):
     - Manages date and time operations across platforms.
 
-- [**Kotlinx Coroutines**](https://github.com/Kotlin/kotlinx.coroutines):
-    - Handles asynchronous programming.
-
 - [**Napier**](https://github.com/AAkira/Napier):
     - Provides logging capabilities across platforms.
 
@@ -74,18 +69,6 @@ using Compose Multiplatform and Kotlin Multiplatform.
 - [**Multiplatform DataStore**](https://developer.android.com/kotlin/multiplatform/datastore):
     - A Kotlin Multiplatform library for data storage that works across Android, iOS, and desktop
       platforms.
-
----
-
-### Features
-
-- Real-time messaging using **Ktor WebSockets**
-
-- Cross-platform UI with **Compose Multiplatform**
-
-- Clean Architecture with MVVM
-
-- Dependency Injection using **Koin**
 
 ---
 
