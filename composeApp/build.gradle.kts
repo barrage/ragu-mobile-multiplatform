@@ -1,5 +1,4 @@
 import net.barrage.KtfmtStyle
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
@@ -42,10 +41,10 @@ kotlin {
         }
     }
 
-    jvm("desktop")
+    // jvm("desktop")
 
     sourceSets {
-        val desktopMain by getting
+        // val desktopMain by getting
 
         androidMain.dependencies {
             implementation(compose.preview)
@@ -93,13 +92,15 @@ kotlin {
             implementation(project.dependencies.platform(libs.kotlin.crypto.hash.bom))
             implementation(libs.kotlin.crypto.hash.sha2)
             implementation(libs.kotlin.crypto.secure.random)
+            implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.27.0")
+            implementation("com.mikepenz:multiplatform-markdown-renderer-code:0.27.0")
         }
 
-        desktopMain.dependencies {
+        /*desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.cio)
-        }
+        }*/
         getByName("commonMain") {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
@@ -173,7 +174,7 @@ dependencies {
     debugImplementation(compose.uiTooling)
 }
 
-compose.desktop {
+/*compose.desktop {
     application {
         mainClass = "net.barrage.chatwhitelabel.MainKt"
 
@@ -183,4 +184,4 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
-}
+}*/

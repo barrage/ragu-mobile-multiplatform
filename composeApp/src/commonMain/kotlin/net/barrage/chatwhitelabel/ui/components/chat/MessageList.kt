@@ -2,7 +2,9 @@ package net.barrage.chatwhitelabel.ui.components.chat
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -36,5 +38,6 @@ fun MessageList(
                 modifier = Modifier,
             )
         }
+        item { Spacer(modifier = Modifier.height(1.dp)) }
     }
 }

@@ -1,7 +1,6 @@
 @file:Suppress("CyclomaticComplexMethod")
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
@@ -35,6 +34,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import net.barrage.chatwhitelabel.data.remote.dto.history.SenderType
 import net.barrage.chatwhitelabel.ui.components.chat.AgentContent
 import net.barrage.chatwhitelabel.ui.components.chat.ChatInput
@@ -73,13 +73,15 @@ fun ChatScreen(
     val clipboardManager = LocalClipboardManager.current
 
     if (chatScreenState is ChatScreenState.Success) {
-        LaunchedEffect(isKeyboardOpen, chatScreenState.messages) {
+        LaunchedEffect(chatScreenState.messages) {
             if (chatScreenState.messages.isNotEmpty()) {
-                if (isKeyboardOpen)
-                    lazyListState.animateScrollBy(
-                        lazyListState.layoutInfo.viewportEndOffset.toFloat()
-                    )
-                else lazyListState.animateScrollToItem(chatScreenState.messages.size - 1)
+                lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
+            }
+        }
+        LaunchedEffect(isKeyboardOpen) {
+            if (isKeyboardOpen) {
+                delay(100)
+                lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
             }
         }
     }
