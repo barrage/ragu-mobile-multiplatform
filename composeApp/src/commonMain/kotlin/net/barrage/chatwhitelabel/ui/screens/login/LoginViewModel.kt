@@ -2,6 +2,9 @@ package net.barrage.chatwhitelabel.ui.screens.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.code_verifier_null
+import chatwhitelabel.composeapp.generated.resources.unexpected_error
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,7 +35,7 @@ class LoginViewModel(
         val codeVerifier = tokenStorage.getCodeVerifier()
 
         if (codeVerifier == null) {
-            _loginState.value = LoginScreenState.Error("Code verifier is null")
+            _loginState.value = LoginScreenState.Error(messageRes = Res.string.code_verifier_null)
             debugLogError("Login failed: Code verifier is null")
             return
         }
@@ -49,13 +52,16 @@ class LoginViewModel(
                 is Response.Failure -> {
                     debugLogError("Login failed", result.e)
                     clearCodeVerifier()
-                    LoginScreenState.Error(result.e?.message ?: "Unknown error occurred")
+                    LoginScreenState.Error(
+                        message = result.e?.message,
+                        messageRes = Res.string.unexpected_error,
+                    )
                 }
 
                 else -> {
                     debugLogError("Unexpected login result")
                     clearCodeVerifier()
-                    LoginScreenState.Error("Unexpected error occurred")
+                    LoginScreenState.Error(messageRes = Res.string.unexpected_error)
                 }
             }
     }
@@ -67,12 +73,15 @@ class LoginViewModel(
                     is Response.Success -> LoginScreenState.Success
                     is Response.Failure -> {
                         debugLogError("Failed to get current user", result.e)
-                        LoginScreenState.Error(result.e?.message ?: "Unknown error occurred")
+                        LoginScreenState.Error(
+                            message = result.e?.message,
+                            messageRes = Res.string.unexpected_error,
+                        )
                     }
 
                     else -> {
                         debugLogError("Unexpected result when getting current user")
-                        LoginScreenState.Error("Unexpected error occurred")
+                        LoginScreenState.Error(messageRes = Res.string.unexpected_error)
                     }
                 }
         }

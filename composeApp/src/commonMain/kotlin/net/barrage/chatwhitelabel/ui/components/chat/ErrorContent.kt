@@ -12,14 +12,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.error_retry_button_text
+import chatwhitelabel.composeapp.generated.resources.error_title
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ErrorContent(errorMessage: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "An error occurred",
+                text = stringResource(Res.string.error_title),
                 style = MaterialTheme.typography.headlineSmall.fixCenterTextOnAllPlatforms(),
                 color = MaterialTheme.colorScheme.error,
             )
@@ -30,7 +34,7 @@ fun ErrorContent(errorMessage: String, onRetry: () -> Unit, modifier: Modifier =
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = onRetry) { Text("Retry") }
+            Button(onClick = onRetry) { Text(stringResource(Res.string.error_retry_button_text)) }
         }
     }
 }

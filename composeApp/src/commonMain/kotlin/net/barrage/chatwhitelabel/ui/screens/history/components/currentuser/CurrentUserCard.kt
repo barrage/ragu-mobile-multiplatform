@@ -23,9 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
+import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.error_loading_data
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileViewState
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CurrentUserCard(
@@ -38,7 +41,7 @@ fun CurrentUserCard(
             when (viewState) {
                 HistoryScreenStates.Error -> {
                     Text(
-                        text = "Error loading data.",
+                        text = stringResource(Res.string.error_loading_data),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
                         modifier = Modifier.padding(8.dp),
@@ -72,7 +75,7 @@ fun CurrentUserCard(
                                         .fixCenterTextOnAllPlatforms(),
                             )
                             Text(
-                                text = viewState.data.content["Email"]?.value ?: "",
+                                text = viewState.data.email,
                                 style =
                                     MaterialTheme.typography.bodySmall
                                         .fixCenterTextOnAllPlatforms(),

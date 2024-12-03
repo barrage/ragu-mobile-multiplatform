@@ -38,9 +38,12 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
+import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.variants
 import com.materialkolor.PaletteStyle
 import kotlinx.collections.immutable.ImmutableList
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -96,7 +99,7 @@ fun ThemePopup(
                         modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
                     ) {
                         Text(
-                            "Variants",
+                            stringResource(Res.string.variants),
                             modifier = Modifier,
                             style =
                                 MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),

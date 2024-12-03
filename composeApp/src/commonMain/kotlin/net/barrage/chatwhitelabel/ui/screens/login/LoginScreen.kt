@@ -29,7 +29,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.choose_a_login_method
+import chatwhitelabel.composeapp.generated.resources.continue_with_google
 import chatwhitelabel.composeapp.generated.resources.ic_google
+import chatwhitelabel.composeapp.generated.resources.login
+import chatwhitelabel.composeapp.generated.resources.login_error_retry_button_text
+import chatwhitelabel.composeapp.generated.resources.login_error_title
+import chatwhitelabel.composeapp.generated.resources.login_failed
 import dev.theolm.rinku.DeepLink
 import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.ui.components.AppIconCard
@@ -39,6 +45,7 @@ import net.barrage.chatwhitelabel.utils.DeepLinkParser
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 import net.barrage.chatwhitelabel.utils.isDebug
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -71,7 +78,7 @@ fun LoginScreen(
                     onGoogleLogin = {
                         scope.launch {
                             val codeVerifier = viewModel.generateCodeVerifier()
-                            codeVerifier.let { rememberedOnGoogleLogin(it) }
+                            rememberedOnGoogleLogin(codeVerifier)
                         }
                     }
                 )
@@ -90,11 +97,15 @@ fun LoginScreen(
                     ErrorDialog(
                         state =
                             ErrorDialogState(
-                                title = "Login Error",
+                                title = stringResource(Res.string.login_error_title),
                                 description =
-                                    "Failed to log in${
+                                    "${stringResource(Res.string.login_failed)}${
                                 if (isDebug)
-                                    ": ${(loginState as LoginScreenState.Error).message}"
+                                    ": ${
+                                        if ((loginState as LoginScreenState.Error).message != null) (loginState as LoginScreenState.Error).message else stringResource(
+                                            (loginState as LoginScreenState.Error).messageRes
+                                        )
+                                    }"
                                 else ""
                             }",
                                 onDismissRequest = {},
@@ -107,7 +118,9 @@ fun LoginScreen(
                                             }
                                         }
                                     ) {
-                                        Text("Retry")
+                                        Text(
+                                            stringResource(Res.string.login_error_retry_button_text)
+                                        )
                                     }
                                 },
                             ),
@@ -133,12 +146,12 @@ fun LoginContent(onGoogleLogin: () -> Unit, modifier: Modifier = Modifier) {
             AppIconCard()
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                "Login",
+                stringResource(Res.string.login),
                 style = MaterialTheme.typography.headlineMedium.fixCenterTextOnAllPlatforms(),
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                "Choose a login method",
+                stringResource(Res.string.choose_a_login_method),
                 style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -159,7 +172,7 @@ fun LoginContent(onGoogleLogin: () -> Unit, modifier: Modifier = Modifier) {
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        "Continue with Google",
+                        stringResource(Res.string.continue_with_google),
                         style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
                     )
                 }

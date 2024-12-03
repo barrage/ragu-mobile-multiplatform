@@ -25,9 +25,12 @@ import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.ic_check
 import chatwhitelabel.composeapp.generated.resources.ic_three_dots
+import chatwhitelabel.composeapp.generated.resources.popup_menu_delete_chat
+import chatwhitelabel.composeapp.generated.resources.popup_menu_edit_title
 import net.barrage.chatwhitelabel.ui.components.TypewriterText
 import net.barrage.chatwhitelabel.ui.components.TypewriterTextState
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -78,12 +81,12 @@ fun ChatTitle(state: ChatTitleState, maxWidth: Dp, modifier: Modifier = Modifier
                             listOf(
                                 PopupMenuItemState(
                                     Icons.Filled.Edit,
-                                    "Edit title",
+                                    stringResource(Res.string.popup_menu_edit_title),
                                     state.onEditTitleClick,
                                 ),
                                 PopupMenuItemState(
                                     Icons.Filled.Delete,
-                                    "Delete chat",
+                                    stringResource(Res.string.popup_menu_delete_chat),
                                     state.onDeleteChatClick,
                                 ),
                             ),

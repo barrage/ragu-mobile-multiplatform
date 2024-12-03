@@ -25,11 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.error_occurred
+import chatwhitelabel.composeapp.generated.resources.logout
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.profile.components.ProfileCardHeader
 import net.barrage.chatwhitelabel.ui.screens.profile.components.ProfileContent
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileViewState
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ProfileCard(
@@ -46,7 +50,7 @@ fun ProfileCard(
             when (viewState) {
                 HistoryScreenStates.Error -> {
                     Text(
-                        text = "Error loading data.",
+                        text = stringResource(Res.string.error_occurred),
                         style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(8.dp),
@@ -85,7 +89,7 @@ fun ProfileCard(
                             modifier = Modifier.padding(top = 16.dp).align(Alignment.End),
                         ) {
                             Text(
-                                text = "Logout",
+                                text = stringResource(Res.string.logout),
                                 style =
                                     MaterialTheme.typography.titleMedium
                                         .fixCenterTextOnAllPlatforms(),

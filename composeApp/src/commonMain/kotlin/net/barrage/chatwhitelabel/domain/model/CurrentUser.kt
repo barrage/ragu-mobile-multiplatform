@@ -1,10 +1,14 @@
 package net.barrage.chatwhitelabel.domain.model
 
 import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.created_at
+import chatwhitelabel.composeapp.generated.resources.email
 import chatwhitelabel.composeapp.generated.resources.ic_created_at
 import chatwhitelabel.composeapp.generated.resources.ic_email
 import chatwhitelabel.composeapp.generated.resources.ic_role
 import chatwhitelabel.composeapp.generated.resources.ic_updated_at
+import chatwhitelabel.composeapp.generated.resources.role
+import chatwhitelabel.composeapp.generated.resources.updated_at
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.datetime.Instant
 import net.barrage.chatwhitelabel.data.remote.dto.user.Role
@@ -28,27 +32,28 @@ data class CurrentUser(
         ProfileViewState(
             id = id,
             header = ProfileHeaderViewState(profileImage = "", name = fullName, active = active),
+            email = email,
             content =
                 persistentMapOf(
-                    "Email" to
+                    Res.string.email to
                         ProfileContentItem(
                             value = email,
                             iconId = Res.drawable.ic_email,
                             iconDescription = "email",
                         ),
-                    "Role" to
+                    Res.string.role to
                         ProfileContentItem(
                             value = role.name,
                             iconId = Res.drawable.ic_role,
                             iconDescription = "Role",
                         ),
-                    "Created At" to
+                    Res.string.created_at to
                         ProfileContentItem(
                             value = formatIsoDateToReadable(createdAt),
                             iconId = Res.drawable.ic_created_at,
                             iconDescription = "created At",
                         ),
-                    "Updated At" to
+                    Res.string.updated_at to
                         ProfileContentItem(
                             value = formatIsoDateToReadable(createdAt),
                             iconId = Res.drawable.ic_updated_at,

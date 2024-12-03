@@ -9,7 +9,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.no_agents_available
 import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AgentList(agents: ImmutableList<AgentItemState>, modifier: Modifier = Modifier) {
@@ -21,9 +24,7 @@ fun AgentList(agents: ImmutableList<AgentItemState>, modifier: Modifier = Modifi
         if (agents.isEmpty()) {
             item {
                 Text(
-                    "Currently, there are no available agents for conversation. " +
-                        "To start a chat, it is necessary to add or enable at least one agent. " +
-                        "Please contact your system administrator or check agent settings to continue.",
+                    stringResource(Res.string.no_agents_available),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }

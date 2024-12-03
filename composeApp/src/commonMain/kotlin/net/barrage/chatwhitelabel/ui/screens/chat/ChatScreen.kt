@@ -32,6 +32,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
+import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.agent_inactive_text
+import chatwhitelabel.composeapp.generated.resources.delete_chat_description
+import chatwhitelabel.composeapp.generated.resources.delete_chat_title
+import chatwhitelabel.composeapp.generated.resources.no
+import chatwhitelabel.composeapp.generated.resources.yes
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -47,7 +53,7 @@ import net.barrage.chatwhitelabel.ui.screens.chat.ChatScreenState
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
 import net.barrage.chatwhitelabel.ui.screens.chat.ReceiveMessageCallback
 import net.barrage.chatwhitelabel.ui.screens.profile.ProfileCard
-import net.barrage.chatwhitelabel.utils.isDebug
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ChatScreen(
@@ -79,7 +85,7 @@ fun ChatScreen(
             }
         }
         LaunchedEffect(isKeyboardOpen) {
-            if (isKeyboardOpen) {
+            if (isKeyboardOpen && chatScreenState.messages.isNotEmpty()) {
                 delay(100)
                 lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
             }
@@ -120,7 +126,10 @@ fun ChatScreen(
                         ChatTitle(
                             state =
                                 ChatTitleState(
-                                    title = chatScreenState.chatTitle,
+                                    title =
+                                        if (chatScreenState.chatTitle.isNullOrEmpty())
+                                            stringResource(chatScreenState.chatTitleRes)
+                                        else chatScreenState.chatTitle,
                                     isMenuVisible = menuVisible,
                                     isEditingTitle = chatScreenState.isEditingTitle,
                                     onThreeDotsClick = { menuVisible = true },
@@ -199,8 +208,7 @@ fun ChatScreen(
                         ) {
                             Box(modifier = Modifier.padding(16.dp)) {
                                 Text(
-                                    "This agent is no longer active. " +
-                                        "Please select an active agent to begin a new conversation.",
+                                    stringResource(Res.string.agent_inactive_text),
                                     style = MaterialTheme.typography.bodyMedium,
                                 )
                             }
@@ -216,7 +224,7 @@ fun ChatScreen(
 
                 is ChatScreenState.Error ->
                     ErrorContent(
-                        errorMessage = chatScreenState.message,
+                        errorMessage = stringResource(chatScreenState.message),
                         onRetry = { viewModel.loadAllData() },
                     )
 
@@ -244,8 +252,8 @@ fun ChatScreen(
     if (showDeleteConfirmation) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation = false },
-            title = { Text("Delete Chat") },
-            text = { Text("Are you sure you want to delete this chat?") },
+            title = { Text(stringResource(Res.string.delete_chat_title)) },
+            text = { Text(stringResource(Res.string.delete_chat_description)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -253,11 +261,13 @@ fun ChatScreen(
                         showDeleteConfirmation = false
                     }
                 ) {
-                    Text("Yes")
+                    Text(stringResource(Res.string.yes))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteConfirmation = false }) { Text("No") }
+                TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text(stringResource(Res.string.no))
+                }
             },
         )
     }
@@ -303,8 +313,7 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                 }
 
                 override fun onError(error: String) {
-                    val errorMessage = if (isDebug) error else "An error occurred"
-                    viewModel.addMessage(errorMessage, senderType = SenderType.ERROR)
+                    viewModel.addMessage(error, senderType = SenderType.ERROR)
                     viewModel.setReceivingMessage(false)
                 }
 

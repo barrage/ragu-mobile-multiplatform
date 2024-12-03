@@ -8,6 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.failed_to_load_agents
+import chatwhitelabel.composeapp.generated.resources.new_chat
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
@@ -39,6 +42,7 @@ import net.barrage.chatwhitelabel.utils.ThemeColors
 import net.barrage.chatwhitelabel.utils.chat.WebSocketChatClient
 import net.barrage.chatwhitelabel.utils.coreComponent
 import net.barrage.chatwhitelabel.utils.debugLog
+import org.jetbrains.compose.resources.StringResource
 
 class ChatViewModel(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
@@ -103,7 +107,7 @@ class ChatViewModel(
                     }
                 }
             } else {
-                chatScreenState = ChatScreenState.Error("Failed to load agents")
+                chatScreenState = ChatScreenState.Error(Res.string.failed_to_load_agents)
             }
         }
     }
@@ -214,7 +218,7 @@ class ChatViewModel(
         updateChatScreenState { currentState ->
             when (currentState) {
                 is ChatScreenState.Success -> {
-                    if (editing) {
+                    if (editing && currentState.chatTitle != null) {
                         tempChatTitle = currentState.chatTitle
                     }
                     currentState.copy(isEditingTitle = editing)
@@ -232,16 +236,18 @@ class ChatViewModel(
                 currentState is ChatScreenState.Success &&
                     !webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
             ) {
-                val response =
-                    chatUseCase.updateChatTitle(
-                        webSocketChatClient?.currentChatId?.value!!,
-                        currentState.chatTitle,
-                    )
-                if (response is Response.Success) {
-                    setEditingTitle(false)
-                    tempChatTitle = "" // Clear temporary title after successful update
-                } else {
-                    // Handle error
+                currentState.chatTitle?.let { chatTitle ->
+                    val response =
+                        chatUseCase.updateChatTitle(
+                            webSocketChatClient?.currentChatId?.value!!,
+                            chatTitle,
+                        )
+                    if (response is Response.Success) {
+                        setEditingTitle(false)
+                        tempChatTitle = "" // Clear temporary title after successful update
+                    } else {
+                        // Handle error
+                    }
                 }
             }
         }
@@ -347,7 +353,8 @@ class ChatViewModel(
                 is ChatScreenState.Success ->
                     stateToUse.copy(
                         messages = persistentListOf(),
-                        chatTitle = "New Chat",
+                        chatTitleRes = Res.string.new_chat,
+                        chatTitle = null,
                         isEditingTitle = false,
                         isReceivingMessage = false,
                         inputText = "",
@@ -437,7 +444,7 @@ class ChatViewModel(
     private fun mapElementsByTimePeriod(
         elements: List<ChatHistoryItem>,
         currentChatId: String?,
-    ): ImmutableMap<String?, ImmutableList<ChatHistoryItem>> {
+    ): ImmutableMap<StringResource?, ImmutableList<ChatHistoryItem>> {
         val now = Clock.System.now()
         val today = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
         val timePeriods =

@@ -24,10 +24,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.assistant_icon_content_description
+import chatwhitelabel.composeapp.generated.resources.copy_button_content_description
 import chatwhitelabel.composeapp.generated.resources.ic_brain
 import chatwhitelabel.composeapp.generated.resources.ic_copy
 import chatwhitelabel.composeapp.generated.resources.ic_thumb_down
 import chatwhitelabel.composeapp.generated.resources.ic_thumb_up
+import chatwhitelabel.composeapp.generated.resources.negative_evaluation_button_content_description
+import chatwhitelabel.composeapp.generated.resources.positive_evaluation_button_content_description
+import chatwhitelabel.composeapp.generated.resources.user_icon_content_description
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.highlightedCodeBlock
 import com.mikepenz.markdown.compose.elements.highlightedCodeFence
@@ -39,6 +44,7 @@ import net.barrage.chatwhitelabel.ui.theme.customTypography
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 import net.barrage.chatwhitelabel.utils.getScreenWidth
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -70,6 +76,7 @@ fun MessageItem(
                 when (chatMessage.senderType) {
                     SenderType.ASSISTANT,
                     SenderType.ERROR -> SenderIcon(SenderType.ASSISTANT)
+
                     SenderType.USER -> Unit
                 }
                 Card(shape = RoundedCornerShape(12.dp)) {
@@ -128,7 +135,8 @@ fun MessageItem(
                         ) {
                             Icon(
                                 painterResource(Res.drawable.ic_copy),
-                                contentDescription = "Copy message",
+                                contentDescription =
+                                    stringResource(Res.string.copy_button_content_description),
                                 modifier = Modifier.size(16.dp),
                             )
                         }
@@ -140,7 +148,10 @@ fun MessageItem(
                         ) {
                             Icon(
                                 painterResource(Res.drawable.ic_thumb_up),
-                                contentDescription = "Positive evaluation",
+                                contentDescription =
+                                    stringResource(
+                                        Res.string.positive_evaluation_button_content_description
+                                    ),
                                 modifier = Modifier.size(16.dp),
                             )
                         }
@@ -152,7 +163,10 @@ fun MessageItem(
                         ) {
                             Icon(
                                 painterResource(Res.drawable.ic_thumb_down),
-                                contentDescription = "Negative evaluation",
+                                contentDescription =
+                                    stringResource(
+                                        Res.string.negative_evaluation_button_content_description
+                                    ),
                                 modifier = Modifier.size(16.dp),
                             )
                         }
@@ -172,14 +186,16 @@ private fun SenderIcon(senderType: SenderType, modifier: Modifier = Modifier) {
                 SenderType.ERROR ->
                     Icon(
                         painterResource(Res.drawable.ic_brain),
-                        contentDescription = "Assistant profile",
+                        contentDescription =
+                            stringResource(Res.string.assistant_icon_content_description),
                         modifier = Modifier.size(18.dp),
                     )
 
                 SenderType.USER ->
                     Icon(
                         Icons.Filled.Person,
-                        contentDescription = "User profile",
+                        contentDescription =
+                            stringResource(Res.string.user_icon_content_description),
                         modifier = Modifier.size(18.dp),
                     )
             }

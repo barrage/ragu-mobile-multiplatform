@@ -1,9 +1,11 @@
 package net.barrage.chatwhitelabel.ui.screens.profile.viewstate
 
 import kotlinx.collections.immutable.ImmutableMap
+import org.jetbrains.compose.resources.StringResource
 
 data class ProfileViewState(
     val id: String,
     val header: ProfileHeaderViewState,
-    val content: ImmutableMap<String, ProfileContentItem>,
+    val email: String,
+    val content: ImmutableMap<StringResource, ProfileContentItem>,
 )
