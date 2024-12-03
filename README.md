@@ -69,6 +69,8 @@ using Compose Multiplatform and Kotlin Multiplatform.
 - [**Multiplatform DataStore**](https://developer.android.com/kotlin/multiplatform/datastore):
     - A Kotlin Multiplatform library for data storage that works across Android, iOS, and desktop
       platforms.
+- [**Markdown Renderer**](https://github.com/mikepenz/multiplatform-markdown-renderer):
+    - Markdown text rendering and syntax highlighting.
 
 ---
 
