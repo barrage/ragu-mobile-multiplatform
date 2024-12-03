@@ -92,8 +92,8 @@ kotlin {
             implementation(project.dependencies.platform(libs.kotlin.crypto.hash.bom))
             implementation(libs.kotlin.crypto.hash.sha2)
             implementation(libs.kotlin.crypto.secure.random)
-            implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.27.0")
-            implementation("com.mikepenz:multiplatform-markdown-renderer-code:0.27.0")
+            implementation(libs.multiplatform.markdown.renderer.m3)
+            implementation(libs.multiplatform.markdown.renderer.code)
         }
 
         /*desktopMain.dependencies {
