@@ -16,11 +16,13 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableMap
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileContentItem
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ProfileContent(
-    viewState: ImmutableMap<String, ProfileContentItem>,
+    viewState: ImmutableMap<StringResource, ProfileContentItem>,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.padding(vertical = 8.dp)) {
@@ -35,7 +37,7 @@ fun ProfileContent(
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    text = it.key + ":",
+                    text = stringResource(it.key) + ":",
                     style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,

@@ -1,16 +1,112 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-    - `commonMain` is for code that’s common for all targets.
-    - Other folders are for Kotlin code that will be compiled for only the platform indicated in the
-      folder name.
-      For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-      `iosMain` would be the right folder for such calls.
+---
+<!-- Table of Contents -->
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for
-  your project.
+# Table of Contents
 
-Learn more
-about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+- [About the Project](#about-the-project)
+    - [Screenshots](#screenshots)
+
+    - [Tech Stack](#tech-stack)
+
+- [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+
+- [Usage](#usage)
+
+---
+
+## About the Project
+
+**ChatWhitelabel**  is a Kotlin Multiplatform chat application demonstrating real-time messaging
+capabilities across Android, iOS, and Desktop platforms. It highlights the power of shared code
+using Compose Multiplatform and Kotlin Multiplatform.
+
+### Screenshots
+
+<div align="center"> 
+  <img src="https://placehold.co/600x400?text=App+Screenshot+Here" alt="ChatWhitelabel Screenshot" />
+</div>
+
+---
+
+### Tech Stack
+
+- [**Compose Multiplatform**](https://github.com/JetBrains/compose-multiplatform)
+    - Used for building the UI across all platforms.
+
+- [**Koin**](https://github.com/InsertKoinIO/koin):
+    - Handles dependency injection for services and view models across platforms.
+
+- [**Ktor**](https://ktor.io/):
+    - Manages network requests and WebSocket connections for real-time messaging.
+
+- [**Kotlinx Serialization**](https://github.com/Kotlin/kotlinx.serialization):
+    - Handles JSON serialization and deserialization.
+
+- [**Kotlinx DateTime**](https://github.com/Kotlin/kotlinx-datetime):
+    - Manages date and time operations across platforms.
+
+- [**Napier**](https://github.com/AAkira/Napier):
+    - Provides logging capabilities across platforms.
+
+- [**Landscapist Coil**](https://github.com/skydoves/landscapist):
+    - Handles image loading and caching.
+
+- [**Compottie**](https://github.com/alexzhirkevich/compottie):
+    - Used for loading and displaying vector animations.
+
+- [**Konnection**](https://github.com/TM-Apps/konnection):
+    - Manages internet connection status and network changes.
+
+- [**Firebase Kotlin SDK**](https://github.com/GitLiveApp/firebase-kotlin-sdk):
+    - Integrates Firebase services, including Crashlytics.
+
+- [**MaterialKolor**](https://github.com/jordond/MaterialKolor):
+    - Generates dynamic color palettes for Material 3 theming, enhancing the app's visual
+      customization capabilities.
+
+- [**Multiplatform DataStore**](https://developer.android.com/kotlin/multiplatform/datastore):
+    - A Kotlin Multiplatform library for data storage that works across Android, iOS, and desktop
+      platforms.
+- [**Markdown Renderer**](https://github.com/mikepenz/multiplatform-markdown-renderer):
+    - Markdown text rendering and syntax highlighting.
+
+---
+
+## Getting Started
+
+### Prerequisites
+**Check Your Development Environment**:
+   Follow the instructions provided in the official Kotlin documentation to set up your environment
+   for Kotlin Multiplatform
+   development: [Multiplatform Setup](https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-setup.html#check-your-environment).
+
+---
+
+### Run the app
+
+#### Android
+
+- Open the project in Android Studio.
+
+- Run the `composeApp` configuration.
+
+#### iOS
+
+- Open the project in Xcode.
+
+- Build and run.
+
+#### Desktop
+
+- Use the `desktopMain` Gradle configuration or run via your IDE.
+
+---
+
+## Usage
+
+This project serves as a starting point for building custom chat solutions. Modify the UI, integrate
+with your backend, or more.
+
+---

@@ -30,6 +30,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.active
+import chatwhitelabel.composeapp.generated.resources.inactive
 import net.barrage.chatwhitelabel.utils.StatusGreenBackground
 import net.barrage.chatwhitelabel.utils.StatusGreenBorder
 import net.barrage.chatwhitelabel.utils.StatusGreenIndicatorEnd
@@ -39,6 +42,7 @@ import net.barrage.chatwhitelabel.utils.StatusRedBorder
 import net.barrage.chatwhitelabel.utils.StatusRedIndicatorEnd
 import net.barrage.chatwhitelabel.utils.StatusRedIndicatorStart
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun StatusIndicator(active: Boolean, modifier: Modifier = Modifier) {
@@ -98,9 +102,9 @@ fun StatusIndicator(active: Boolean, modifier: Modifier = Modifier) {
             Text(
                 text =
                     if (active) {
-                        "Active"
+                        stringResource(Res.string.active)
                     } else {
-                        "Inactive"
+                        stringResource(Res.string.inactive)
                     },
                 color = Color(0xFF222222),
                 fontSize = 12.sp,

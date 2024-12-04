@@ -1,5 +1,4 @@
 import net.barrage.KtfmtStyle
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
@@ -42,10 +41,10 @@ kotlin {
         }
     }
 
-    jvm("desktop")
+    // jvm("desktop")
 
     sourceSets {
-        val desktopMain by getting
+        // val desktopMain by getting
 
         androidMain.dependencies {
             implementation(compose.preview)
@@ -93,13 +92,15 @@ kotlin {
             implementation(project.dependencies.platform(libs.kotlin.crypto.hash.bom))
             implementation(libs.kotlin.crypto.hash.sha2)
             implementation(libs.kotlin.crypto.secure.random)
+            implementation(libs.multiplatform.markdown.renderer.m3)
+            implementation(libs.multiplatform.markdown.renderer.code)
         }
 
-        desktopMain.dependencies {
+        /*desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.cio)
-        }
+        }*/
         getByName("commonMain") {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
@@ -117,7 +118,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.0.1"
     }
     packaging {
         resources {
@@ -173,14 +174,14 @@ dependencies {
     debugImplementation(compose.uiTooling)
 }
 
-compose.desktop {
+/*compose.desktop {
     application {
         mainClass = "net.barrage.chatwhitelabel.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "net.barrage.chatwhitelabel"
-            packageVersion = "1.0.0"
+            packageVersion = "0.0.1"
         }
     }
-}
+}*/

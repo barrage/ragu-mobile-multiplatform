@@ -9,11 +9,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import chatwhitelabel.composeapp.generated.resources.Res
+import chatwhitelabel.composeapp.generated.resources.agents_label
+import chatwhitelabel.composeapp.generated.resources.chat_header
+import chatwhitelabel.composeapp.generated.resources.chat_sub_header
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import net.barrage.chatwhitelabel.domain.model.Agent
 import net.barrage.chatwhitelabel.ui.components.AppIconCard
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AgentContent(
@@ -27,16 +32,19 @@ fun AgentContent(
         AppIconCard()
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            "LLM Chat",
+            stringResource(Res.string.chat_header),
             style = MaterialTheme.typography.headlineMedium.fixCenterTextOnAllPlatforms(),
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            "Choose an agent to start a chat with",
+            stringResource(Res.string.chat_sub_header),
             style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
         )
         Spacer(modifier = Modifier.height(12.dp))
-        Text("Agents:", style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms())
+        Text(
+            stringResource(Res.string.agents_label),
+            style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
+        )
         AgentList(
             agents =
                 agents

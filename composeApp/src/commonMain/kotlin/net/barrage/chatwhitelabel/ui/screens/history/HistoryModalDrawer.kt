@@ -20,16 +20,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.ic_brain
+import chatwhitelabel.composeapp.generated.resources.new_chat
 import com.materialkolor.PaletteStyle
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toImmutableMap
-import net.barrage.chatwhitelabel.domain.model.ChatHistoryItem
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerContentTopBar
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerHistoryContent
 import net.barrage.chatwhitelabel.ui.screens.history.components.currentuser.CurrentUserCard
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ModalDrawer(
@@ -71,7 +70,7 @@ fun ModalDrawer(
                 Icon(painter = painterResource(Res.drawable.ic_brain), null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    "New Chat",
+                    stringResource(Res.string.new_chat),
                     style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
                 )
             }
@@ -92,31 +91,6 @@ fun ModalDrawer(
             )
         }
     }
-}
-
-fun updateHistory(selectedElement: ChatHistoryItem, viewModel: ChatViewModel) {
-    val updatedElements =
-        viewModel.historyViewState.history.let { historyState ->
-            when (historyState) {
-                is HistoryScreenStates.Success -> {
-                    val updatedMap =
-                        historyState.data.elements
-                            .mapValues { (_, list) ->
-                                list
-                                    .map { element ->
-                                        element.copy(isSelected = element.id == selectedElement.id)
-                                    }
-                                    .toImmutableList()
-                            }
-                            .toImmutableMap()
-
-                    HistoryScreenStates.Success(historyState.data.copy(elements = updatedMap))
-                }
-
-                else -> historyState
-            }
-        }
-    viewModel.historyViewState = viewModel.historyViewState.copy(history = updatedElements)
 }
 
 @Composable
