@@ -47,5 +47,8 @@
     <string name="role">Uloga</string>
     <string name="created_at">Profil kreiran</string>
     <string name="updated_at">Profil ažuriran</string>
-    <string name="logout">Odjava</string>
+    <string name="sign_out">Odjava</string>
+    <string name="sign_out_title">Odjava</string>
+    <string name="sign_out_description">Jeste li sigurni da želite nastaviti s odjavom?</string>
+
 </resources>
