@@ -59,6 +59,14 @@ fun ChatInput(state: ChatInputState, modifier: Modifier = Modifier) {
                         TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.4f),
                     disabledContainerColor =
                         TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.2f),
+                    unfocusedPlaceholderColor =
+                        TextFieldDefaults.colors().unfocusedPlaceholderColor.copy(alpha = 0.6f),
+                    disabledPlaceholderColor =
+                        TextFieldDefaults.colors().disabledPlaceholderColor.copy(alpha = 0.2f),
+                    unfocusedSuffixColor =
+                        TextFieldDefaults.colors().unfocusedSuffixColor.copy(alpha = 0.6f),
+                    disabledSuffixColor =
+                        TextFieldDefaults.colors().disabledSuffixColor.copy(alpha = 0.2f),
                 ),
             suffix = {
                 CompositionLocalProvider(
