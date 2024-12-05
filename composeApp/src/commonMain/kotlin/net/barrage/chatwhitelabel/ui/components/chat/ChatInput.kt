@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -84,6 +85,7 @@ fun ChatInput(state: ChatInputState, modifier: Modifier = Modifier) {
                 }
             },
             enabled = state.isEnabled,
+            placeholder = { Text(text = "Send a message") },
         )
     }
 }
