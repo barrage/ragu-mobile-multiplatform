@@ -1,25 +1,7 @@
-
----
-<!-- Table of Contents -->
-
-# Table of Contents
-
-- [About the Project](#about-the-project)
-    - [Screenshots](#screenshots)
-
-    - [Tech Stack](#tech-stack)
-
-- [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-
-- [Usage](#usage)
-
----
-
 ## About the Project
 
 **ChatWhitelabel**  is a Kotlin Multiplatform chat application demonstrating real-time messaging
-capabilities across Android, iOS, and Desktop platforms. It highlights the power of shared code
+capabilities on Android and iOS platforms. It highlights the power of shared code
 using Compose Multiplatform and Kotlin Multiplatform.
 
 ### Screenshots
@@ -97,10 +79,6 @@ using Compose Multiplatform and Kotlin Multiplatform.
 - Open the project in Xcode.
 
 - Build and run.
-
-#### Desktop
-
-- Use the `desktopMain` Gradle configuration or run via your IDE.
 
 ---
 

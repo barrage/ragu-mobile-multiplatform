@@ -37,6 +37,8 @@ import chatwhitelabel.composeapp.generated.resources.agent_inactive_text
 import chatwhitelabel.composeapp.generated.resources.delete_chat_description
 import chatwhitelabel.composeapp.generated.resources.delete_chat_title
 import chatwhitelabel.composeapp.generated.resources.no
+import chatwhitelabel.composeapp.generated.resources.sign_out_description
+import chatwhitelabel.composeapp.generated.resources.sign_out_title
 import chatwhitelabel.composeapp.generated.resources.yes
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -72,6 +74,7 @@ fun ChatScreen(
     val chatInputFocused by chatInteractionSource.collectIsFocusedAsState()
     var menuVisible by remember { mutableStateOf(false) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var showLogoutConfirmation by remember { mutableStateOf(false) }
 
     val chatScreenState = viewModel.chatScreenState
     val density = LocalDensity.current
@@ -243,7 +246,7 @@ fun ChatScreen(
                     onCloseClick = changeProfileVisibility,
                     onLogoutClick = {
                         changeProfileVisibility()
-                        viewModel.logout(onLogoutSuccess)
+                        showLogoutConfirmation = true
                     },
                 )
             }
@@ -266,6 +269,28 @@ fun ChatScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text(stringResource(Res.string.no))
+                }
+            },
+        )
+    }
+    if (showLogoutConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showLogoutConfirmation = false },
+            title = { Text(stringResource(Res.string.sign_out_title)) },
+            text = { Text(stringResource(Res.string.sign_out_description)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.logout(onLogoutSuccess)
+                        showLogoutConfirmation = false
+                    }
+                ) {
+                    Text(stringResource(Res.string.yes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutConfirmation = false }) {
                     Text(stringResource(Res.string.no))
                 }
             },

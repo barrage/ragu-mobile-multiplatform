@@ -47,5 +47,7 @@
     <string name="role">Role</string>
     <string name="created_at">Created At</string>
     <string name="updated_at">Updated At</string>
-    <string name="logout">Logout</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_out_title">Sign Out</string>
+    <string name="sign_out_description">Are you sure you want to proceed with signing out?</string>
 </resources>

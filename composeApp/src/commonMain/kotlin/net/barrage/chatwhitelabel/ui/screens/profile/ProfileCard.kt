@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.error_occurred
-import chatwhitelabel.composeapp.generated.resources.logout
+import chatwhitelabel.composeapp.generated.resources.sign_out
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.profile.components.ProfileCardHeader
 import net.barrage.chatwhitelabel.ui.screens.profile.components.ProfileContent
@@ -89,7 +89,7 @@ fun ProfileCard(
                             modifier = Modifier.padding(top = 16.dp).align(Alignment.End),
                         ) {
                             Text(
-                                text = stringResource(Res.string.logout),
+                                text = stringResource(Res.string.sign_out),
                                 style =
                                     MaterialTheme.typography.titleMedium
                                         .fixCenterTextOnAllPlatforms(),

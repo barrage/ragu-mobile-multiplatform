@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -58,6 +59,14 @@ fun ChatInput(state: ChatInputState, modifier: Modifier = Modifier) {
                         TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.4f),
                     disabledContainerColor =
                         TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.2f),
+                    unfocusedPlaceholderColor =
+                        TextFieldDefaults.colors().unfocusedPlaceholderColor.copy(alpha = 0.6f),
+                    disabledPlaceholderColor =
+                        TextFieldDefaults.colors().disabledPlaceholderColor.copy(alpha = 0.2f),
+                    unfocusedSuffixColor =
+                        TextFieldDefaults.colors().unfocusedSuffixColor.copy(alpha = 0.6f),
+                    disabledSuffixColor =
+                        TextFieldDefaults.colors().disabledSuffixColor.copy(alpha = 0.2f),
                 ),
             suffix = {
                 CompositionLocalProvider(
@@ -84,6 +93,7 @@ fun ChatInput(state: ChatInputState, modifier: Modifier = Modifier) {
                 }
             },
             enabled = state.isEnabled,
+            placeholder = { Text(text = "Send a message") },
         )
     }
 }
