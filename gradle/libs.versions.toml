@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.2"
+agp = "8.7.3"
 android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "35"
@@ -15,20 +15,19 @@ compottie = "2.0.0-rc02"
 landscapistCoil = "2.4.4"
 materialKolor = "2.0.0"
 markdownRenderer = "0.27.0"
-multiplatformSettingsDatastore = "1.3.0"
 napier = "2.7.1"
-navigationCompose = "2.8.0-alpha10"
-ktor = "3.0.1"
+navigationCompose = "2.8.0-alpha11"
+ktor = "3.0.2"
 prekommit = "0.0.3"
 #Gradle
 gradlePlugins-crashlytics = "3.0.2"
 googleServices = "4.4.2"
 #Firebase Android
-firebaseAndroidBom = "33.6.0"
+firebaseAndroidBom = "33.7.0"
 #Gitlive
 firebaseGitLiveSdk = "2.1.0"
-rinku = "1.2.0"
-rinkuComposeExt = "1.2.0"
+rinku = "1.3.0"
+rinkuComposeExt = "1.3.0"
 kotlinx-coroutines = "1.9.0"
 androidx-startup = "1.2.0"
 #KotlinCrypto
@@ -49,7 +48,6 @@ landscapist-coil = { module = "com.github.skydoves:landscapist-coil3", version.r
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 multiplatform-markdown-renderer-code = { module = "com.mikepenz:multiplatform-markdown-renderer-code", version.ref = "markdownRenderer" }
 multiplatform-markdown-renderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdownRenderer" }
-multiplatform-settings-datastore = { module = "com.russhwolf:multiplatform-settings-datastore", version.ref = "multiplatformSettingsDatastore" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
