@@ -1,6 +1,5 @@
 package net.barrage.chatwhitelabel.ui.main
 
-import ChatScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -26,6 +25,7 @@ import net.barrage.chatwhitelabel.navigation.Empty
 import net.barrage.chatwhitelabel.navigation.FellowNavigation
 import net.barrage.chatwhitelabel.navigation.Login
 import net.barrage.chatwhitelabel.ui.components.keyboardAsState
+import net.barrage.chatwhitelabel.ui.screens.chat.ChatScreen
 import net.barrage.chatwhitelabel.ui.screens.login.LoginScreen
 import net.barrage.chatwhitelabel.utils.Constants
 import net.barrage.chatwhitelabel.utils.getAndroidVersion

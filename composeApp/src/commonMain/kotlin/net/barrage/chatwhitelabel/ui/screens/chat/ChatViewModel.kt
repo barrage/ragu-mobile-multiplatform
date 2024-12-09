@@ -1,11 +1,7 @@
-@file:Suppress("TooManyFunctions")
-
 package net.barrage.chatwhitelabel.ui.screens.chat
 
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import chatwhitelabel.composeapp.generated.resources.Res
@@ -17,6 +13,9 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -51,36 +50,40 @@ class ChatViewModel(
     private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
 
-    var chatScreenState by mutableStateOf<ChatScreenState>(ChatScreenState.Idle)
-        private set
+    private val _chatScreenState = MutableStateFlow<ChatScreenState>(ChatScreenState.Idle)
+    val chatScreenState: StateFlow<ChatScreenState> = _chatScreenState.asStateFlow()
 
     var webSocketChatClient: WebSocketChatClient? = null
         private set
 
-    var historyViewState by
-        mutableStateOf(
+    private val _historyViewState =
+        MutableStateFlow(
             HistoryModalDrawerContentViewState(
                 ThemeColors,
                 PaletteVariants,
                 HistoryScreenStates.Idle,
             )
         )
+    val historyViewState: StateFlow<HistoryModalDrawerContentViewState> =
+        _historyViewState.asStateFlow()
 
     var selectedAgent: MutableState<Agent?> = mutableStateOf(null)
         private set
 
-    var currentUserViewState by
-        mutableStateOf<HistoryScreenStates<ProfileViewState>>(HistoryScreenStates.Idle)
-        private set
+    private val _currentUserViewState =
+        MutableStateFlow<HistoryScreenStates<ProfileViewState>>(HistoryScreenStates.Idle)
+    val currentUserViewState: StateFlow<HistoryScreenStates<ProfileViewState>> =
+        _currentUserViewState.asStateFlow()
 
     private var shouldUpdateHistory = true
     private var tempChatTitle: String = ""
 
     fun loadAllData() {
         viewModelScope.launch {
-            chatScreenState = ChatScreenState.Loading
-            historyViewState = historyViewState.copy(history = HistoryScreenStates.Loading)
-            currentUserViewState = HistoryScreenStates.Loading
+            _chatScreenState.value = ChatScreenState.Loading
+            _historyViewState.value =
+                historyViewState.value.copy(history = HistoryScreenStates.Loading)
+            _currentUserViewState.value = HistoryScreenStates.Loading
             launch { updateHistory() }
             launch { updateCurrentUser() }
 
@@ -107,7 +110,7 @@ class ChatViewModel(
                     }
                 }
             } else {
-                chatScreenState = ChatScreenState.Error(Res.string.failed_to_load_agents)
+                _chatScreenState.value = ChatScreenState.Error(Res.string.failed_to_load_agents)
             }
         }
     }
@@ -161,7 +164,7 @@ class ChatViewModel(
     }
 
     fun sendMessage() {
-        val currentState = chatScreenState
+        val currentState = chatScreenState.value
         if (currentState is ChatScreenState.Success && currentState.inputText.isNotEmpty()) {
             addMessage(currentState.inputText, SenderType.USER)
             webSocketChatClient?.sendMessage(currentState.inputText)
@@ -231,7 +234,7 @@ class ChatViewModel(
 
     fun updateTitle() {
         viewModelScope.launch {
-            val currentState = chatScreenState
+            val currentState = chatScreenState.value
             if (
                 currentState is ChatScreenState.Success &&
                     !webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
@@ -269,8 +272,8 @@ class ChatViewModel(
     fun deleteChat() {
         viewModelScope.launch {
             if (!webSocketChatClient?.currentChatId?.value.isNullOrEmpty()) {
-                val tempChatScreenState = chatScreenState
-                chatScreenState = ChatScreenState.Loading
+                val tempChatScreenState = chatScreenState.value
+                _chatScreenState.value = ChatScreenState.Loading
                 val response = chatUseCase.deleteChat(webSocketChatClient?.currentChatId?.value!!)
                 if (response is Response.Success) {
                     clearChat(tempChatScreenState)
@@ -286,7 +289,7 @@ class ChatViewModel(
     }
 
     fun newChat() {
-        val currentState = chatScreenState
+        val currentState = chatScreenState.value
         if (currentState is ChatScreenState.Success && currentState.isReceivingMessage) {
             webSocketChatClient?.stopMessageStream()
         }
@@ -299,7 +302,7 @@ class ChatViewModel(
 
     fun getChatById(id: String, title: String) {
         viewModelScope.launch {
-            val tempChatScreenState = chatScreenState
+            val tempChatScreenState = chatScreenState.value
             if (
                 tempChatScreenState is ChatScreenState.Success &&
                     tempChatScreenState.isReceivingMessage
@@ -307,7 +310,7 @@ class ChatViewModel(
                 webSocketChatClient?.stopMessageStream()
             }
             webSocketChatClient?.isChatOpen?.value = false
-            chatScreenState = ChatScreenState.Loading
+            _chatScreenState.value = ChatScreenState.Loading
             val chatMessagesResponse = chatUseCase.getChatMessagesById(id)
             val chatResponse = chatUseCase.getChatById(id)
             if (chatMessagesResponse is Response.Success && chatResponse is Response.Success) {
@@ -347,7 +350,7 @@ class ChatViewModel(
 
     private fun clearChat(tempChatScreenState: ChatScreenState? = null) {
         val stateToUse = tempChatScreenState ?: chatScreenState
-        chatScreenState = ChatScreenState.Loading
+        _chatScreenState.value = ChatScreenState.Loading
         updateChatScreenState { currentState ->
             when (stateToUse) {
                 is ChatScreenState.Success ->
@@ -373,17 +376,17 @@ class ChatViewModel(
         viewModelScope.launch {
             val response = logoutUseCase()
             if (response is Response.Success) {
-                chatScreenState = ChatScreenState.Idle
+                _chatScreenState.value = ChatScreenState.Idle
                 webSocketChatClient?.disconnect()
                 webSocketChatClient = null
-                historyViewState =
+                _historyViewState.value =
                     HistoryModalDrawerContentViewState(
                         ThemeColors,
                         PaletteVariants,
                         HistoryScreenStates.Idle,
                     )
                 selectedAgent.value = null
-                currentUserViewState = HistoryScreenStates.Idle
+                _currentUserViewState.value = HistoryScreenStates.Idle
 
                 coreComponent.appPreferences.clear()
 
@@ -405,8 +408,8 @@ class ChatViewModel(
                                 response.data,
                                 webSocketChatClient?.currentChatId?.value,
                             )
-                        historyViewState =
-                            historyViewState.copy(
+                        _historyViewState.value =
+                            historyViewState.value.copy(
                                 history =
                                     HistoryScreenStates.Success(
                                         HistoryViewState(elements = mappedElements)
@@ -415,8 +418,8 @@ class ChatViewModel(
                     }
 
                     is Response.Failure ->
-                        historyViewState =
-                            historyViewState.copy(history = HistoryScreenStates.Error)
+                        _historyViewState.value =
+                            historyViewState.value.copy(history = HistoryScreenStates.Error)
 
                     Response.Loading -> {}
                 }
@@ -427,7 +430,7 @@ class ChatViewModel(
     }
 
     private suspend fun updateCurrentUser() {
-        currentUserViewState =
+        _currentUserViewState.value =
             when (val response = currentUserUseCase.invoke()) {
                 is Response.Success -> HistoryScreenStates.Success(response.data.toViewState())
 
@@ -438,7 +441,7 @@ class ChatViewModel(
     }
 
     private fun updateChatScreenState(update: (ChatScreenState) -> ChatScreenState) {
-        chatScreenState = update(chatScreenState)
+        _chatScreenState.value = update(chatScreenState.value)
     }
 
     private fun mapElementsByTimePeriod(

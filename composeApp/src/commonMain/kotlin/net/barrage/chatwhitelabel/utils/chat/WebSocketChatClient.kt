@@ -1,5 +1,3 @@
-@file:Suppress("TooManyFunctions", "TooGenericExceptionCaught", "TooGenericExceptionThrown")
-
 package net.barrage.chatwhitelabel.utils.chat
 
 import androidx.compose.runtime.MutableState

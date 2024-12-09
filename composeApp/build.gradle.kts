@@ -1,39 +1,21 @@
-import net.barrage.KtfmtStyle
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.prekommit)
     alias(libs.plugins.google.services)
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.kotlinSerialization)
 }
 
-preKommitConfig {
-    composeEnabled = true
-    ktfmtStyle = KtfmtStyle.KOTLIN_STYLE
-    injectHookTaskPath = "clean"
-}
-
 kotlin {
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
+    androidTarget { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
@@ -55,7 +37,6 @@ kotlin {
             implementation(libs.ktor.client.cio)
             api(libs.gitlive.firebase.kotlin.crashlytics)
             implementation(libs.androidx.startup)
-
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -88,7 +69,6 @@ kotlin {
             api(libs.rinku)
             implementation(libs.rinku.compose.ext)
             implementation(libs.androidx.datastore.preferences.core)
-            implementation(libs.multiplatform.settings.datastore)
             implementation(project.dependencies.platform(libs.kotlin.crypto.hash.bom))
             implementation(libs.kotlin.crypto.hash.sha2)
             implementation(libs.kotlin.crypto.secure.random)
@@ -101,11 +81,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.cio)
         }*/
-        getByName("commonMain") {
-            dependencies {
-                implementation(libs.kotlinx.coroutines.core)
-            }
-        }
+        getByName("commonMain") { dependencies { implementation(libs.kotlinx.coroutines.core) } }
     }
 }
 
@@ -120,11 +96,7 @@ android {
         versionCode = 2
         versionName = "0.0.2"
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+    packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
     signingConfigs {
         val keystorePropertiesFile = rootProject.file("keystore.properties")
         if (keystorePropertiesFile.exists()) {
@@ -137,8 +109,7 @@ android {
                 storePassword = keystoreProperties.getProperty("storePassword")
             }
         } else {
-            create("release") {
-            }
+            create("release") {}
         }
     }
     buildTypes {
@@ -147,7 +118,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             signingConfig = signingConfigs.getByName("release")
         }
@@ -157,7 +128,7 @@ android {
             isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -165,9 +136,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    buildFeatures {
-        buildConfig = true
-    }
+    buildFeatures { buildConfig = true }
 }
 
 dependencies {
@@ -175,13 +144,13 @@ dependencies {
 }
 
 /*compose.desktop {
-    application {
-        mainClass = "net.barrage.chatwhitelabel.MainKt"
+     application {
+         mainClass = "net.barrage.chatwhitelabel.MainKt"
 
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "net.barrage.chatwhitelabel"
-            packageVersion = "0.0.1"
-        }
-    }
-}*/
+         nativeDistributions {
+             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+             packageName = "net.barrage.chatwhitelabel"
+             packageVersion = "0.0.1"
+         }
+     }
+ }*/

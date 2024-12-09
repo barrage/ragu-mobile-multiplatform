@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package net.barrage.chatwhitelabel
 
 import androidx.compose.ui.window.ComposeUIViewController

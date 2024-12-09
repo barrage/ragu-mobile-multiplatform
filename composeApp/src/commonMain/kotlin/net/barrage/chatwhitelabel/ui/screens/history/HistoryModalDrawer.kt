@@ -14,6 +14,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,10 +45,11 @@ fun ModalDrawer(
     changeDrawerVisibility: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val historyViewState by viewModel.historyViewState.collectAsState()
     ModalDrawerSheet(modifier = modifier) {
         Column {
             ModalDrawerContentTopBar(
-                viewState = viewModel.historyViewState,
+                viewState = historyViewState,
                 currentTheme = currentTheme,
                 currentVariant = currentVariant,
                 isDarkMode = isDarkMode,
@@ -77,16 +80,17 @@ fun ModalDrawer(
             HistoryDivider()
             ModalDrawerHistoryContent(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
-                viewState = viewModel.historyViewState.history,
+                viewState = historyViewState.history,
                 onElementClick = {
                     viewModel.getChatById(id = it.id, title = it.title)
                     changeDrawerVisibility()
                 },
             )
             HistoryDivider()
+            val currentUserViewState by viewModel.currentUserViewState.collectAsState()
             CurrentUserCard(
                 modifier = Modifier.fillMaxWidth(),
-                viewState = viewModel.currentUserViewState,
+                viewState = currentUserViewState,
                 onUserClick = onUserClick,
             )
         }

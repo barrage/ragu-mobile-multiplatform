@@ -1,5 +1,3 @@
-@file:Suppress("DestructuringDeclarationWithTooManyEntries")
-
 package net.barrage.chatwhitelabel.ui.screens.profile.components
 
 import androidx.compose.animation.animateColor

@@ -25,7 +25,13 @@ class AuthRepositoryImpl(private val api: Api) : AuthRepository {
     }
 
     private fun extractCookie(response: HttpResponse): String? {
-        return response.headers.getAll("Set-Cookie")?.firstOrNull { it.startsWith("kappi=") }
+        return response.headers
+            .getAll("Set-Cookie")
+            ?.asSequence()
+            ?.flatMap { it.split(',') }
+            ?.flatMap { it.split(';') }
+            ?.map { it.trim() }
+            ?.firstOrNull { it.startsWith("kappi=") }
     }
 
     override suspend fun logout(): Response<HttpResponse> = api.logout()

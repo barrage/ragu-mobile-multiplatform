@@ -1,5 +1,3 @@
-@file:Suppress("TopLevelPropertyNaming")
-
 package net.barrage.chatwhitelabel.utils.preferences
 
 import androidx.datastore.core.DataMigration

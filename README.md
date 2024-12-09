@@ -10,6 +10,12 @@ using Compose Multiplatform and Kotlin Multiplatform.
   <img src="https://placehold.co/600x400?text=App+Screenshot+Here" alt="ChatWhitelabel Screenshot" />
 </div>
 
+## Features
+
+- Real-time messaging across Android and iOS platforms
+- Shared codebase using Kotlin Multiplatform
+- Modern UI with Compose Multiplatform
+
 ---
 
 ### Tech Stack
@@ -56,13 +62,55 @@ using Compose Multiplatform and Kotlin Multiplatform.
 
 ---
 
+## Project Structure and Architecture
+
+### Project Structure
+
+The project follows a typical Kotlin Multiplatform structure:
+
+- `composeApp/`: Contains the shared code and platform-specific implementations
+    - `src/commonMain/`: Shared Kotlin code for all platforms
+    - `src/androidMain/`: Android-specific code
+    - `src/iosMain/`: iOS-specific code
+- `iosApp/`: iOS application module
+- `gradle/`: Gradle configuration files
+- `build.gradle.kts`: Main Gradle build script
+
+### Architecture
+
+This project follows a Clean Architecture approach with MVVM (Model-View-ViewModel) for the
+presentation layer:
+
+1. **Presentation Layer** (`ui/` directory):
+    - Uses Compose Multiplatform for the UI
+    - ViewModels handle UI logic and state management
+
+2. **Domain Layer** (`domain/` directory):
+    - Contains business logic and use cases
+    - Defines repository interfaces
+
+3. **Data Layer** (`data/` directory):
+    - Implements repository interfaces
+    - Manages data sources (local storage, network)
+
+### Key Components
+
+- **Dependency Injection**: Koin is used for dependency injection across the app.
+- **Navigation**: Implemented using Compose Navigation.
+- **Networking**: Ktor handles API requests and WebSocket connections.
+- **State Management**: Kotlin Flows and StateFlow for reactive state management.
+- **Concurrency**: Coroutines and Flows for asynchronous operations.
+
+---
+
 ## Getting Started
 
 ### Prerequisites
+
 **Check Your Development Environment**:
-   Follow the instructions provided in the official Kotlin documentation to set up your environment
-   for Kotlin Multiplatform
-   development: [Multiplatform Setup](https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-setup.html#check-your-environment).
+Follow the instructions provided in the official Kotlin documentation to set up your environment
+for Kotlin Multiplatform
+development: [Multiplatform Setup](https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-setup.html#check-your-environment).
 
 ---
 
