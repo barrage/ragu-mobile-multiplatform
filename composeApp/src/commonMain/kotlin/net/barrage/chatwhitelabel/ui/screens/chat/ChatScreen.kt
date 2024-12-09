@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,24 +77,32 @@ fun ChatScreen(
     var showDeleteConfirmation by remember { mutableStateOf(false) }
     var showLogoutConfirmation by remember { mutableStateOf(false) }
 
-    val chatScreenState = viewModel.chatScreenState
+    val chatScreenState by viewModel.chatScreenState.collectAsState()
+    val profileViewState by viewModel.currentUserViewState.collectAsState()
     val density = LocalDensity.current
     var width by remember { mutableStateOf(0.dp) }
     val clipboardManager = LocalClipboardManager.current
 
-    if (chatScreenState is ChatScreenState.Success) {
-        LaunchedEffect(chatScreenState.messages) {
-            if (chatScreenState.messages.isNotEmpty()) {
-                lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
-            }
-        }
-        LaunchedEffect(isKeyboardOpen) {
-            if (isKeyboardOpen && chatScreenState.messages.isNotEmpty()) {
-                delay(100)
-                lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
-            }
+    LaunchedEffect(chatScreenState) {
+        if (
+            chatScreenState is ChatScreenState.Success &&
+                (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
+        ) {
+            lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
         }
     }
+
+    LaunchedEffect(isKeyboardOpen) {
+        if (
+            isKeyboardOpen &&
+                chatScreenState is ChatScreenState.Success &&
+                (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
+        ) {
+            delay(100)
+            lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
+        }
+    }
+
     LaunchedEffect(networkAvailable) {
         when {
             !networkAvailable -> viewModel.webSocketChatClient?.disconnect()
@@ -120,21 +129,21 @@ fun ChatScreen(
                     }
                     .imePadding()
         ) {
-            when (chatScreenState) {
+            when (val state = chatScreenState) {
                 is ChatScreenState.Success -> {
                     if (
-                        chatScreenState.messages.isNotEmpty() ||
+                        state.messages.isNotEmpty() ||
                             viewModel.webSocketChatClient?.currentChatId?.value != null
                     ) {
                         ChatTitle(
                             state =
                                 ChatTitleState(
                                     title =
-                                        if (chatScreenState.chatTitle.isNullOrEmpty())
-                                            stringResource(chatScreenState.chatTitleRes)
-                                        else chatScreenState.chatTitle,
+                                        if (state.chatTitle.isNullOrEmpty())
+                                            stringResource(state.chatTitleRes)
+                                        else state.chatTitle,
                                     isMenuVisible = menuVisible,
-                                    isEditingTitle = chatScreenState.isEditingTitle,
+                                    isEditingTitle = state.isEditingTitle,
                                     onThreeDotsClick = { menuVisible = true },
                                     onEditTitleClick = {
                                         viewModel.setEditingTitle(true)
@@ -158,18 +167,18 @@ fun ChatScreen(
                     }
 
                     if (
-                        chatScreenState.messages.isEmpty() &&
+                        state.messages.isEmpty() &&
                             viewModel.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
                     ) {
                         AgentContent(
-                            agents = chatScreenState.agents.toImmutableList(),
+                            agents = state.agents.toImmutableList(),
                             selectedAgent = viewModel.selectedAgent.value,
                             onAgentClick = { selectedAgent -> viewModel.setAgent(selectedAgent) },
                             modifier = Modifier.weight(1f),
                         )
                     } else {
                         MessageList(
-                            messages = chatScreenState.messages.toImmutableList(),
+                            messages = state.messages.toImmutableList(),
                             lazyListState = lazyListState,
                             onCopy = {
                                 clipboardManager.setText(
@@ -181,20 +190,18 @@ fun ChatScreen(
                             modifier = Modifier.weight(1f),
                         )
                     }
-                    if (chatScreenState.isAgentActive) {
+                    if (state.isAgentActive) {
                         ChatInput(
                             state =
                                 ChatInputState(
-                                    inputText = chatScreenState.inputText,
+                                    inputText = state.inputText,
                                     onInputTextChange = { viewModel.updateInputText(it) },
                                     onSendMessage = { viewModel.sendMessage() },
                                     onStopReceivingMessage = {
                                         viewModel.webSocketChatClient?.stopMessageStream()
                                     },
-                                    isEnabled =
-                                        chatScreenState.isSendEnabled &&
-                                            chatScreenState.agents.isNotEmpty(),
-                                    isReceivingMessage = chatScreenState.isReceivingMessage,
+                                    isEnabled = state.isSendEnabled && state.agents.isNotEmpty(),
+                                    isReceivingMessage = state.isReceivingMessage,
                                     focusManager = focusManager,
                                     chatInteractionSource = chatInteractionSource,
                                 )
@@ -227,7 +234,7 @@ fun ChatScreen(
 
                 is ChatScreenState.Error ->
                     ErrorContent(
-                        errorMessage = stringResource(chatScreenState.message),
+                        errorMessage = stringResource(state.message),
                         onRetry = { viewModel.loadAllData() },
                     )
 
@@ -238,10 +245,11 @@ fun ChatScreen(
                 }
             }
         }
+
         if (profileVisible) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 ProfileCard(
-                    viewState = viewModel.currentUserViewState,
+                    viewState = profileViewState,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
                     onCloseClick = changeProfileVisibility,
                     onLogoutClick = {
@@ -252,6 +260,7 @@ fun ChatScreen(
             }
         }
     }
+
     if (showDeleteConfirmation) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation = false },
@@ -274,6 +283,7 @@ fun ChatScreen(
             },
         )
     }
+
     if (showLogoutConfirmation) {
         AlertDialog(
             onDismissRequest = { showLogoutConfirmation = false },
