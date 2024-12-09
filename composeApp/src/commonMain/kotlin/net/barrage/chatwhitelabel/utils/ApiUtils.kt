@@ -1,5 +1,3 @@
-@file:Suppress("TooGenericExceptionCaught")
-
 package net.barrage.chatwhitelabel.utils
 
 import io.ktor.client.call.body

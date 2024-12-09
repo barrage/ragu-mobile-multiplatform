@@ -1,5 +1,3 @@
-@file:Suppress("LongParameterList")
-
 package net.barrage.chatwhitelabel.domain.usecase.chat
 
 import net.barrage.chatwhitelabel.domain.usecase.agents.GetAgentsUseCase

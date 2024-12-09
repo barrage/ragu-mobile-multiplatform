@@ -1,5 +1,3 @@
-@file:Suppress("TooManyFunctions")
-
 package net.barrage.chatwhitelabel.data.remote.ktor
 
 import io.ktor.client.HttpClient

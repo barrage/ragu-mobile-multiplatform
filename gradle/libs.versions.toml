@@ -18,7 +18,6 @@ markdownRenderer = "0.27.0"
 napier = "2.7.1"
 navigationCompose = "2.8.0-alpha11"
 ktor = "3.0.2"
-prekommit = "0.0.3"
 #Gradle
 gradlePlugins-crashlytics = "3.0.2"
 googleServices = "4.4.2"
@@ -86,6 +85,5 @@ jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-prekommit = { id = "net.barrage.prekommit", version.ref = "prekommit" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "gradlePlugins-crashlytics" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }

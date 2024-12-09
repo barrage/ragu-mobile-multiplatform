@@ -1,5 +1,3 @@
-@file:Suppress("CompositionLocalAllowlist")
-
 package net.barrage.chatwhitelabel.ui.theme
 
 import androidx.compose.runtime.Immutable

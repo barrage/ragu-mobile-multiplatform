@@ -1,5 +1,3 @@
-@file:Suppress("TooManyFunctions")
-
 package net.barrage.chatwhitelabel.ui.screens.chat
 
 import androidx.compose.runtime.MutableState

@@ -1,4 +1,4 @@
-@file:Suppress("CyclomaticComplexMethod")
+package net.barrage.chatwhitelabel.ui.screens.chat
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -52,9 +52,6 @@ import net.barrage.chatwhitelabel.ui.components.chat.ChatTitle
 import net.barrage.chatwhitelabel.ui.components.chat.ChatTitleState
 import net.barrage.chatwhitelabel.ui.components.chat.ErrorContent
 import net.barrage.chatwhitelabel.ui.components.chat.MessageList
-import net.barrage.chatwhitelabel.ui.screens.chat.ChatScreenState
-import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
-import net.barrage.chatwhitelabel.ui.screens.chat.ReceiveMessageCallback
 import net.barrage.chatwhitelabel.ui.screens.profile.ProfileCard
 import org.jetbrains.compose.resources.stringResource
 
@@ -102,7 +99,6 @@ fun ChatScreen(
             lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
         }
     }
-
     LaunchedEffect(networkAvailable) {
         when {
             !networkAvailable -> viewModel.webSocketChatClient?.disconnect()
@@ -260,7 +256,6 @@ fun ChatScreen(
             }
         }
     }
-
     if (showDeleteConfirmation) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation = false },
@@ -283,7 +278,6 @@ fun ChatScreen(
             },
         )
     }
-
     if (showLogoutConfirmation) {
         AlertDialog(
             onDismissRequest = { showLogoutConfirmation = false },

@@ -1,4 +1,5 @@
 rootProject.name = "ChatWhitelabel"
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -12,16 +13,6 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
-        val prop = java.util.Properties().apply {
-            load(java.io.FileInputStream(File(rootDir, "local.properties")))
-        }
-        maven {
-            credentials {
-                username = prop["nexusUsername"].toString()
-                password = prop["nexusPassword"].toString()
-            }
-            url = java.net.URI(prop["nexusUrl"].toString())
-        }
     }
 }
 
