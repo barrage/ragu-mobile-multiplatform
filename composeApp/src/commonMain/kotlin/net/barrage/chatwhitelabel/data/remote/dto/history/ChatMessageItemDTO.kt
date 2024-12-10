@@ -18,8 +18,13 @@ data class ChatMessageItemDTO(
 
 @Serializable
 enum class SenderType {
-    @SerialName("assistant") ASSISTANT,
-    @SerialName("user") USER,
-    @SerialName("error") ERROR,
+    @SerialName("assistant")
+    ASSISTANT,
+
+    @SerialName("user")
+    USER,
+
+    @SerialName("error")
+    ERROR,
     // Add other roles as needed
 }

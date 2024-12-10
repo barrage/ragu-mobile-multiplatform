@@ -41,33 +41,33 @@ fun ChatInput(state: ChatInputState, modifier: Modifier = Modifier) {
             textStyle = customTypography().textBase,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions =
-                KeyboardActions(
-                    onDone = {
-                        state.onSendMessage()
-                        state.focusManager.clearFocus()
-                    }
-                ),
+            KeyboardActions(
+                onDone = {
+                    state.onSendMessage()
+                    state.focusManager.clearFocus()
+                }
+            ),
             modifier = Modifier.weight(1f),
             interactionSource = state.chatInteractionSource,
             shape = RoundedCornerShape(12.dp),
             colors =
-                TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    unfocusedContainerColor =
-                        TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.4f),
-                    disabledContainerColor =
-                        TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.2f),
-                    unfocusedPlaceholderColor =
-                        TextFieldDefaults.colors().unfocusedPlaceholderColor.copy(alpha = 0.6f),
-                    disabledPlaceholderColor =
-                        TextFieldDefaults.colors().disabledPlaceholderColor.copy(alpha = 0.2f),
-                    unfocusedSuffixColor =
-                        TextFieldDefaults.colors().unfocusedSuffixColor.copy(alpha = 0.6f),
-                    disabledSuffixColor =
-                        TextFieldDefaults.colors().disabledSuffixColor.copy(alpha = 0.2f),
-                ),
+            TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                unfocusedContainerColor =
+                TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.4f),
+                disabledContainerColor =
+                TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.2f),
+                unfocusedPlaceholderColor =
+                TextFieldDefaults.colors().unfocusedPlaceholderColor.copy(alpha = 0.6f),
+                disabledPlaceholderColor =
+                TextFieldDefaults.colors().disabledPlaceholderColor.copy(alpha = 0.2f),
+                unfocusedSuffixColor =
+                TextFieldDefaults.colors().unfocusedSuffixColor.copy(alpha = 0.6f),
+                disabledSuffixColor =
+                TextFieldDefaults.colors().disabledSuffixColor.copy(alpha = 0.2f),
+            ),
             suffix = {
                 CompositionLocalProvider(
                     LocalMinimumInteractiveComponentEnforcement provides false

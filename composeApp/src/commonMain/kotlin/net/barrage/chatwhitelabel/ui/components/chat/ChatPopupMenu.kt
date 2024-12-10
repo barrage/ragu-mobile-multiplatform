@@ -28,18 +28,18 @@ fun ChatPopupMenu(state: ChatPopupMenuState, modifier: Modifier = Modifier) {
     Popup(
         onDismissRequest = state.onDismiss,
         popupPositionProvider =
-            object : PopupPositionProvider {
-                override fun calculatePosition(
-                    anchorBounds: IntRect,
-                    windowSize: IntSize,
-                    layoutDirection: LayoutDirection,
-                    popupContentSize: IntSize,
-                ): IntOffset {
-                    val x = anchorBounds.center.x - (popupContentSize.width / 2)
-                    val y = anchorBounds.bottom
-                    return IntOffset(x, y)
-                }
-            },
+        object : PopupPositionProvider {
+            override fun calculatePosition(
+                anchorBounds: IntRect,
+                windowSize: IntSize,
+                layoutDirection: LayoutDirection,
+                popupContentSize: IntSize,
+            ): IntOffset {
+                val x = anchorBounds.center.x - (popupContentSize.width / 2)
+                val y = anchorBounds.bottom
+                return IntOffset(x, y)
+            }
+        },
     ) {
         AnimatedVisibility(
             visible = state.visible,

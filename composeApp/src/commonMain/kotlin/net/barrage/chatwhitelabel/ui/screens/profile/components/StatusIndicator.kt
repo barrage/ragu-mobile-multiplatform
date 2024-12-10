@@ -31,14 +31,14 @@ import androidx.compose.ui.unit.sp
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.active
 import chatwhitelabel.composeapp.generated.resources.inactive
-import net.barrage.chatwhitelabel.utils.StatusGreenBackground
-import net.barrage.chatwhitelabel.utils.StatusGreenBorder
-import net.barrage.chatwhitelabel.utils.StatusGreenIndicatorEnd
-import net.barrage.chatwhitelabel.utils.StatusGreenIndicatorStart
-import net.barrage.chatwhitelabel.utils.StatusRedBackground
-import net.barrage.chatwhitelabel.utils.StatusRedBorder
-import net.barrage.chatwhitelabel.utils.StatusRedIndicatorEnd
-import net.barrage.chatwhitelabel.utils.StatusRedIndicatorStart
+import net.barrage.chatwhitelabel.ui.theme.StatusGreenBackground
+import net.barrage.chatwhitelabel.ui.theme.StatusGreenBorder
+import net.barrage.chatwhitelabel.ui.theme.StatusGreenIndicatorEnd
+import net.barrage.chatwhitelabel.ui.theme.StatusGreenIndicatorStart
+import net.barrage.chatwhitelabel.ui.theme.StatusRedBackground
+import net.barrage.chatwhitelabel.ui.theme.StatusRedBorder
+import net.barrage.chatwhitelabel.ui.theme.StatusRedIndicatorEnd
+import net.barrage.chatwhitelabel.ui.theme.StatusRedIndicatorStart
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.stringResource
 
@@ -62,23 +62,23 @@ fun StatusIndicator(active: Boolean, modifier: Modifier = Modifier) {
             )
         }
     val scale by
-        infiniteTransition.animateFloat(
-            initialValue = 1f,
-            targetValue = 1.25f,
-            animationSpec =
-                infiniteRepeatable(animation = tween(1000), repeatMode = RepeatMode.Reverse),
-        )
+    infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.25f,
+        animationSpec =
+        infiniteRepeatable(animation = tween(1000), repeatMode = RepeatMode.Reverse),
+    )
 
     val indicatorColor by
-        infiniteTransition.animateColor(
-            initialValue = start,
-            targetValue = end,
-            animationSpec =
-                infiniteRepeatable(
-                    animation = tween(durationMillis = 1000, easing = LinearEasing),
-                    repeatMode = RepeatMode.Reverse,
-                ),
-        )
+    infiniteTransition.animateColor(
+        initialValue = start,
+        targetValue = end,
+        animationSpec =
+        infiniteRepeatable(
+            animation = tween(durationMillis = 1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse,
+        ),
+    )
 
     Card(
         colors = CardDefaults.cardColors(containerColor = background),
@@ -92,18 +92,18 @@ fun StatusIndicator(active: Boolean, modifier: Modifier = Modifier) {
         ) {
             Spacer(
                 modifier =
-                    Modifier.scale(scale).size(10.dp).clip(CircleShape).background(indicatorColor)
+                Modifier.scale(scale).size(10.dp).clip(CircleShape).background(indicatorColor)
             )
 
             Spacer(Modifier.width(8.dp))
 
             Text(
                 text =
-                    if (active) {
-                        stringResource(Res.string.active)
-                    } else {
-                        stringResource(Res.string.inactive)
-                    },
+                if (active) {
+                    stringResource(Res.string.active)
+                } else {
+                    stringResource(Res.string.inactive)
+                },
                 color = Color(0xFF222222),
                 fontSize = 12.sp,
                 style = MaterialTheme.typography.bodySmall.fixCenterTextOnAllPlatforms(),

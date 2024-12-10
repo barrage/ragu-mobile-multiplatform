@@ -53,6 +53,7 @@ import net.barrage.chatwhitelabel.ui.components.chat.ChatTitleState
 import net.barrage.chatwhitelabel.ui.components.chat.ErrorContent
 import net.barrage.chatwhitelabel.ui.components.chat.MessageList
 import net.barrage.chatwhitelabel.ui.screens.profile.ProfileCard
+import net.barrage.chatwhitelabel.utils.debugLog
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -83,7 +84,7 @@ fun ChatScreen(
     LaunchedEffect(chatScreenState) {
         if (
             chatScreenState is ChatScreenState.Success &&
-                (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
+            (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
         ) {
             lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
         }
@@ -92,8 +93,8 @@ fun ChatScreen(
     LaunchedEffect(isKeyboardOpen) {
         if (
             isKeyboardOpen &&
-                chatScreenState is ChatScreenState.Success &&
-                (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
+            chatScreenState is ChatScreenState.Success &&
+            (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
         ) {
             delay(100)
             lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
@@ -113,50 +114,50 @@ fun ChatScreen(
 
     Box(
         modifier =
-            modifier.fillMaxSize().onGloballyPositioned {
-                with(density) { width = it.size.width.toDp() - 80.dp }
-            }
+        modifier.fillMaxSize().onGloballyPositioned {
+            with(density) { width = it.size.width.toDp() - 80.dp }
+        }
     ) {
         Column(
             modifier =
-                Modifier.fillMaxSize()
-                    .clickable(chatInteractionSource, null) {
-                        if (chatInputFocused) focusManager.clearFocus()
-                    }
-                    .imePadding()
+            Modifier.fillMaxSize()
+                .clickable(chatInteractionSource, null) {
+                    if (chatInputFocused) focusManager.clearFocus()
+                }
+                .imePadding()
         ) {
             when (val state = chatScreenState) {
                 is ChatScreenState.Success -> {
                     if (
                         state.messages.isNotEmpty() ||
-                            viewModel.webSocketChatClient?.currentChatId?.value != null
+                        viewModel.webSocketChatClient?.currentChatId?.value != null
                     ) {
                         ChatTitle(
                             state =
-                                ChatTitleState(
-                                    title =
-                                        if (state.chatTitle.isNullOrEmpty())
-                                            stringResource(state.chatTitleRes)
-                                        else state.chatTitle,
-                                    isMenuVisible = menuVisible,
-                                    isEditingTitle = state.isEditingTitle,
-                                    onThreeDotsClick = { menuVisible = true },
-                                    onEditTitleClick = {
-                                        viewModel.setEditingTitle(true)
-                                        menuVisible = false
-                                    },
-                                    onDeleteChatClick = {
-                                        showDeleteConfirmation = true
-                                        menuVisible = false
-                                    },
-                                    onDismiss = { menuVisible = false },
-                                    onTitleChange = { viewModel.setChatTitle(it) },
-                                    onTitleChangeConfirmation = { viewModel.updateTitle() },
-                                    onTitleChangeDismiss = {
-                                        viewModel.cancelTitleEdit()
-                                        menuVisible = false
-                                    },
-                                ),
+                            ChatTitleState(
+                                title =
+                                if (state.chatTitle.isNullOrEmpty())
+                                    stringResource(state.chatTitleRes)
+                                else state.chatTitle,
+                                isMenuVisible = menuVisible,
+                                isEditingTitle = state.isEditingTitle,
+                                onThreeDotsClick = { menuVisible = true },
+                                onEditTitleClick = {
+                                    viewModel.setEditingTitle(true)
+                                    menuVisible = false
+                                },
+                                onDeleteChatClick = {
+                                    showDeleteConfirmation = true
+                                    menuVisible = false
+                                },
+                                onDismiss = { menuVisible = false },
+                                onTitleChange = { viewModel.setChatTitle(it) },
+                                onTitleChangeConfirmation = { viewModel.updateTitle() },
+                                onTitleChangeDismiss = {
+                                    viewModel.cancelTitleEdit()
+                                    menuVisible = false
+                                },
+                            ),
                             maxWidth = width,
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                         )
@@ -164,7 +165,7 @@ fun ChatScreen(
 
                     if (
                         state.messages.isEmpty() &&
-                            viewModel.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
+                        viewModel.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
                     ) {
                         AgentContent(
                             agents = state.agents.toImmutableList(),
@@ -189,27 +190,27 @@ fun ChatScreen(
                     if (state.isAgentActive) {
                         ChatInput(
                             state =
-                                ChatInputState(
-                                    inputText = state.inputText,
-                                    onInputTextChange = { viewModel.updateInputText(it) },
-                                    onSendMessage = { viewModel.sendMessage() },
-                                    onStopReceivingMessage = {
-                                        viewModel.webSocketChatClient?.stopMessageStream()
-                                    },
-                                    isEnabled = state.isSendEnabled && state.agents.isNotEmpty(),
-                                    isReceivingMessage = state.isReceivingMessage,
-                                    focusManager = focusManager,
-                                    chatInteractionSource = chatInteractionSource,
-                                )
+                            ChatInputState(
+                                inputText = state.inputText,
+                                onInputTextChange = { viewModel.updateInputText(it) },
+                                onSendMessage = { viewModel.sendMessage() },
+                                onStopReceivingMessage = {
+                                    viewModel.webSocketChatClient?.stopMessageStream()
+                                },
+                                isEnabled = state.isSendEnabled && state.agents.isNotEmpty(),
+                                isReceivingMessage = state.isReceivingMessage,
+                                focusManager = focusManager,
+                                chatInteractionSource = chatInteractionSource,
+                            )
                         )
                     } else {
                         Card(
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.padding(horizontal = 20.dp),
                             colors =
-                                CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                                ),
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
                             border = CardDefaults.outlinedCardBorder(enabled = true),
                         ) {
                             Box(modifier = Modifier.padding(16.dp)) {

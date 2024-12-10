@@ -19,7 +19,10 @@ data class CurrentUserDTO(
 
 @Serializable
 enum class Role {
-    @SerialName("admin") ADMIN,
-    @SerialName("user") USER,
+    @SerialName("admin")
+    ADMIN,
+
+    @SerialName("user")
+    USER,
     // Add other roles as needed
 }

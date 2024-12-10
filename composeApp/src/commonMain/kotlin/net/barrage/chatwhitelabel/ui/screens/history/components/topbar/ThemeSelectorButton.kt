@@ -19,20 +19,20 @@ import androidx.compose.ui.unit.dp
 fun ThemeSelectorButton(selectedTheme: Color, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Box(
         modifier =
-            modifier.fillMaxHeight().aspectRatio(1f).clip(CircleShape).clickable(onClick = onClick)
+        modifier.fillMaxHeight().aspectRatio(1f).clip(CircleShape).clickable(onClick = onClick)
     ) {
         if (selectedTheme == White) {
             DarkLightElement(
                 modifier =
-                    Modifier.matchParentSize()
-                        .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                Modifier.matchParentSize()
+                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
             )
         } else {
             Box(
                 modifier =
-                    Modifier.matchParentSize()
-                        .background(selectedTheme)
-                        .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                Modifier.matchParentSize()
+                    .background(selectedTheme)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
             )
         }
     }

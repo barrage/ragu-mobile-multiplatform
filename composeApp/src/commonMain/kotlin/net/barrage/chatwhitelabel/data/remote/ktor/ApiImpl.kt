@@ -23,101 +23,161 @@ import net.barrage.chatwhitelabel.domain.remote.ktor.Api
 import net.barrage.chatwhitelabel.utils.TokenStorage
 import net.barrage.chatwhitelabel.utils.safeApiCall
 
+/**
+ * Implementation of the Api interface using Ktor HTTP client.
+ *
+ * @property httpClient The Ktor HTTP client used for making API requests.
+ * @property tokenStorage The storage mechanism for managing authentication tokens.
+ */
 class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: TokenStorage) : Api {
+
+    /**
+     * Performs a login request.
+     *
+     * @param parameters The login parameters.
+     * @return A Response containing the HttpResponse or an error.
+     */
     override suspend fun login(parameters: Parameters): Response<HttpResponse> {
         return safeApiCall {
-            val response: HttpResponse =
-                httpClient.submitForm(url = "auth/login", formParameters = parameters)
-            response
+            httpClient.submitForm(url = "auth/login", formParameters = parameters)
         }
     }
 
+    /**
+     * Performs a logout request.
+     *
+     * @return A Response containing the HttpResponse or an error.
+     */
     override suspend fun logout(): Response<HttpResponse> {
         return safeApiCall {
-            val response = httpClient.post("auth/logout") { addCookieHeader() }
-            response
+            httpClient.post("auth/logout") { addCookieHeader() }
         }
     }
 
+    /**
+     * Retrieves the current user's information.
+     *
+     * @return A Response containing the CurrentUserDTO or an error.
+     */
     override suspend fun getCurrentUser(): Response<CurrentUserDTO> {
         return safeApiCall {
-            val response = httpClient.get("users/current") { addCookieHeader() }
-            response
+            httpClient.get("users/current") { addCookieHeader() }
         }
     }
 
+    /**
+     * Retrieves the chat history.
+     *
+     * @param parameters Query parameters for the history request.
+     * @return A Response containing the ChatHistoryResponseDTO or an error.
+     */
     override suspend fun getHistory(parameters: Parameters): Response<ChatHistoryResponseDTO> {
         return safeApiCall {
-            val response =
-                httpClient.get("chats") {
-                    addCookieHeader()
-                    parameters.forEach { key, value -> parameter(key, value) }
-                }
-            response
+            httpClient.get("chats") {
+                addCookieHeader()
+                parameters.forEach { key, value -> parameter(key, value) }
+            }
         }
     }
 
+    /**
+     * Retrieves messages for a specific chat.
+     *
+     * @param chatId The ID of the chat.
+     * @return A Response containing a List of ChatMessageItemDTO or an error.
+     */
     override suspend fun getChatMessagesById(chatId: String): Response<List<ChatMessageItemDTO>> {
         return safeApiCall {
-            val response = httpClient.get("chats/$chatId/messages") { addCookieHeader() }
-            response
+            httpClient.get("chats/$chatId/messages") { addCookieHeader() }
         }
     }
 
+    /**
+     * Retrieves a WebSocket token.
+     *
+     * @return A Response containing the token as a String or an error.
+     */
     override suspend fun getWebSocketToken(): Response<String> {
         return safeApiCall {
-            val response = httpClient.get("ws") { addCookieHeader() }
-            response
+            httpClient.get("ws") { addCookieHeader() }
         }
     }
 
+    /**
+     * Updates the title of a chat.
+     *
+     * @param chatId The ID of the chat to update.
+     * @param title The new title for the chat.
+     * @return A Response containing the HttpResponse or an error.
+     */
     override suspend fun updateChatTitle(chatId: String, title: String): Response<HttpResponse> {
         return safeApiCall {
-            val response =
-                httpClient.put("chats/$chatId") {
-                    addCookieHeader()
-                    setBody(mapOf("title" to title))
-                }
-            response
+            httpClient.put("chats/$chatId") {
+                addCookieHeader()
+                setBody(mapOf("title" to title))
+            }
         }
     }
 
+    /**
+     * Deletes a chat.
+     *
+     * @param chatId The ID of the chat to delete.
+     * @return A Response containing the HttpResponse or an error.
+     */
     override suspend fun deleteChat(chatId: String): Response<HttpResponse> {
         return safeApiCall {
-            val response = httpClient.delete("chats/$chatId") { addCookieHeader() }
-            response
+            httpClient.delete("chats/$chatId") { addCookieHeader() }
         }
     }
 
+    /**
+     * Retrieves a list of agents.
+     *
+     * @return A Response containing the AgentResponse or an error.
+     */
     override suspend fun getAgents(): Response<AgentResponse> {
         return safeApiCall {
-            val response = httpClient.get("agents") { addCookieHeader() }
-            response
+            httpClient.get("agents") { addCookieHeader() }
         }
     }
 
+    /**
+     * Evaluates a message in a chat.
+     *
+     * @param chatId The ID of the chat containing the message.
+     * @param messageId The ID of the message to evaluate.
+     * @param evaluation The evaluation value.
+     * @return A Response containing the HttpResponse or an error.
+     */
     override suspend fun evaluateMessage(
         chatId: String,
         messageId: String,
         evaluation: Boolean,
     ): Response<HttpResponse> {
         return safeApiCall {
-            val response =
-                httpClient.patch("chats/$chatId/messages/$messageId") {
-                    addCookieHeader()
-                    setBody(mapOf("evaluation" to evaluation))
-                }
-            response
+            httpClient.patch("chats/$chatId/messages/$messageId") {
+                addCookieHeader()
+                setBody(mapOf("evaluation" to evaluation))
+            }
         }
     }
 
+    /**
+     * Retrieves a specific chat by its ID.
+     *
+     * @param chatId The ID of the chat to retrieve.
+     * @return A Response containing the ChatItemDTO or an error.
+     */
     override suspend fun getChatById(chatId: String): Response<ChatItemDTO> {
         return safeApiCall {
-            val response = httpClient.get("chats/$chatId") { addCookieHeader() }
-            response
+            httpClient.get("chats/$chatId") { addCookieHeader() }
         }
     }
 
+    /**
+     * Adds the authentication cookie to the request header.
+     */
     private suspend fun HttpRequestBuilder.addCookieHeader() {
         tokenStorage.getCookie()?.let { cookie -> header("Cookie", cookie) }
     }

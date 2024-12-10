@@ -34,31 +34,31 @@ data class CurrentUser(
             header = ProfileHeaderViewState(profileImage = "", name = fullName, active = active),
             email = email,
             content =
-                persistentMapOf(
-                    Res.string.email to
+            persistentMapOf(
+                Res.string.email to
                         ProfileContentItem(
                             value = email,
                             iconId = Res.drawable.ic_email,
                             iconDescription = "email",
                         ),
-                    Res.string.role to
+                Res.string.role to
                         ProfileContentItem(
                             value = role.name,
                             iconId = Res.drawable.ic_role,
                             iconDescription = "Role",
                         ),
-                    Res.string.created_at to
+                Res.string.created_at to
                         ProfileContentItem(
                             value = formatIsoDateToReadable(createdAt),
                             iconId = Res.drawable.ic_created_at,
                             iconDescription = "created At",
                         ),
-                    Res.string.updated_at to
+                Res.string.updated_at to
                         ProfileContentItem(
                             value = formatIsoDateToReadable(createdAt),
                             iconId = Res.drawable.ic_updated_at,
                             iconDescription = "Updated At",
                         ),
-                ),
+            ),
         )
 }

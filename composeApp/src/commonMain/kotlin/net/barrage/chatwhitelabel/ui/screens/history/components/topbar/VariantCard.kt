@@ -24,20 +24,20 @@ fun VariantCard(
 ) {
     Box(
         modifier =
-            modifier
-                .clip(RoundedCornerShape(6.dp))
-                .clickable { onClick(variant) }
-                .then(
-                    if (isSelected) {
-                        Modifier.background(MaterialTheme.colorScheme.onTertiary)
-                    } else {
-                        Modifier.border(
-                            1.dp,
-                            MaterialTheme.colorScheme.onSecondaryContainer,
-                            RoundedCornerShape(6.dp),
-                        )
-                    }
-                )
+        modifier
+            .clip(RoundedCornerShape(6.dp))
+            .clickable { onClick(variant) }
+            .then(
+                if (isSelected) {
+                    Modifier.background(MaterialTheme.colorScheme.onTertiary)
+                } else {
+                    Modifier.border(
+                        1.dp,
+                        MaterialTheme.colorScheme.onSecondaryContainer,
+                        RoundedCornerShape(6.dp),
+                    )
+                }
+            )
     ) {
         Text(
             text = variant.name,

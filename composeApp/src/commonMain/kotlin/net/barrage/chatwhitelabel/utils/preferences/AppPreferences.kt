@@ -13,38 +13,108 @@ import com.materialkolor.PaletteStyle
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
+/**
+ * Interface for managing theme-related preferences.
+ */
 interface ThemePreferences {
+    /**
+     * Checks if dark mode is enabled.
+     * @return true if dark mode is enabled, false otherwise.
+     */
     suspend fun isDarkModeEnabled(): Boolean
 
+    /**
+     * Retrieves the current theme color.
+     * @return The current Color used for theming.
+     */
     suspend fun getThemeColor(): Color
 
+    /**
+     * Retrieves the current theme variant.
+     * @return The current PaletteStyle used for theming.
+     */
     suspend fun getThemeVariant(): PaletteStyle
 
+    /**
+     * Saves a new theme color.
+     * @param color The Color to be saved as the new theme color.
+     * @return The updated Preferences.
+     */
     suspend fun saveThemeColor(color: Color): Preferences
 
+    /**
+     * Saves a new theme variant.
+     * @param variant The PaletteStyle to be saved as the new theme variant.
+     * @return The updated Preferences.
+     */
     suspend fun saveThemeVariant(variant: PaletteStyle): Preferences
 
+    /**
+     * Changes the dark mode setting.
+     * @param isEnabled Whether dark mode should be enabled or disabled.
+     * @return The updated Preferences.
+     */
     suspend fun changeDarkMode(isEnabled: Boolean): Preferences
 }
 
+/**
+ * Interface for managing authentication-related preferences.
+ */
 interface AuthPreferences {
+    /**
+     * Saves an authentication cookie.
+     * @param cookie The cookie string to be saved.
+     * @return The updated Preferences.
+     */
     suspend fun saveCookie(cookie: String): Preferences
 
+    /**
+     * Retrieves the saved authentication cookie.
+     * @return The saved cookie string, or null if not present.
+     */
     suspend fun getCookie(): String?
 
+    /**
+     * Clears the saved authentication cookie.
+     * @return The updated Preferences.
+     */
     suspend fun clearCookie(): Preferences
 
+    /**
+     * Saves a PKCE code verifier.
+     * @param codeVerifier The code verifier string to be saved.
+     * @return The updated Preferences.
+     */
     suspend fun saveCodeVerifier(codeVerifier: String): Preferences
 
+    /**
+     * Retrieves the saved PKCE code verifier.
+     * @return The saved code verifier string, or null if not present.
+     */
     suspend fun getCodeVerifier(): String?
 
+    /**
+     * Clears the saved PKCE code verifier.
+     * @return The updated Preferences.
+     */
     suspend fun clearCodeVerifier(): Preferences
 }
 
+/**
+ * Combined interface for all app preferences, including theme and authentication preferences.
+ */
 interface AppPreferences : ThemePreferences, AuthPreferences {
+    /**
+     * Clears all saved preferences.
+     * @return The updated (empty) Preferences.
+     */
     suspend fun clear(): Preferences
 }
 
+/**
+ * Implementation of AppPreferences that delegates to separate implementations for theme and auth preferences.
+ * @param dataStore The DataStore used for storing preferences.
+ */
 internal class AppPreferencesImpl(private val dataStore: DataStore<Preferences>) :
     AppPreferences,
     ThemePreferences by ThemePreferencesImpl(dataStore),
@@ -54,6 +124,10 @@ internal class AppPreferencesImpl(private val dataStore: DataStore<Preferences>)
         dataStore.edit { preferences -> preferences.clear() }
 }
 
+/**
+ * Implementation of ThemePreferences using DataStore.
+ * @param dataStore The DataStore used for storing theme preferences.
+ */
 private class ThemePreferencesImpl(private val dataStore: DataStore<Preferences>) :
     ThemePreferences {
     private companion object {
@@ -95,6 +169,10 @@ private class ThemePreferencesImpl(private val dataStore: DataStore<Preferences>
         dataStore.edit { preferences -> preferences[darkModeKey] = isEnabled }
 }
 
+/**
+ * Implementation of AuthPreferences using DataStore.
+ * @param dataStore The DataStore used for storing authentication preferences.
+ */
 private class AuthPreferencesImpl(private val dataStore: DataStore<Preferences>) : AuthPreferences {
     private companion object {
         private const val PREFS_TAG_KEY = "AppPreferences"

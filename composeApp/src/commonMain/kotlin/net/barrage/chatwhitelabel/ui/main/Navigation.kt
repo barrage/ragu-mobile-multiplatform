@@ -69,11 +69,11 @@ fun AppNavHost(
                     scope = appState.coroutineScope,
                     profileVisible = profileVisible,
                     modifier =
-                        Modifier.then(
-                            if (getAndroidVersion() != -1)
-                                Modifier.consumeWindowInsets(PaddingValues())
-                            else Modifier
-                        ),
+                    Modifier.then(
+                        if (getAndroidVersion() != -1)
+                            Modifier.consumeWindowInsets(PaddingValues())
+                        else Modifier
+                    ),
                     changeProfileVisibility = changeProfileVisibility,
                     networkAvailable = appState.networkAvailable.value,
                     onLogoutSuccess = {

@@ -5,13 +5,29 @@ import kotlinx.coroutines.withContext
 import org.kotlincrypto.SecureRandom
 import org.kotlincrypto.hash.sha2.SHA256
 
+/**
+ * Utility object for PKCE (Proof Key for Code Exchange) operations.
+ * This object provides methods for generating code verifiers and code challenges
+ * as per the PKCE specification for OAuth 2.0.
+ */
 object PKCEUtil {
+    /**
+     * Generates a code verifier for PKCE.
+     *
+     * @return A Base64Url-encoded string to be used as the code verifier.
+     */
     suspend fun generateCodeVerifier(): String =
         withContext(Dispatchers.Default) {
             val bytes = SecureRandom().nextBytesOf(32)
             bytes.encodeBase64Url()
         }
 
+    /**
+     * Generates a code challenge from a given code verifier.
+     *
+     * @param codeVerifier The code verifier to generate the challenge from.
+     * @return A Base64Url-encoded string representing the code challenge.
+     */
     suspend fun generateCodeChallenge(codeVerifier: String): String =
         withContext(Dispatchers.Default) {
             val bytes = codeVerifier.encodeToByteArray()
@@ -19,10 +35,20 @@ object PKCEUtil {
             hash.encodeBase64Url()
         }
 
+    /**
+     * Encodes a ByteArray to a Base64Url string.
+     *
+     * @return A Base64Url-encoded string.
+     */
     private fun ByteArray.encodeBase64Url(): String {
         return this.encodeBase64().replace('+', '-').replace('/', '_').replace("=", "")
     }
 
+    /**
+     * Encodes a ByteArray to a standard Base64 string.
+     *
+     * @return A Base64-encoded string.
+     */
     private fun ByteArray.encodeBase64(): String {
         val table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
         val output = StringBuilder()

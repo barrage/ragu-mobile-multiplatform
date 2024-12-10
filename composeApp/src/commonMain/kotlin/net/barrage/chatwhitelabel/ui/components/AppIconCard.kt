@@ -17,9 +17,9 @@ import org.jetbrains.compose.resources.painterResource
 fun AppIconCard(modifier: Modifier = Modifier) {
     Card(
         colors =
-            CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
-            ),
+        CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+        ),
         modifier = modifier,
     ) {
         Icon(

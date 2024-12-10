@@ -59,16 +59,16 @@ fun ModalDrawerHistoryContent(
                                 item {
                                     Column(
                                         modifier =
-                                            Modifier.padding(horizontal = 8.dp).padding(top = 8.dp)
+                                        Modifier.padding(horizontal = 8.dp).padding(top = 8.dp)
                                     ) {
                                         Text(
                                             text = stringResource(timePeriod),
                                             style =
-                                                MaterialTheme.typography.labelMedium
-                                                    .fixCenterTextOnAllPlatforms()
-                                                    .copy(
-                                                        color = MaterialTheme.colorScheme.outline
-                                                    ),
+                                            MaterialTheme.typography.labelMedium
+                                                .fixCenterTextOnAllPlatforms()
+                                                .copy(
+                                                    color = MaterialTheme.colorScheme.outline
+                                                ),
                                             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
                                         )
                                     }

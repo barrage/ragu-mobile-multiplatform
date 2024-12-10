@@ -1,6 +1,12 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+/**
+ * Gradle build configuration for the ChatWhitelabel Kotlin Multiplatform project.
+ * This file sets up the project for Android and iOS targets, configures dependencies,
+ * and defines build settings.
+ */
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -13,8 +19,15 @@ plugins {
 }
 
 kotlin {
+    /**
+     * Android target configuration
+     */
     androidTarget { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
 
+    /**
+     * iOS targets configuration
+     * Configures framework for iOS targets (x64, arm64, simulatorArm64)
+     */
     listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
@@ -28,6 +41,9 @@ kotlin {
     sourceSets {
         // val desktopMain by getting
 
+        /**
+         * Android-specific dependencies
+         */
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -38,10 +54,18 @@ kotlin {
             api(libs.gitlive.firebase.kotlin.crashlytics)
             implementation(libs.androidx.startup)
         }
+
+        /**
+         * iOS-specific dependencies
+         */
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
             api(libs.gitlive.firebase.kotlin.crashlytics)
         }
+
+        /**
+         * Common dependencies for all platforms
+         */
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -85,6 +109,9 @@ kotlin {
     }
 }
 
+/**
+ * Android-specific configuration
+ */
 android {
     namespace = "net.barrage.chatwhitelabel"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -93,10 +120,14 @@ android {
         applicationId = "net.barrage.chatwhitelabel"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 2
-        versionName = "0.0.2"
+        versionCode = 3
+        versionName = "0.0.3"
     }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
+
+    /**
+     * Signing configurations for release builds
+     */
     signingConfigs {
         val keystorePropertiesFile = rootProject.file("keystore.properties")
         if (keystorePropertiesFile.exists()) {
@@ -112,6 +143,10 @@ android {
             create("release") {}
         }
     }
+
+    /**
+     * Build types configuration
+     */
     buildTypes {
         release {
             isMinifyEnabled = true
