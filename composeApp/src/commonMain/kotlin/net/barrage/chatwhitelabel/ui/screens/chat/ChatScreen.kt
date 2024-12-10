@@ -136,9 +136,7 @@ fun ChatScreen(
                             state =
                             ChatTitleState(
                                 title =
-                                if (state.chatTitle.isNullOrEmpty())
-                                    stringResource(state.chatTitleRes)
-                                else state.chatTitle,
+                                state.chatTitle ?: stringResource(state.chatTitleRes),
                                 isMenuVisible = menuVisible,
                                 isEditingTitle = state.isEditingTitle,
                                 onThreeDotsClick = { menuVisible = true },
