@@ -88,7 +88,6 @@ fun ChatScreen(
         ) {
             lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
         }
-        debugLog("ChatScreenState: $chatScreenState")
     }
 
     LaunchedEffect(isKeyboardOpen) {

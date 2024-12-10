@@ -60,6 +60,7 @@ fun ChatTitle(state: ChatTitleState, maxWidth: Dp, modifier: Modifier = Modifier
                     else state.onThreeDotsClick,
                     modifier =
                     Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp),
+                    enabled = state.title.length in 3..255,
                 ) {
                     Icon(
                         painter =

@@ -59,14 +59,25 @@ fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
                     textFieldValue = it
                     state.onTextChange(it.text)
                 },
-                textStyle =
-                state.textStyle
+                textStyle = state.textStyle
                     .copy(color = state.textColor, textAlign = TextAlign.End)
                     .fixCenterTextOnAllPlatforms(),
-                modifier = Modifier.width(IntrinsicSize.Min).focusRequester(focusRequester),
+                modifier = Modifier.width(IntrinsicSize.Max).focusRequester(focusRequester),
                 enabled = true,
                 singleLine = true,
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                decorationBox = { innerTextField ->
+                    if (textFieldValue.text.isEmpty()) {
+                        Text(
+                            text = "Chat title",
+                            style = state.textStyle.copy(color = state.textColor.copy(alpha = 0.5f)),
+                            textAlign = TextAlign.End,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    innerTextField()
+                }
             )
         } else {
             Text(

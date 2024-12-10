@@ -308,10 +308,15 @@ class ChatViewModel(
     fun updateTitle() {
         viewModelScope.launch {
             val currentState = chatScreenState.value
-            if (currentState is ChatScreenState.Success &&
-                !webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
+            if (currentState is ChatScreenState.Success && currentState.chatTitle == tempChatTitle) {
+                setEditingTitle(false)
+                tempChatTitle = "" // Clear temporary title
+            }
+            else if (currentState is ChatScreenState.Success &&
+                !webSocketChatClient?.currentChatId?.value.isNullOrEmpty() &&
+                currentState.chatTitle?.isNotEmpty() == true
             ) {
-                currentState.chatTitle?.let { chatTitle ->
+                currentState.chatTitle.let { chatTitle ->
                     val response = chatUseCase.updateChatTitle(
                         webSocketChatClient?.currentChatId?.value!!,
                         chatTitle,
