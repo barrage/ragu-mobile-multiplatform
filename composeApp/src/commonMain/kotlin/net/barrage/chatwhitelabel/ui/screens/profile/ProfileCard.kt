@@ -91,8 +91,8 @@ fun ProfileCard(
                             Text(
                                 text = stringResource(Res.string.sign_out),
                                 style =
-                                    MaterialTheme.typography.titleMedium
-                                        .fixCenterTextOnAllPlatforms(),
+                                MaterialTheme.typography.titleMedium
+                                    .fixCenterTextOnAllPlatforms(),
                             )
                         }
                     }

@@ -60,10 +60,10 @@ fun CurrentUserCard(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier =
-                            Modifier.clip(RoundedCornerShape(12.dp))
-                                .background(MaterialTheme.colorScheme.surfaceDim)
-                                .clickable(onClick = onUserClick)
-                                .padding(8.dp),
+                        Modifier.clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.surfaceDim)
+                            .clickable(onClick = onUserClick)
+                            .padding(8.dp),
                     ) {
                         Icon(imageVector = Icons.Filled.Person, contentDescription = "user profile")
                         Spacer(modifier = Modifier.width(8.dp))
@@ -71,14 +71,14 @@ fun CurrentUserCard(
                             Text(
                                 text = viewState.data.header.name,
                                 style =
-                                    MaterialTheme.typography.labelLarge
-                                        .fixCenterTextOnAllPlatforms(),
+                                MaterialTheme.typography.labelLarge
+                                    .fixCenterTextOnAllPlatforms(),
                             )
                             Text(
                                 text = viewState.data.email,
                                 style =
-                                    MaterialTheme.typography.bodySmall
-                                        .fixCenterTextOnAllPlatforms(),
+                                MaterialTheme.typography.bodySmall
+                                    .fixCenterTextOnAllPlatforms(),
                                 overflow = Ellipsis,
                             )
                         }

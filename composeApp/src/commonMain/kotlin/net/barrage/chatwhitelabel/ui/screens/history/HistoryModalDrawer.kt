@@ -62,12 +62,12 @@ fun ModalDrawer(
             HistoryDivider()
             Row(
                 modifier =
-                    Modifier.fillMaxWidth()
-                        .clickable {
-                            viewModel.newChat()
-                            changeDrawerVisibility()
-                        }
-                        .padding(24.dp),
+                Modifier.fillMaxWidth()
+                    .clickable {
+                        viewModel.newChat()
+                        changeDrawerVisibility()
+                    }
+                    .padding(24.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(painter = painterResource(Res.drawable.ic_brain), null)

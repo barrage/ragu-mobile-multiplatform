@@ -25,11 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.materialkolor.PaletteStyle
-import kotlin.math.ceil
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryModalDrawerContentViewState
 import net.barrage.chatwhitelabel.ui.screens.history.components.topbar.DarkLightThemeSwitcher
 import net.barrage.chatwhitelabel.ui.screens.history.components.topbar.ThemePopup
 import net.barrage.chatwhitelabel.ui.screens.history.components.topbar.ThemeSelectorButton
+import kotlin.math.ceil
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

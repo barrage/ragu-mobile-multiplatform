@@ -61,13 +61,13 @@ fun MessageItem(
     Box(modifier = modifier.fillMaxWidth()) {
         Column(
             modifier =
-                Modifier.align(
-                    when (chatMessage.senderType) {
-                        SenderType.USER -> Alignment.CenterEnd
-                        SenderType.ASSISTANT,
-                        SenderType.ERROR -> Alignment.CenterStart
-                    }
-                )
+            Modifier.align(
+                when (chatMessage.senderType) {
+                    SenderType.USER -> Alignment.CenterEnd
+                    SenderType.ASSISTANT,
+                    SenderType.ERROR -> Alignment.CenterStart
+                }
+            )
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -84,32 +84,32 @@ fun MessageItem(
                         chatMessage.content,
                         modifier = Modifier.padding(12.dp).widthIn(max = maxWidth),
                         typography =
-                            markdownTypography(
-                                text = customTypography().textBase.fixCenterTextOnAllPlatforms(),
-                                h1 = markdownTypography().h1.fixCenterTextOnAllPlatforms(),
-                                h2 = markdownTypography().h2.fixCenterTextOnAllPlatforms(),
-                                h3 = markdownTypography().h3.fixCenterTextOnAllPlatforms(),
-                                h4 = markdownTypography().h4.fixCenterTextOnAllPlatforms(),
-                                h5 = markdownTypography().h5.fixCenterTextOnAllPlatforms(),
-                                h6 = markdownTypography().h6.fixCenterTextOnAllPlatforms(),
-                                code = markdownTypography().code.fixCenterTextOnAllPlatforms(),
-                                inlineCode =
-                                    markdownTypography().inlineCode.fixCenterTextOnAllPlatforms(),
-                                quote = markdownTypography().quote.fixCenterTextOnAllPlatforms(),
-                                paragraph =
-                                    markdownTypography().paragraph.fixCenterTextOnAllPlatforms(),
-                                ordered =
-                                    markdownTypography().ordered.fixCenterTextOnAllPlatforms(),
-                                bullet = markdownTypography().bullet.fixCenterTextOnAllPlatforms(),
-                                list = markdownTypography().list.fixCenterTextOnAllPlatforms(),
-                                link = markdownTypography().link.fixCenterTextOnAllPlatforms(),
-                            ),
+                        markdownTypography(
+                            text = customTypography().textBase.fixCenterTextOnAllPlatforms(),
+                            h1 = markdownTypography().h1.fixCenterTextOnAllPlatforms(),
+                            h2 = markdownTypography().h2.fixCenterTextOnAllPlatforms(),
+                            h3 = markdownTypography().h3.fixCenterTextOnAllPlatforms(),
+                            h4 = markdownTypography().h4.fixCenterTextOnAllPlatforms(),
+                            h5 = markdownTypography().h5.fixCenterTextOnAllPlatforms(),
+                            h6 = markdownTypography().h6.fixCenterTextOnAllPlatforms(),
+                            code = markdownTypography().code.fixCenterTextOnAllPlatforms(),
+                            inlineCode =
+                            markdownTypography().inlineCode.fixCenterTextOnAllPlatforms(),
+                            quote = markdownTypography().quote.fixCenterTextOnAllPlatforms(),
+                            paragraph =
+                            markdownTypography().paragraph.fixCenterTextOnAllPlatforms(),
+                            ordered =
+                            markdownTypography().ordered.fixCenterTextOnAllPlatforms(),
+                            bullet = markdownTypography().bullet.fixCenterTextOnAllPlatforms(),
+                            list = markdownTypography().list.fixCenterTextOnAllPlatforms(),
+                            link = markdownTypography().link.fixCenterTextOnAllPlatforms(),
+                        ),
                         components =
-                            markdownComponents(
-                                codeBlock = highlightedCodeBlock,
-                                codeFence = highlightedCodeFence,
-                                paragraph = customParagraphComponent,
-                            ),
+                        markdownComponents(
+                            codeBlock = highlightedCodeBlock,
+                            codeFence = highlightedCodeFence,
+                            paragraph = customParagraphComponent,
+                        ),
                     )
                 }
 
@@ -130,43 +130,43 @@ fun MessageItem(
                         IconButton(
                             onClick = { onCopy(chatMessage) },
                             modifier =
-                                Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
-                                    .size(24.dp),
+                            Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
+                                .size(24.dp),
                         ) {
                             Icon(
                                 painterResource(Res.drawable.ic_copy),
                                 contentDescription =
-                                    stringResource(Res.string.copy_button_content_description),
+                                stringResource(Res.string.copy_button_content_description),
                                 modifier = Modifier.size(16.dp),
                             )
                         }
                         IconButton(
                             onClick = { onPositiveEvaluation(chatMessage) },
                             modifier =
-                                Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
-                                    .size(24.dp),
+                            Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
+                                .size(24.dp),
                         ) {
                             Icon(
                                 painterResource(Res.drawable.ic_thumb_up),
                                 contentDescription =
-                                    stringResource(
-                                        Res.string.positive_evaluation_button_content_description
-                                    ),
+                                stringResource(
+                                    Res.string.positive_evaluation_button_content_description
+                                ),
                                 modifier = Modifier.size(16.dp),
                             )
                         }
                         IconButton(
                             onClick = { onNegativeEvaluation(chatMessage) },
                             modifier =
-                                Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
-                                    .size(24.dp),
+                            Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
+                                .size(24.dp),
                         ) {
                             Icon(
                                 painterResource(Res.drawable.ic_thumb_down),
                                 contentDescription =
-                                    stringResource(
-                                        Res.string.negative_evaluation_button_content_description
-                                    ),
+                                stringResource(
+                                    Res.string.negative_evaluation_button_content_description
+                                ),
                                 modifier = Modifier.size(16.dp),
                             )
                         }
@@ -187,7 +187,7 @@ private fun SenderIcon(senderType: SenderType, modifier: Modifier = Modifier) {
                     Icon(
                         painterResource(Res.drawable.ic_brain),
                         contentDescription =
-                            stringResource(Res.string.assistant_icon_content_description),
+                        stringResource(Res.string.assistant_icon_content_description),
                         modifier = Modifier.size(18.dp),
                     )
 
@@ -195,7 +195,7 @@ private fun SenderIcon(senderType: SenderType, modifier: Modifier = Modifier) {
                     Icon(
                         Icons.Filled.Person,
                         contentDescription =
-                            stringResource(Res.string.user_icon_content_description),
+                        stringResource(Res.string.user_icon_content_description),
                         modifier = Modifier.size(18.dp),
                     )
             }

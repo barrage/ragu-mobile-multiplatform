@@ -27,6 +27,14 @@ import net.barrage.chatwhitelabel.ui.main.rememberAppState
 import net.barrage.chatwhitelabel.ui.theme.CustomTheme
 import net.barrage.chatwhitelabel.utils.coreComponent
 
+/**
+ * The main composable function for the application.
+ * It sets up the app's theme, handles deep links, and manages the main content and overlays.
+ *
+ * @param modifier Modifier to be applied to the app's root composable.
+ * @param onThemeChange Callback function to be invoked when the theme changes. It receives a Boolean
+ *                      indicating whether dark mode is enabled.
+ */
 @Composable
 fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = null) {
     val appState = rememberAppState()

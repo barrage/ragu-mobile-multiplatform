@@ -63,18 +63,18 @@ fun ThemePopup(
     val rotation = animateFloatAsState(if (areVariantsVisible) 180f else 0f, label = "rotation")
     Popup(
         popupPositionProvider =
-            object : PopupPositionProvider {
-                override fun calculatePosition(
-                    anchorBounds: IntRect,
-                    windowSize: IntSize,
-                    layoutDirection: LayoutDirection,
-                    popupContentSize: IntSize,
-                ): IntOffset {
-                    val x = anchorBounds.center.x - (popupContentSize.width / 2)
-                    val y = anchorBounds.bottom
-                    return IntOffset(x, y)
-                }
-            },
+        object : PopupPositionProvider {
+            override fun calculatePosition(
+                anchorBounds: IntRect,
+                windowSize: IntSize,
+                layoutDirection: LayoutDirection,
+                popupContentSize: IntSize,
+            ): IntOffset {
+                val x = anchorBounds.center.x - (popupContentSize.width / 2)
+                val y = anchorBounds.bottom
+                return IntOffset(x, y)
+            }
+        },
         onDismissRequest = onDismissRequest,
     ) {
         AnimatedVisibility(
@@ -102,19 +102,19 @@ fun ThemePopup(
                             stringResource(Res.string.variants),
                             modifier = Modifier,
                             style =
-                                MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
+                            MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
                         )
                         Icon(
                             Icons.Filled.ArrowDropDown,
                             contentDescription = null,
                             modifier =
-                                Modifier.size(24.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = MutableInteractionSource(),
-                                        onClick = { areVariantsVisible = !areVariantsVisible },
-                                    )
-                                    .rotate(rotation.value),
+                            Modifier.size(24.dp)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = MutableInteractionSource(),
+                                    onClick = { areVariantsVisible = !areVariantsVisible },
+                                )
+                                .rotate(rotation.value),
                         )
                     }
                     AnimatedVisibility(areVariantsVisible) {

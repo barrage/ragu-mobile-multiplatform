@@ -35,7 +35,10 @@ import net.barrage.chatwhitelabel.utils.restClient
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-// Module for use cases
+/**
+ * Module for use cases
+ * Defines single instances for various use cases in the application
+ */
 val useCaseModule = module {
     single<LoginUseCase> { LoginUseCase(get()) }
     single<LogoutUseCase> { LogoutUseCase(get()) }
@@ -48,14 +51,21 @@ val useCaseModule = module {
     single<GetAgentsUseCase> { GetAgentsUseCase(get()) }
     single<EvaluateMessageUseCase> { EvaluateMessageUseCase(get()) }
     single<GetChatByIdUseCase> { GetChatByIdUseCase(get()) }
+    single<ChatUseCase> { ChatUseCase(get(), get(), get(), get(), get(), get(), get()) }
 }
 
-// Module for mappers
-val mapperModule = module {}
+/**
+ * Module for API
+ * Defines a single instance of the API implementation
+ */
+val apiModule = module {
+    single<Api> { ApiImpl(restClient, get()) }
+}
 
-val apiModule = module { single<Api> { ApiImpl(restClient, get()) } }
-
-// Module for repositories
+/**
+ * Module for repositories
+ * Defines single instances for various repositories
+ */
 val repositoryModule = module {
     single<AuthRepository> { AuthRepositoryImpl(get()) }
     single<UserRepository> { UserRepositoryImpl(get()) }
@@ -63,20 +73,29 @@ val repositoryModule = module {
     single<WebSocketRepository> { WebSocketRepositoryImpl(get()) }
     single<ChatRepository> { ChatRepositoryImpl(get()) }
     single<AgentRepository> { AgentRepositoryImpl(get()) }
-    single<ChatUseCase> { ChatUseCase(get(), get(), get(), get(), get(), get(), get()) }
 }
 
-// Module for app
+/**
+ * Module for app-wide dependencies
+ * Defines a single instance for TokenStorage
+ */
 val appModule = module {
     single<TokenStorage> { DataStoreTokenStorage(coreComponent.appPreferences) }
 }
 
-// Module for view models
+/**
+ * Module for view models
+ * Defines view model factories for LoginViewModel and ChatViewModel
+ */
 val viewModelModule = module {
     viewModel { LoginViewModel(get(), get(), get()) }
     viewModel { ChatViewModel(get(), get(), get(), get()) }
 }
 
-// Combine all modules into a single module list for Koin initialization
+/**
+ * Combines all modules into a single list for Koin initialization
+ *
+ * @return A list of all Koin modules used in the application
+ */
 fun allModules() =
-    useCaseModule + apiModule + mapperModule + repositoryModule + appModule + viewModelModule
+    useCaseModule + apiModule + repositoryModule + appModule + viewModelModule

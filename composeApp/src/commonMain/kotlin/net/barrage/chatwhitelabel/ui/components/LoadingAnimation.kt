@@ -26,10 +26,10 @@ fun LoadingAnimation(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Image(
             painter =
-                rememberLottiePainter(
-                    composition = composition,
-                    iterations = Compottie.IterateForever,
-                ),
+            rememberLottiePainter(
+                composition = composition,
+                iterations = Compottie.IterateForever,
+            ),
             contentDescription = null,
             modifier = Modifier.size(200.dp),
         )

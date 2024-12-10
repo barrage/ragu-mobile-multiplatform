@@ -44,34 +44,34 @@ fun DarkLightThemeSwitcher(
 ) {
     val rotation: Float by animateFloatAsState(if (isDarkTheme) 180f else 0f, label = "rotation")
     val distance: Dp by
-        animateDpAsState(if (isDarkTheme) movingDistance else 0.dp, label = "distance")
+    animateDpAsState(if (isDarkTheme) movingDistance else 0.dp, label = "distance")
     val color: Color by animateColorAsState(if (isDarkTheme) LightGray else Gray, label = "color")
 
     Box(
         modifier =
-            modifier
-                .width(movingDistance + iconSize + 8.dp)
-                .clip(RoundedCornerShape(90.dp))
-                .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                .background(if (isDarkTheme) Black else White)
-                .clickable { onClick() }
+        modifier
+            .width(movingDistance + iconSize + 8.dp)
+            .clip(RoundedCornerShape(90.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+            .background(if (isDarkTheme) Black else White)
+            .clickable { onClick() }
     ) {
         Crossfade(
             targetState = isDarkTheme,
             modifier =
-                Modifier.wrapContentSize()
-                    .padding(4.dp)
-                    .size(iconSize)
-                    .offset(x = distance)
-                    .rotate(rotation),
+            Modifier.wrapContentSize()
+                .padding(4.dp)
+                .size(iconSize)
+                .offset(x = distance)
+                .rotate(rotation),
         ) { isChecked ->
             Icon(
                 imageVector =
-                    if (isChecked) vectorResource(Res.drawable.ic_moon)
-                    else vectorResource(Res.drawable.ic_sun),
+                if (isChecked) vectorResource(Res.drawable.ic_moon)
+                else vectorResource(Res.drawable.ic_sun),
                 modifier =
-                    Modifier.size(iconSize)
-                        .then(if (isChecked) Modifier.rotate(180F) else Modifier),
+                Modifier.size(iconSize)
+                    .then(if (isChecked) Modifier.rotate(180F) else Modifier),
                 contentDescription = "dark light theme switch",
                 tint = color,
             )

@@ -6,15 +6,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.tooling.preview.Preview
 import dev.theolm.rinku.compose.ext.Rinku
 
+/**
+ * The main activity for the Android application.
+ * It sets up the UI and handles the edge-to-edge display and system bar styling.
+ */
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,27 +27,21 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(isDarkTheme) {
                     enableEdgeToEdge(
                         statusBarStyle =
-                            if (isDarkTheme) {
-                                SystemBarStyle.dark(Color.TRANSPARENT)
-                            } else {
-                                SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-                            },
+                        if (isDarkTheme) {
+                            SystemBarStyle.dark(Color.TRANSPARENT)
+                        } else {
+                            SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                        },
                         navigationBarStyle =
-                            if (isDarkTheme) {
-                                SystemBarStyle.dark(Color.TRANSPARENT)
-                            } else {
-                                SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-                            },
+                        if (isDarkTheme) {
+                            SystemBarStyle.dark(Color.TRANSPARENT)
+                        } else {
+                            SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                        },
                     )
                 }
                 App(onThemeChange = { darkTheme -> isDarkTheme = darkTheme })
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun AppAndroidPreview() {
-    App()
 }

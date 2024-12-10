@@ -26,14 +26,14 @@ fun ThemeColorBox(
 ) {
     Box(
         modifier =
-            modifier
-                .padding(1.dp)
-                .clip(RoundedCornerShape(6.dp))
-                .background(
-                    if (isSelected) MaterialTheme.colorScheme.inverseOnSurface else Transparent
-                )
-                .clickable(onClick = onClick)
-                .padding(8.dp)
+        modifier
+            .padding(1.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(
+                if (isSelected) MaterialTheme.colorScheme.inverseOnSurface else Transparent
+            )
+            .clickable(onClick = onClick)
+            .padding(8.dp)
     ) {
         if (color == White) {
             DarkLightElement(size = 20.dp)

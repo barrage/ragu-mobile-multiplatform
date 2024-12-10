@@ -96,10 +96,10 @@ fun LoginScreen(
                 Box(modifier = Modifier.fillMaxSize()) {
                     ErrorDialog(
                         state =
-                            ErrorDialogState(
-                                title = stringResource(Res.string.login_error_title),
-                                description =
-                                    "${stringResource(Res.string.login_failed)}${
+                        ErrorDialogState(
+                            title = stringResource(Res.string.login_error_title),
+                            description =
+                            "${stringResource(Res.string.login_failed)}${
                                 if (isDebug)
                                     ": ${
                                         if ((loginState as LoginScreenState.Error).message != null) (loginState as LoginScreenState.Error).message else stringResource(
@@ -108,22 +108,22 @@ fun LoginScreen(
                                     }"
                                 else ""
                             }",
-                                onDismissRequest = {},
-                                confirmButton = {
-                                    Button(
-                                        onClick = {
-                                            scope.launch {
-                                                val codeVerifier = viewModel.generateCodeVerifier()
-                                                rememberedOnGoogleLogin(codeVerifier)
-                                            }
+                            onDismissRequest = {},
+                            confirmButton = {
+                                Button(
+                                    onClick = {
+                                        scope.launch {
+                                            val codeVerifier = viewModel.generateCodeVerifier()
+                                            rememberedOnGoogleLogin(codeVerifier)
                                         }
-                                    ) {
-                                        Text(
-                                            stringResource(Res.string.login_error_retry_button_text)
-                                        )
                                     }
-                                },
-                            ),
+                                ) {
+                                    Text(
+                                        stringResource(Res.string.login_error_retry_button_text)
+                                    )
+                                }
+                            },
+                        ),
                         modifier = Modifier.padding(20.dp).align(Alignment.Center),
                     )
                 }
@@ -136,7 +136,7 @@ fun LoginScreen(
 fun LoginContent(onGoogleLogin: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         colors =
-            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         modifier = modifier.fillMaxWidth(),
     ) {
         Column(

@@ -60,9 +60,9 @@ fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
                     state.onTextChange(it.text)
                 },
                 textStyle =
-                    state.textStyle
-                        .copy(color = state.textColor, textAlign = TextAlign.End)
-                        .fixCenterTextOnAllPlatforms(),
+                state.textStyle
+                    .copy(color = state.textColor, textAlign = TextAlign.End)
+                    .fixCenterTextOnAllPlatforms(),
                 modifier = Modifier.width(IntrinsicSize.Min).focusRequester(focusRequester),
                 enabled = true,
                 singleLine = true,

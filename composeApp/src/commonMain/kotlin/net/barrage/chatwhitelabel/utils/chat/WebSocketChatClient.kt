@@ -9,7 +9,6 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
 import io.ktor.websocket.readReason
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
@@ -29,6 +28,7 @@ import net.barrage.chatwhitelabel.utils.Constants
 import net.barrage.chatwhitelabel.utils.debugLog
 import net.barrage.chatwhitelabel.utils.debugLogError
 import net.barrage.chatwhitelabel.utils.wsClient
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * WebSocketChatClient manages WebSocket connections for chat functionality.

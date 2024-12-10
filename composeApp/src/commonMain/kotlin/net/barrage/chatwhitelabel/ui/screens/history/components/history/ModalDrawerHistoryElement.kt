@@ -22,22 +22,22 @@ fun ModalDrawerHistoryElement(
 ) {
     Box(
         modifier =
-            modifier
-                .then(
-                    if (viewState.isSelected) {
-                        Modifier.background(MaterialTheme.colorScheme.surfaceDim)
-                    } else {
-                        Modifier
-                    }
-                )
-                .clickable { onClick(viewState) }
-                .padding(8.dp)
+        modifier
+            .then(
+                if (viewState.isSelected) {
+                    Modifier.background(MaterialTheme.colorScheme.surfaceDim)
+                } else {
+                    Modifier
+                }
+            )
+            .clickable { onClick(viewState) }
+            .padding(8.dp)
     ) {
         Text(
             modifier =
-                Modifier.padding(vertical = 8.dp)
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 12.dp),
+            Modifier.padding(vertical = 8.dp)
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 12.dp),
             style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
             text = viewState.title,
             maxLines = 1,

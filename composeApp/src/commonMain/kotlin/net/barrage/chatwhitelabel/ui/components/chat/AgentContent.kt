@@ -47,15 +47,15 @@ fun AgentContent(
         )
         AgentList(
             agents =
-                agents
-                    .map { agent ->
-                        AgentItemState(
-                            agent = agent,
-                            onAgentClick = { onAgentClick(agent) },
-                            selectedAgent = selectedAgent,
-                        )
-                    }
-                    .toImmutableList(),
+            agents
+                .map { agent ->
+                    AgentItemState(
+                        agent = agent,
+                        onAgentClick = { onAgentClick(agent) },
+                        selectedAgent = selectedAgent,
+                    )
+                }
+                .toImmutableList(),
             modifier = Modifier.weight(1f),
         )
     }

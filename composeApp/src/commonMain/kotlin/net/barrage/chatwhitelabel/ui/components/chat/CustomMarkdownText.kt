@@ -33,27 +33,27 @@ private fun TightWrapText(text: AnnotatedString) {
     Text(
         text = text,
         modifier =
-            Modifier.layout { measurable, constraints ->
-                val placeable = measurable.measure(constraints)
-                val newTextLayoutResult = textLayoutResult!!
+        Modifier.layout { measurable, constraints ->
+            val placeable = measurable.measure(constraints)
+            val newTextLayoutResult = textLayoutResult!!
 
-                if (newTextLayoutResult.lineCount == 0) {
-                    layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
-                } else {
-                    val minX =
-                        (0 until newTextLayoutResult.lineCount).minOf(
-                            newTextLayoutResult::getLineLeft
-                        )
-                    val maxX =
-                        (0 until newTextLayoutResult.lineCount).maxOf(
-                            newTextLayoutResult::getLineRight
-                        )
+            if (newTextLayoutResult.lineCount == 0) {
+                layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
+            } else {
+                val minX =
+                    (0 until newTextLayoutResult.lineCount).minOf(
+                        newTextLayoutResult::getLineLeft
+                    )
+                val maxX =
+                    (0 until newTextLayoutResult.lineCount).maxOf(
+                        newTextLayoutResult::getLineRight
+                    )
 
-                    layout(ceil(maxX - minX).toInt(), placeable.height) {
-                        placeable.place(-floor(minX).toInt(), 0)
-                    }
+                layout(ceil(maxX - minX).toInt(), placeable.height) {
+                    placeable.place(-floor(minX).toInt(), 0)
                 }
-            },
+            }
+        },
         onTextLayout = { textLayoutResult = it },
     )
 }

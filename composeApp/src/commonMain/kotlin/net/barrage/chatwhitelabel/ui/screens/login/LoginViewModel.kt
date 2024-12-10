@@ -16,20 +16,41 @@ import net.barrage.chatwhitelabel.utils.PKCEUtil
 import net.barrage.chatwhitelabel.utils.TokenStorage
 import net.barrage.chatwhitelabel.utils.debugLogError
 
+/**
+ * ViewModel responsible for managing the login process and state.
+ *
+ * @property loginUseCase Use case for handling the login process
+ * @property currentUserUseCase Use case for fetching the current user's information
+ * @property tokenStorage Storage mechanism for managing authentication tokens
+ */
 class LoginViewModel(
     private val loginUseCase: LoginUseCase,
     private val currentUserUseCase: CurrentUserUseCase,
     private val tokenStorage: TokenStorage,
 ) : ViewModel() {
     private val _loginState = MutableStateFlow<LoginScreenState>(LoginScreenState.Idle)
+
+    /**
+     * Represents the current state of the login process.
+     */
     val loginState: StateFlow<LoginScreenState> = _loginState.asStateFlow()
 
+    /**
+     * Generates a code verifier for PKCE (Proof Key for Code Exchange) authentication.
+     *
+     * @return The generated code verifier string
+     */
     suspend fun generateCodeVerifier(): String {
         val codeVerifier = PKCEUtil.generateCodeVerifier()
         tokenStorage.saveCodeVerifier(codeVerifier)
         return codeVerifier
     }
 
+    /**
+     * Initiates the login process with the provided authorization code.
+     *
+     * @param code The authorization code received from the authentication server
+     */
     suspend fun login(code: String) {
         _loginState.value = LoginScreenState.Loading
         val codeVerifier = tokenStorage.getCodeVerifier()
@@ -66,6 +87,9 @@ class LoginViewModel(
             }
     }
 
+    /**
+     * Fetches the current user's information.
+     */
     private fun getCurrentUser() {
         viewModelScope.launch {
             _loginState.value =
@@ -87,15 +111,25 @@ class LoginViewModel(
         }
     }
 
+    /**
+     * Clears the ViewModel state, resetting it to the initial state.
+     */
     fun clearViewModel() {
         _loginState.value = LoginScreenState.Idle
         clearCodeVerifier()
     }
 
+    /**
+     * Clears the stored code verifier.
+     */
     private fun clearCodeVerifier() {
         viewModelScope.launch { tokenStorage.clearCodeVerifier() }
     }
 
+    /**
+     * Called when the ViewModel is about to be destroyed.
+     * Ensures that the code verifier is cleared for security reasons.
+     */
     override fun onCleared() {
         super.onCleared()
         clearCodeVerifier()

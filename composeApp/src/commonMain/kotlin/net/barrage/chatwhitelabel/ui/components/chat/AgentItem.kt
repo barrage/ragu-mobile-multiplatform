@@ -30,12 +30,12 @@ fun AgentItem(state: AgentItemState, modifier: Modifier = Modifier) {
         onClick = { state.onAgentClick(state.agent) },
         modifier = modifier,
         colors =
-            CardDefaults.cardColors(
-                containerColor =
-                    if (state.selectedAgent == state.agent)
-                        MaterialTheme.colorScheme.surfaceContainerHighest
-                    else MaterialTheme.colorScheme.surfaceContainer
-            ),
+        CardDefaults.cardColors(
+            containerColor =
+            if (state.selectedAgent == state.agent)
+                MaterialTheme.colorScheme.surfaceContainerHighest
+            else MaterialTheme.colorScheme.surfaceContainer
+        ),
         border = CardDefaults.outlinedCardBorder(enabled = state.selectedAgent == state.agent),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {

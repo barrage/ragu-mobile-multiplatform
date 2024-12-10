@@ -43,30 +43,30 @@ fun ChatTitle(state: ChatTitleState, maxWidth: Dp, modifier: Modifier = Modifier
     ) {
         TypewriterText(
             state =
-                TypewriterTextState(
-                    text = state.title,
-                    isEditing = state.isEditingTitle,
-                    onTextChange = state.onTitleChange,
-                    textStyle = MaterialTheme.typography.titleMedium,
-                    textColor = MaterialTheme.colorScheme.onSurface,
-                ),
+            TypewriterTextState(
+                text = state.title,
+                isEditing = state.isEditingTitle,
+                onTextChange = state.onTitleChange,
+                textStyle = MaterialTheme.typography.titleMedium,
+                textColor = MaterialTheme.colorScheme.onSurface,
+            ),
             modifier = Modifier.widthIn(min = 0.dp, max = maxWidth - 24.dp),
         )
         Column {
             CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
                 IconButton(
                     onClick =
-                        if (state.isEditingTitle) state.onTitleChangeConfirmation
-                        else state.onThreeDotsClick,
+                    if (state.isEditingTitle) state.onTitleChangeConfirmation
+                    else state.onThreeDotsClick,
                     modifier =
-                        Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp),
+                    Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp),
                 ) {
                     Icon(
                         painter =
-                            painterResource(
-                                if (state.isEditingTitle) Res.drawable.ic_check
-                                else Res.drawable.ic_three_dots
-                            ),
+                        painterResource(
+                            if (state.isEditingTitle) Res.drawable.ic_check
+                            else Res.drawable.ic_three_dots
+                        ),
                         contentDescription = null,
                         modifier = Modifier.padding(4.dp),
                     )
@@ -74,23 +74,23 @@ fun ChatTitle(state: ChatTitleState, maxWidth: Dp, modifier: Modifier = Modifier
             }
             ChatPopupMenu(
                 state =
-                    ChatPopupMenuState(
-                        visible = state.isMenuVisible,
-                        onDismiss = state.onDismiss,
-                        menuItems =
-                            listOf(
-                                PopupMenuItemState(
-                                    Icons.Filled.Edit,
-                                    stringResource(Res.string.popup_menu_edit_title),
-                                    state.onEditTitleClick,
-                                ),
-                                PopupMenuItemState(
-                                    Icons.Filled.Delete,
-                                    stringResource(Res.string.popup_menu_delete_chat),
-                                    state.onDeleteChatClick,
-                                ),
-                            ),
-                    )
+                ChatPopupMenuState(
+                    visible = state.isMenuVisible,
+                    onDismiss = state.onDismiss,
+                    menuItems =
+                    listOf(
+                        PopupMenuItemState(
+                            Icons.Filled.Edit,
+                            stringResource(Res.string.popup_menu_edit_title),
+                            state.onEditTitleClick,
+                        ),
+                        PopupMenuItemState(
+                            Icons.Filled.Delete,
+                            stringResource(Res.string.popup_menu_delete_chat),
+                            state.onDeleteChatClick,
+                        ),
+                    ),
+                )
             )
         }
         if (state.isEditingTitle) {
@@ -98,7 +98,7 @@ fun ChatTitle(state: ChatTitleState, maxWidth: Dp, modifier: Modifier = Modifier
                 IconButton(
                     onClick = state.onTitleChangeDismiss,
                     modifier =
-                        Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp),
+                    Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp),
                 ) {
                     Icon(
                         Icons.Filled.Close,

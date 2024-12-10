@@ -15,12 +15,12 @@ fun fontFamily(): FontFamily {
 fun customTypography(): CustomTypography {
     return CustomTypography(
         textBase =
-            TextStyle(
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-            )
+        TextStyle(
+            fontFamily = FontFamily.Default,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+        )
     )
 }
 

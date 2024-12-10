@@ -11,6 +11,19 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
+/**
+ * iOS-specific implementation of the dataStorePreferences function.
+ *
+ * This function creates and returns a DataStore instance for managing preferences
+ * using the DataStore library, adapted for iOS.
+ *
+ * @param corruptionHandler A handler for dealing with data corruption. Can be null.
+ * @param coroutineScope The CoroutineScope to be used for DataStore operations.
+ * @param migrations A list of data migrations to be applied to the DataStore.
+ * @return A DataStore instance for managing preferences.
+ *
+ * @OptIn(ExperimentalForeignApi::class) This function uses experimental foreign API features.
+ */
 @OptIn(ExperimentalForeignApi::class)
 actual fun dataStorePreferences(
     corruptionHandler: ReplaceFileCorruptionHandler<Preferences>?,

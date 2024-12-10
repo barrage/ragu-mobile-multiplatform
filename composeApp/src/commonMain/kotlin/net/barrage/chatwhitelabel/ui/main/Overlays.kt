@@ -34,16 +34,16 @@ fun NoInternetOverlay(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
         ErrorDialog(
             state =
-                ErrorDialogState(
-                    title = stringResource(Res.string.no_internet_connection_title),
-                    description = stringResource(Res.string.no_internet_connection_description),
-                    onDismissRequest = {
-                        // Do nothing
-                    },
-                    confirmButton = {
-                        // Do nothing
-                    },
-                ),
+            ErrorDialogState(
+                title = stringResource(Res.string.no_internet_connection_title),
+                description = stringResource(Res.string.no_internet_connection_description),
+                onDismissRequest = {
+                    // Do nothing
+                },
+                confirmButton = {
+                    // Do nothing
+                },
+            ),
             modifier = Modifier.fillMaxWidth().padding(20.dp).align(Alignment.Center),
         )
     }
