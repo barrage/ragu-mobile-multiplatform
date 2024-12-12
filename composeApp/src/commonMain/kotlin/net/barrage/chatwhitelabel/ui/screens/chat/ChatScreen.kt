@@ -33,6 +33,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.agent_inactive_text
 import chatwhitelabel.composeapp.generated.resources.delete_chat_description
@@ -52,8 +54,7 @@ import net.barrage.chatwhitelabel.ui.components.chat.ChatTitle
 import net.barrage.chatwhitelabel.ui.components.chat.ChatTitleState
 import net.barrage.chatwhitelabel.ui.components.chat.ErrorContent
 import net.barrage.chatwhitelabel.ui.components.chat.MessageList
-import net.barrage.chatwhitelabel.ui.screens.profile.ProfileCard
-import net.barrage.chatwhitelabel.utils.debugLog
+import net.barrage.chatwhitelabel.ui.screens.profile.ProfileContent
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -242,10 +243,13 @@ fun ChatScreen(
         }
 
         if (profileVisible) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                ProfileCard(
+            Dialog(
+                onDismissRequest = changeProfileVisibility,
+                properties = DialogProperties(usePlatformDefaultWidth = false),
+            ) {
+                ProfileContent(
                     viewState = profileViewState,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                     onCloseClick = changeProfileVisibility,
                     onLogoutClick = {
                         changeProfileVisibility()
@@ -275,6 +279,8 @@ fun ChatScreen(
                     Text(stringResource(Res.string.no))
                 }
             },
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
         )
     }
     if (showLogoutConfirmation) {
@@ -297,6 +303,8 @@ fun ChatScreen(
                     Text(stringResource(Res.string.no))
                 }
             },
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
         )
     }
 }
