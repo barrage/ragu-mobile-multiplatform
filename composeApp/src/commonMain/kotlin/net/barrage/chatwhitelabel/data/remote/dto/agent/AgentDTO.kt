@@ -10,12 +10,9 @@ data class AgentResponse(val total: Int, val items: List<AgentDTO>)
 data class AgentDTO(
     val active: Boolean,
     val createdAt: Instant,
-    val description: String?,
-    val embeddingModel: String,
-    val embeddingProvider: String,
+    val description: String? = null,
     val id: String,
-    val language: String,
+    val language: String? = null,
     val name: String,
     val updatedAt: Instant,
-    val vectorProvider: String,
 )
