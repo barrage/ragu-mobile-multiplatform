@@ -98,6 +98,8 @@ kotlin {
             implementation(libs.kotlin.crypto.secure.random)
             implementation(libs.multiplatform.markdown.renderer.m3)
             implementation(libs.multiplatform.markdown.renderer.code)
+            implementation("com.svenjacobs.reveal:reveal-core:3.1.1")
+            implementation("com.svenjacobs.reveal:reveal-shapes:3.1.1")
         }
 
         /*desktopMain.dependencies {

@@ -20,15 +20,42 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.ic_chat_agent
+import com.svenjacobs.reveal.RevealShape
+import com.svenjacobs.reveal.RevealState
+import com.svenjacobs.reveal.revealable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import net.barrage.chatwhitelabel.ui.components.reveal.RevealKeys
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun AgentItem(state: AgentItemState, modifier: Modifier = Modifier) {
+fun AgentItem(
+    state: AgentItemState,
+    revealState: RevealState,
+    scope: CoroutineScope,
+    index: Int,
+    modifier: Modifier = Modifier
+) {
+
     Card(
         shape = RoundedCornerShape(12.dp),
         onClick = { state.onAgentClick(state.agent) },
-        modifier = modifier,
+        modifier = modifier.then(
+            if (index == 0) Modifier.revealable(
+                key = RevealKeys.AgentItem,
+                state = revealState,
+                shape = RevealShape.RoundRect(12.dp),
+                onClick = {
+                    scope.launch {
+                        revealState.hide()
+                        delay(1000)
+                        revealState.reveal(RevealKeys.ChatInput)
+                    }
+                },
+            ) else Modifier
+        ),
         colors =
         CardDefaults.cardColors(
             containerColor =

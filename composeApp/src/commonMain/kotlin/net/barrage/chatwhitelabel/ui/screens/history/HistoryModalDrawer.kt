@@ -24,6 +24,13 @@ import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.ic_brain
 import chatwhitelabel.composeapp.generated.resources.new_chat
 import com.materialkolor.PaletteStyle
+import com.svenjacobs.reveal.RevealShape
+import com.svenjacobs.reveal.RevealState
+import com.svenjacobs.reveal.revealable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import net.barrage.chatwhitelabel.ui.components.reveal.RevealKeys
 import net.barrage.chatwhitelabel.ui.screens.chat.ChatViewModel
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerContentTopBar
 import net.barrage.chatwhitelabel.ui.screens.history.components.ModalDrawerHistoryContent
@@ -43,6 +50,8 @@ fun ModalDrawer(
     onDarkLightModeClick: () -> Unit,
     onUserClick: () -> Unit,
     changeDrawerVisibility: () -> Unit,
+    revealState: RevealState,
+    scope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
     val historyViewState by viewModel.historyViewState.collectAsState()
@@ -58,28 +67,56 @@ fun ModalDrawer(
                 onSelectThemeClick = onSelectThemeClick,
                 onSelectVariantClick = onSelectVariantClick,
                 onDarkLightModeClick = onDarkLightModeClick,
+                revealState = revealState,
+                scope = scope,
             )
-            HistoryDivider()
-            Row(
-                modifier =
-                Modifier.fillMaxWidth()
-                    .clickable {
-                        viewModel.newChat()
-                        changeDrawerVisibility()
-                    }
-                    .padding(24.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(painter = painterResource(Res.drawable.ic_brain), null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    stringResource(Res.string.new_chat),
-                    style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
+            Column(
+                modifier = Modifier.revealable(
+                    key = RevealKeys.MenuNewChat,
+                    shape = RevealShape.RoundRect(12.dp),
+                    state = revealState,
+                    onClick = {
+                        scope.launch {
+                            revealState.hide()
+                            delay(1000)
+                            revealState.reveal(RevealKeys.MenuHistory)
+                        }
+                    },
                 )
+            ) {
+                HistoryDivider()
+                Row(
+                    modifier =
+                    Modifier.fillMaxWidth()
+                        .clickable {
+                            viewModel.newChat()
+                            changeDrawerVisibility()
+                        }
+                        .padding(24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(painter = painterResource(Res.drawable.ic_brain), null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        stringResource(Res.string.new_chat),
+                        style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
+                    )
+                }
+                HistoryDivider()
             }
-            HistoryDivider()
             ModalDrawerHistoryContent(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
+                modifier = Modifier.weight(1f).fillMaxWidth().revealable(
+                    key = RevealKeys.MenuHistory,
+                    shape = RevealShape.RoundRect(12.dp),
+                    state = revealState,
+                    onClick = {
+                        scope.launch {
+                            revealState.hide()
+                            delay(1000)
+                            revealState.reveal(RevealKeys.Account)
+                        }
+                    },
+                ),
                 viewState = historyViewState.history,
                 onElementClick = {
                     viewModel.getChatById(id = it.id, title = it.title)
@@ -92,6 +129,8 @@ fun ModalDrawer(
                 modifier = Modifier.fillMaxWidth(),
                 viewState = currentUserViewState,
                 onUserClick = onUserClick,
+                revealState = revealState,
+                scope = scope,
             )
         }
     }

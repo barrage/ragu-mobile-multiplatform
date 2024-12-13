@@ -16,6 +16,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.svenjacobs.reveal.RevealCanvasState
+import com.svenjacobs.reveal.RevealState
 import dev.theolm.rinku.DeepLink
 import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.domain.Response
@@ -39,6 +41,10 @@ fun AppNavHost(
     onLogoutSuccess: () -> Unit,
     modifier: Modifier = Modifier,
     changeProfileVisibility: () -> Unit,
+    revealCanvasState: RevealCanvasState,
+    revealState: RevealState,
+    inputEnabled: Boolean,
+    changeInputEnabled: (Boolean) -> Unit,
 ) {
     val currentUserUseCase: CurrentUserUseCase = koinInject()
     var startDestination by remember { mutableStateOf<String?>(null) }
@@ -81,6 +87,10 @@ fun AppNavHost(
                         appState.navController.navigateSingleTopTo(Login.route)
                         onLogoutSuccess()
                     },
+                    inputEnabled = inputEnabled,
+                    changeInputEnabled = changeInputEnabled,
+                    revealCanvasState = revealCanvasState,
+                    revealState = revealState,
                 )
             }
             composable(Login.route) {

@@ -25,11 +25,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.svenjacobs.reveal.RevealShape
+import com.svenjacobs.reveal.RevealState
+import com.svenjacobs.reveal.revealable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import net.barrage.chatwhitelabel.ui.components.reveal.RevealKeys
 import net.barrage.chatwhitelabel.ui.theme.customTypography
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ChatInput(state: ChatInputState, modifier: Modifier = Modifier) {
+fun ChatInput(
+    state: ChatInputState,
+    revealState: RevealState,
+    scope: CoroutineScope,
+    modifier: Modifier = Modifier
+) {
     Row(
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -47,7 +59,18 @@ fun ChatInput(state: ChatInputState, modifier: Modifier = Modifier) {
                     state.focusManager.clearFocus()
                 }
             ),
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).revealable(
+                key = RevealKeys.ChatInput,
+                shape = RevealShape.RoundRect(12.dp),
+                state = revealState,
+                onClick = {
+                    scope.launch {
+                        revealState.hide()
+                        delay(1000)
+                        revealState.reveal(RevealKeys.Menu)
+                    }
+                },
+            ),
             interactionSource = state.chatInteractionSource,
             shape = RoundedCornerShape(12.dp),
             colors =

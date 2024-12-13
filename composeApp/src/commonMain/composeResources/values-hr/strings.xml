@@ -50,5 +50,16 @@
     <string name="sign_out">Odjava</string>
     <string name="sign_out_title">Odjava</string>
     <string name="sign_out_description">Jeste li sigurni da želite nastaviti s odjavom?</string>
+    <string name="reveal_account">Otključajte svoj profil: Pregledajte detalje profila ili se odjavite</string>
+    <string name="reveal_agent_item">Odaberite svog AI sugovornika: Dodirnite za odabir agenta za vaš razgovor</string>
+    <string name="reveal_chat_input">Razgovarajte sa svojim AI-jem: Ovdje upišite i pošaljite svoju poruku odabranom agentu</string>
+    <string name="reveal_menu">Istražite više opcija: Dodirnite za otvaranje izbornika</string>
+    <string name="reveal_menu_close">Sve gotovo? Dodirnite ovdje za zatvaranje izbornika</string>
+    <string name="reveal_menu_color">Učinite ga svojim: Personalizirajte boju i varijantu teme</string>
+    <string name="reveal_menu_history">Vaše putovanje kroz razgovore: Ovdje pregledajte prošle razgovore</string>
+    <string name="reveal_menu_new_chat">Započnite iznova: Pokrenite novi razgovor ovdje</string>
+    <string name="reveal_menu_theme">Dan ili noć? Odaberite savršeni način prikaza</string>
+    <string name="reveal_menu_item">Ponovno otvorite prošli razgovor: Dodirnite za nastavak gdje ste stali</string>
+    <string name="reveal_title_menu">Organizirajte svoje misli: Uredite naslov razgovora ili obrišite povijest</string>
 
 </resources>

@@ -50,4 +50,15 @@
     <string name="sign_out">Sign Out</string>
     <string name="sign_out_title">Sign Out</string>
     <string name="sign_out_description">Are you sure you want to proceed with signing out?</string>
+    <string name="reveal_account">Unlock your profile: View profile details or sign out</string>
+    <string name="reveal_agent_item">Choose your AI companion: Tap to select an agent for your conversation</string>
+    <string name="reveal_chat_input">Chat with your AI: Type your message to the selected agent here</string>
+    <string name="reveal_menu">Explore more options: Tap to open the menu</string>
+    <string name="reveal_menu_close">All set? Tap here to close the menu</string>
+    <string name="reveal_menu_color">Make it yours: Personalize your theme color and variant</string>
+    <string name="reveal_menu_history">Your chat journey: Revisit past conversations here</string>
+    <string name="reveal_menu_new_chat">Start fresh: Begin a new conversation here</string>
+    <string name="reveal_menu_theme">Day or night? Choose your perfect viewing mode</string>
+    <string name="reveal_menu_item">Reopen a past conversation: Tap to continue where you left off</string>
+    <string name="reveal_title_menu">Organize your thoughts: Edit chat title or clear history</string>
 </resources>

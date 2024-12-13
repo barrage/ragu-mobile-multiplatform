@@ -13,8 +13,10 @@ import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.agents_label
 import chatwhitelabel.composeapp.generated.resources.chat_header
 import chatwhitelabel.composeapp.generated.resources.chat_sub_header
+import com.svenjacobs.reveal.RevealState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
 import net.barrage.chatwhitelabel.domain.model.Agent
 import net.barrage.chatwhitelabel.ui.components.AppIconCard
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
@@ -25,6 +27,8 @@ fun AgentContent(
     agents: ImmutableList<Agent>,
     selectedAgent: Agent?,
     onAgentClick: (Agent) -> Unit,
+    revealState: RevealState,
+    scope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -56,6 +60,8 @@ fun AgentContent(
                     )
                 }
                 .toImmutableList(),
+            revealState = revealState,
+            scope = scope,
             modifier = Modifier.weight(1f),
         )
     }

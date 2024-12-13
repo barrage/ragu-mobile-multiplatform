@@ -25,6 +25,12 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.error_loading_data
+import com.svenjacobs.reveal.RevealShape
+import com.svenjacobs.reveal.RevealState
+import com.svenjacobs.reveal.revealable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import net.barrage.chatwhitelabel.ui.components.reveal.RevealKeys
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.profile.viewstate.ProfileViewState
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
@@ -35,8 +41,22 @@ fun CurrentUserCard(
     viewState: HistoryScreenStates<ProfileViewState>,
     modifier: Modifier = Modifier,
     onUserClick: () -> Unit,
+    revealState: RevealState,
+    scope: CoroutineScope,
 ) {
-    Card(modifier.padding(16.dp)) {
+    Card(
+        modifier.padding(16.dp)
+            .revealable(
+                key = RevealKeys.Account,
+                shape = RevealShape.RoundRect(12.dp),
+                state = revealState,
+                onClick = {
+                    scope.launch {
+                        revealState.hide()
+                    }
+                },
+            )
+    ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             when (viewState) {
                 HistoryScreenStates.Error -> {

@@ -7,15 +7,23 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.materialkolor.PaletteStyle
+import com.svenjacobs.reveal.Reveal
+import com.svenjacobs.reveal.RevealCanvasState
+import com.svenjacobs.reveal.rememberRevealState
 import dev.theolm.rinku.DeepLink
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.navigation.Chat
 import net.barrage.chatwhitelabel.ui.components.TopBar
+import net.barrage.chatwhitelabel.ui.components.reveal.RevealKeys
+import net.barrage.chatwhitelabel.ui.components.reveal.RevealOverlayContent
 import net.barrage.chatwhitelabel.ui.screens.history.ModalDrawer
 
 @Composable
@@ -32,46 +40,122 @@ fun MainContent(
     onLogoutSuccess: () -> Unit,
     modifier: Modifier = Modifier,
     onDarkLightModeClick: () -> Unit,
+    revealCanvasState: RevealCanvasState,
 ) {
     val drawerState = appState.drawerState
     val scope = rememberCoroutineScope()
-    ModalNavigationDrawer(
-        modifier = modifier,
-        drawerState = drawerState,
-        gesturesEnabled = profileVisible.not() && appState.currentScreen == Chat,
-        drawerContent = {
-            ModalDrawer(
-                isDarkMode = isDarkMode,
-                currentTheme = currentTheme,
-                currentVariant = currentVariant,
-                onSelectThemeClick = onSelectThemeClick,
-                viewModel = appState.chatViewModel,
-                onSelectVariantClick = onSelectVariantClick,
-                onDarkLightModeClick = onDarkLightModeClick,
-                changeDrawerVisibility = { scope.launch { drawerState.close() } },
-                onUserClick = {
-                    onProfileVisibilityChange()
-                    scope.launch { drawerState.close() }
-                },
-                modifier = Modifier.fillMaxWidth(0.8f),
-            )
+    val revealState = rememberRevealState()
+    val inputEnabled = remember { mutableStateOf(true) }
+    Reveal(
+        onOverlayClick = { key ->
+            appState.coroutineScope.launch {
+                revealState.hide()
+                when (key as RevealKeys) {
+                    RevealKeys.Menu -> {
+                        delay(1000)
+                        drawerState.open()
+                        revealState.reveal(RevealKeys.MenuTheme)
+                    }
+
+                    RevealKeys.TitleMenu -> {
+                        delay(1000)
+                        revealState.reveal(RevealKeys.TitleMenu)
+                    }
+
+                    RevealKeys.Account -> {
+                        delay(1000)
+                        revealState.reveal(RevealKeys.MenuClose)
+                    }
+
+                    RevealKeys.AgentItem -> {
+                        delay(1000)
+                        revealState.reveal(RevealKeys.ChatInput)
+                    }
+
+                    RevealKeys.ChatInput -> {
+                        delay(1000)
+                        revealState.reveal(RevealKeys.Menu)
+                    }
+
+                    RevealKeys.MenuClose -> {
+                        delay(1000)
+                        drawerState.close()
+                        inputEnabled.value = true
+                    }
+
+                    RevealKeys.MenuColor -> {
+                        delay(1000)
+                        revealState.reveal(RevealKeys.MenuNewChat)
+                    }
+
+                    RevealKeys.MenuHistory -> {
+                        delay(1000)
+                        revealState.reveal(RevealKeys.Account)
+                    }
+
+                    RevealKeys.MenuTheme -> {
+                        delay(1000)
+                        revealState.reveal(RevealKeys.MenuColor)
+                    }
+
+                    RevealKeys.MenuNewChat -> {
+                        delay(1000)
+                        revealState.reveal(RevealKeys.MenuHistory)
+                    }
+                }
+            }
         },
+        modifier = modifier,
+        revealCanvasState = revealCanvasState,
+        revealState = revealState,
+        overlayContent = { key -> RevealOverlayContent(key) },
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            if (appState.currentScreen == Chat) {
-                TopBar(
-                    onMenuClick = { scope.launch { drawerState.open() } },
-                    modifier = Modifier.padding(top = 56.dp).padding(horizontal = 10.dp),
+        ModalNavigationDrawer(
+            modifier = modifier,
+            drawerState = drawerState,
+            gesturesEnabled = profileVisible.not() && appState.currentScreen == Chat && inputEnabled.value,
+            drawerContent = {
+                ModalDrawer(
+                    isDarkMode = isDarkMode,
+                    currentTheme = currentTheme,
+                    currentVariant = currentVariant,
+                    onSelectThemeClick = onSelectThemeClick,
+                    viewModel = appState.chatViewModel,
+                    onSelectVariantClick = onSelectVariantClick,
+                    onDarkLightModeClick = onDarkLightModeClick,
+                    changeDrawerVisibility = { scope.launch { drawerState.close() } },
+                    onUserClick = {
+                        onProfileVisibilityChange()
+                        scope.launch { drawerState.close() }
+                    },
+                    revealState = revealState,
+                    scope = appState.coroutineScope,
+                    modifier = Modifier.fillMaxWidth(0.8f),
+                )
+            },
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                if (appState.currentScreen == Chat) {
+                    TopBar(
+                        onMenuClick = { scope.launch { drawerState.open() } },
+                        revealState = revealState,
+                        scope = appState.coroutineScope,
+                        modifier = Modifier.padding(top = 56.dp).padding(horizontal = 10.dp),
+                    )
+                }
+                AppNavHost(
+                    appState = appState,
+                    deepLink = deepLink,
+                    profileVisible = profileVisible,
+                    modifier = Modifier.weight(1f).padding(bottom = 20.dp).navigationBarsPadding(),
+                    changeProfileVisibility = onProfileVisibilityChange,
+                    onLogoutSuccess = onLogoutSuccess,
+                    revealCanvasState = revealCanvasState,
+                    revealState = revealState,
+                    inputEnabled = inputEnabled.value,
+                    changeInputEnabled = { inputEnabled.value = it },
                 )
             }
-            AppNavHost(
-                appState = appState,
-                deepLink = deepLink,
-                profileVisible = profileVisible,
-                modifier = Modifier.weight(1f).padding(bottom = 20.dp).navigationBarsPadding(),
-                changeProfileVisibility = onProfileVisibilityChange,
-                onLogoutSuccess = onLogoutSuccess,
-            )
         }
     }
 }

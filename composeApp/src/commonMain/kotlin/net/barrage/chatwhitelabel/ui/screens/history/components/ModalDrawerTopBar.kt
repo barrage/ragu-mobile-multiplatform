@@ -25,6 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.materialkolor.PaletteStyle
+import com.svenjacobs.reveal.RevealShape
+import com.svenjacobs.reveal.RevealState
+import com.svenjacobs.reveal.revealable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import net.barrage.chatwhitelabel.ui.components.reveal.RevealKeys
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryModalDrawerContentViewState
 import net.barrage.chatwhitelabel.ui.screens.history.components.topbar.DarkLightThemeSwitcher
 import net.barrage.chatwhitelabel.ui.screens.history.components.topbar.ThemePopup
@@ -43,6 +50,8 @@ fun ModalDrawerContentTopBar(
     onChangeDrawerVisibility: () -> Unit,
     modifier: Modifier = Modifier,
     onDarkLightModeClick: () -> Unit,
+    revealState: RevealState,
+    scope: CoroutineScope,
 ) {
     val supportedThemeColumns = 4
     val themeRows = ceil(viewState.supportedThemes.size.toFloat() / supportedThemeColumns).toInt()
@@ -50,7 +59,20 @@ fun ModalDrawerContentTopBar(
 
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-            IconButton(onClick = onChangeDrawerVisibility) {
+            IconButton(
+                onClick = onChangeDrawerVisibility, modifier = Modifier.revealable(
+                    key = RevealKeys.MenuClose,
+                    shape = RevealShape.Circle,
+                    state = revealState,
+                    onClick = {
+                        scope.launch {
+                            revealState.hide()
+                            delay(1000)
+                            revealState.reveal(RevealKeys.MenuTheme)
+                        }
+                    },
+                )
+            ) {
                 Icon(imageVector = Icons.Filled.Close, contentDescription = null)
             }
         }
@@ -62,14 +84,36 @@ fun ModalDrawerContentTopBar(
             DarkLightThemeSwitcher(
                 isDarkTheme = isDarkMode,
                 onClick = onDarkLightModeClick,
-                modifier = Modifier.fillMaxHeight(),
+                modifier = Modifier.fillMaxHeight().revealable(
+                    key = RevealKeys.MenuTheme,
+                    shape = RevealShape.RoundRect(26.dp),
+                    state = revealState,
+                    onClick = {
+                        scope.launch {
+                            revealState.hide()
+                            delay(1000)
+                            revealState.reveal(RevealKeys.MenuColor)
+                        }
+                    },
+                ),
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 ThemeSelectorButton(
                     selectedTheme = currentTheme,
                     onClick = { showPopup = !showPopup },
-                    modifier = Modifier.fillMaxHeight(),
+                    modifier = Modifier.fillMaxHeight().revealable(
+                        key = RevealKeys.MenuColor,
+                        shape = RevealShape.Circle,
+                        state = revealState,
+                        onClick = {
+                            scope.launch {
+                                revealState.hide()
+                                delay(1000)
+                                revealState.reveal(RevealKeys.MenuNewChat)
+                            }
+                        },
+                    ),
                 )
                 ThemePopup(
                     themeRows = themeRows,

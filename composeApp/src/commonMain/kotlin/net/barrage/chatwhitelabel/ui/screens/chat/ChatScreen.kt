@@ -43,9 +43,13 @@ import chatwhitelabel.composeapp.generated.resources.no
 import chatwhitelabel.composeapp.generated.resources.sign_out_description
 import chatwhitelabel.composeapp.generated.resources.sign_out_title
 import chatwhitelabel.composeapp.generated.resources.yes
+import com.svenjacobs.reveal.Reveal
+import com.svenjacobs.reveal.RevealCanvasState
+import com.svenjacobs.reveal.RevealState
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.data.remote.dto.history.SenderType
 import net.barrage.chatwhitelabel.ui.components.chat.AgentContent
 import net.barrage.chatwhitelabel.ui.components.chat.ChatInput
@@ -54,8 +58,11 @@ import net.barrage.chatwhitelabel.ui.components.chat.ChatTitle
 import net.barrage.chatwhitelabel.ui.components.chat.ChatTitleState
 import net.barrage.chatwhitelabel.ui.components.chat.ErrorContent
 import net.barrage.chatwhitelabel.ui.components.chat.MessageList
+import net.barrage.chatwhitelabel.ui.components.reveal.RevealKeys
+import net.barrage.chatwhitelabel.ui.components.reveal.RevealOverlayContent
 import net.barrage.chatwhitelabel.ui.screens.profile.ProfileContent
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun ChatScreen(
@@ -67,6 +74,10 @@ fun ChatScreen(
     onLogoutSuccess: () -> Unit,
     modifier: Modifier = Modifier,
     changeProfileVisibility: () -> Unit,
+    inputEnabled: Boolean,
+    changeInputEnabled: (Boolean) -> Unit,
+    revealCanvasState: RevealCanvasState,
+    revealState: RevealState,
 ) {
     val lazyListState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
@@ -111,6 +122,10 @@ fun ChatScreen(
     LaunchedEffect(Unit) {
         viewModel.loadAllData()
         initializeWebSocketClient(viewModel, scope)
+        if (revealState.isVisible) return@LaunchedEffect
+        delay(2.seconds)
+        revealState.reveal(RevealKeys.AgentItem)
+        changeInputEnabled(false)
     }
 
     Box(
@@ -156,6 +171,8 @@ fun ChatScreen(
                                     viewModel.cancelTitleEdit()
                                     menuVisible = false
                                 },
+                                revealCanvasState = revealCanvasState,
+                                revealState = revealState,
                             ),
                             maxWidth = width,
                             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -170,6 +187,8 @@ fun ChatScreen(
                             agents = state.agents.toImmutableList(),
                             selectedAgent = viewModel.selectedAgent.value,
                             onAgentClick = { selectedAgent -> viewModel.setAgent(selectedAgent) },
+                            revealState = revealState,
+                            scope = scope,
                             modifier = Modifier.weight(1f),
                         )
                     } else {
@@ -187,21 +206,39 @@ fun ChatScreen(
                         )
                     }
                     if (state.isAgentActive) {
-                        ChatInput(
-                            state =
-                            ChatInputState(
-                                inputText = state.inputText,
-                                onInputTextChange = { viewModel.updateInputText(it) },
-                                onSendMessage = { viewModel.sendMessage() },
-                                onStopReceivingMessage = {
-                                    viewModel.webSocketChatClient?.stopMessageStream()
-                                },
-                                isEnabled = state.isSendEnabled && state.agents.isNotEmpty(),
-                                isReceivingMessage = state.isReceivingMessage,
-                                focusManager = focusManager,
-                                chatInteractionSource = chatInteractionSource,
+                        Reveal(
+                            onOverlayClick = { key ->
+                                scope.launch {
+                                    revealState.hide()
+                                    if (key == RevealKeys.ChatInput) {
+                                        delay(1000)
+                                        revealState.reveal(RevealKeys.Menu)
+                                    }
+                                }
+                            },
+                            modifier = modifier,
+                            revealCanvasState = revealCanvasState,
+                            revealState = revealState,
+                            overlayContent = { key -> RevealOverlayContent(key) },
+                        ) {
+                            ChatInput(
+                                state =
+                                ChatInputState(
+                                    inputText = state.inputText,
+                                    onInputTextChange = { viewModel.updateInputText(it) },
+                                    onSendMessage = { viewModel.sendMessage() },
+                                    onStopReceivingMessage = {
+                                        viewModel.webSocketChatClient?.stopMessageStream()
+                                    },
+                                    isEnabled = state.isSendEnabled && state.agents.isNotEmpty() && inputEnabled,
+                                    isReceivingMessage = state.isReceivingMessage,
+                                    focusManager = focusManager,
+                                    chatInteractionSource = chatInteractionSource,
+                                ),
+                                revealState = revealState,
+                                scope = scope
                             )
-                        )
+                        }
                     } else {
                         Card(
                             shape = RoundedCornerShape(12.dp),
