@@ -6,6 +6,7 @@ import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.reveal_account
 import chatwhitelabel.composeapp.generated.resources.reveal_agent_item
 import chatwhitelabel.composeapp.generated.resources.reveal_chat_input
+import chatwhitelabel.composeapp.generated.resources.reveal_chat_title
 import chatwhitelabel.composeapp.generated.resources.reveal_menu
 import chatwhitelabel.composeapp.generated.resources.reveal_menu_close
 import chatwhitelabel.composeapp.generated.resources.reveal_menu_color
@@ -100,6 +101,14 @@ fun RevealOverlayScope.RevealOverlayContent(key: Key) {
             ),
             text = stringResource(Res.string.reveal_menu_new_chat),
             arrow = Arrow.top(),
+        )
+
+        RevealKeys.ChatTitle -> OverlayText(
+            modifier = Modifier.align(
+                horizontalArrangement = RevealOverlayArrangement.Start,
+            ),
+            text = stringResource(Res.string.reveal_chat_title),
+            arrow = Arrow.end(),
         )
     }
 }

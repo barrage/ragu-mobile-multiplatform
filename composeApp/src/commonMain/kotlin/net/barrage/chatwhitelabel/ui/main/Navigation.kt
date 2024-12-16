@@ -45,6 +45,7 @@ fun AppNavHost(
     revealState: RevealState,
     inputEnabled: Boolean,
     changeInputEnabled: (Boolean) -> Unit,
+    shouldShowOnboardingTutorial: Boolean,
 ) {
     val currentUserUseCase: CurrentUserUseCase = koinInject()
     var startDestination by remember { mutableStateOf<String?>(null) }
@@ -91,6 +92,7 @@ fun AppNavHost(
                     changeInputEnabled = changeInputEnabled,
                     revealCanvasState = revealCanvasState,
                     revealState = revealState,
+                    shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
                 )
             }
             composable(Login.route) {

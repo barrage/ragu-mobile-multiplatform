@@ -33,10 +33,16 @@ fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
     LaunchedEffect(state.text) {
         if (state.text != previousText && !state.isEditing) {
             displayText = ""
+            val totalDuration = 500L // 1 second in milliseconds
+            val charCount = state.text.length
+            val delayPerChar = if (charCount > 1) totalDuration / (charCount - 1) else totalDuration
+
             state.text.forEachIndexed { charIndex, _ ->
                 val partialText = state.text.substring(startIndex = 0, endIndex = charIndex + 1)
                 displayText = partialText
-                delay(80)
+                if (charIndex < charCount - 1) {
+                    delay(delayPerChar)
+                }
             }
             previousText = state.text
         } else {

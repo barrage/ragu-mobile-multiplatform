@@ -101,9 +101,19 @@ interface AuthPreferences {
 }
 
 /**
+ * Interface for the reveal app tutorial
+ */
+interface TutorialPreferences {
+    suspend fun shouldShowOnboardingTutorial(): Boolean
+    suspend fun shouldShowChatTitleTutorial(): Boolean
+    suspend fun saveShouldShowOnboardingTutorial(shouldShowTutorial: Boolean): Preferences
+    suspend fun saveShouldShowChatTitleTutorial(shouldShowTutorial: Boolean): Preferences
+}
+
+/**
  * Combined interface for all app preferences, including theme and authentication preferences.
  */
-interface AppPreferences : ThemePreferences, AuthPreferences {
+interface AppPreferences : ThemePreferences, AuthPreferences, TutorialPreferences {
     /**
      * Clears all saved preferences.
      * @return The updated (empty) Preferences.
@@ -118,7 +128,8 @@ interface AppPreferences : ThemePreferences, AuthPreferences {
 internal class AppPreferencesImpl(private val dataStore: DataStore<Preferences>) :
     AppPreferences,
     ThemePreferences by ThemePreferencesImpl(dataStore),
-    AuthPreferences by AuthPreferencesImpl(dataStore) {
+    AuthPreferences by AuthPreferencesImpl(dataStore),
+    TutorialPreferences by TutorialPreferencesImpl(dataStore) {
 
     override suspend fun clear(): Preferences =
         dataStore.edit { preferences -> preferences.clear() }
@@ -200,4 +211,37 @@ private class AuthPreferencesImpl(private val dataStore: DataStore<Preferences>)
 
     override suspend fun clearCodeVerifier() =
         dataStore.edit { preferences -> preferences.remove(codeVerifierKey) }
+}
+
+/**
+ * Implementation of TutorialPreferences using DataStore.
+ * @param dataStore The DataStore used for storing tutorial preferences.
+ */
+
+private class TutorialPreferencesImpl(private val dataStore: DataStore<Preferences>) :
+    TutorialPreferences {
+    private companion object {
+        private const val PREFS_TAG_KEY = "AppPreferences"
+        private const val ONBOARDING_TUTORIAL_REVEALED = "tutorialRevealed"
+        private const val CHAT_TITLE_TUTORIAL_REVEALED = "chatTitleTutorialRevealed"
+    }
+
+    private val showOnboardingTutorialKey =
+        booleanPreferencesKey("$PREFS_TAG_KEY$ONBOARDING_TUTORIAL_REVEALED")
+    private val showChatTitleTutorialKey =
+        booleanPreferencesKey("$PREFS_TAG_KEY$CHAT_TITLE_TUTORIAL_REVEALED")
+
+    override suspend fun shouldShowOnboardingTutorial(): Boolean =
+        dataStore.data.map { preferences -> preferences[showOnboardingTutorialKey] ?: true }.first()
+
+    override suspend fun shouldShowChatTitleTutorial(): Boolean =
+        dataStore.data.map { preferences -> preferences[showChatTitleTutorialKey] ?: true }.first()
+
+    override suspend fun saveShouldShowOnboardingTutorial(shouldShowTutorial: Boolean): Preferences =
+        dataStore.edit { preferences ->
+            preferences[showOnboardingTutorialKey] = shouldShowTutorial
+        }
+
+    override suspend fun saveShouldShowChatTitleTutorial(shouldShowTutorial: Boolean): Preferences =
+        dataStore.edit { preferences -> preferences[showChatTitleTutorialKey] = shouldShowTutorial }
 }

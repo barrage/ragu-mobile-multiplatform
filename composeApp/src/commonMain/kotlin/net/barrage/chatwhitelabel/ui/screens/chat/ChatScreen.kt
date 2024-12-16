@@ -62,7 +62,6 @@ import net.barrage.chatwhitelabel.ui.components.reveal.RevealKeys
 import net.barrage.chatwhitelabel.ui.components.reveal.RevealOverlayContent
 import net.barrage.chatwhitelabel.ui.screens.profile.ProfileContent
 import org.jetbrains.compose.resources.stringResource
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun ChatScreen(
@@ -78,6 +77,7 @@ fun ChatScreen(
     changeInputEnabled: (Boolean) -> Unit,
     revealCanvasState: RevealCanvasState,
     revealState: RevealState,
+    shouldShowOnboardingTutorial: Boolean,
 ) {
     val lazyListState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
@@ -122,10 +122,6 @@ fun ChatScreen(
     LaunchedEffect(Unit) {
         viewModel.loadAllData()
         initializeWebSocketClient(viewModel, scope)
-        if (revealState.isVisible) return@LaunchedEffect
-        delay(2.seconds)
-        revealState.reveal(RevealKeys.AgentItem)
-        changeInputEnabled(false)
     }
 
     Box(
@@ -174,6 +170,8 @@ fun ChatScreen(
                                 revealCanvasState = revealCanvasState,
                                 revealState = revealState,
                             ),
+                            revealState = revealState,
+                            scope = scope,
                             maxWidth = width,
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                         )
@@ -189,6 +187,8 @@ fun ChatScreen(
                             onAgentClick = { selectedAgent -> viewModel.setAgent(selectedAgent) },
                             revealState = revealState,
                             scope = scope,
+                            changeInputEnabled = changeInputEnabled,
+                            shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
                             modifier = Modifier.weight(1f),
                         )
                     } else {

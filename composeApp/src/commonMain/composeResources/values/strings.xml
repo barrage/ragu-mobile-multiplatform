@@ -53,6 +53,7 @@
     <string name="reveal_account">Unlock your profile: View profile details or sign out</string>
     <string name="reveal_agent_item">Choose your AI companion: Tap to select an agent for your conversation</string>
     <string name="reveal_chat_input">Chat with your AI: Type your message to the selected agent here</string>
+    <string name="reveal_chat_title">Personalize your chat: Edit the title or delete the chat</string>
     <string name="reveal_menu">Explore more options: Tap to open the menu</string>
     <string name="reveal_menu_close">All set? Tap here to close the menu</string>
     <string name="reveal_menu_color">Make it yours: Personalize your theme color and variant</string>

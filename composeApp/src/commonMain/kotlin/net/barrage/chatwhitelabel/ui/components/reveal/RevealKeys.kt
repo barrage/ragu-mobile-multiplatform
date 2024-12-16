@@ -4,6 +4,7 @@ enum class RevealKeys {
     Account,
     AgentItem,
     ChatInput,
+    ChatTitle,
     Menu,
     MenuClose,
     MenuColor,

@@ -47,12 +47,14 @@ fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = nul
     var selectedVariant by remember { mutableStateOf(PaletteStyle.TonalSpot) }
     var isThemeLoaded by remember { mutableStateOf(false) }
     var profileVisible by remember { mutableStateOf(false) }
+    var shouldShowOnboardingTutorial by remember { mutableStateOf(false) }
     val revealCanvasState = rememberRevealCanvasState()
 
     LaunchedEffect(Unit) {
         isDarkTheme = coreComponent.appPreferences.isDarkModeEnabled()
         selectedTheme = coreComponent.appPreferences.getThemeColor()
         selectedVariant = coreComponent.appPreferences.getThemeVariant()
+        shouldShowOnboardingTutorial = coreComponent.appPreferences.shouldShowOnboardingTutorial()
         isThemeLoaded = true
     }
     LaunchedEffect(isDarkTheme) { onThemeChange?.invoke(isDarkTheme) }
@@ -106,6 +108,7 @@ fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = nul
                             },
                             onProfileVisibilityChange = { profileVisible = !profileVisible },
                             revealCanvasState = revealCanvasState,
+                            shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
                         )
                         Overlays(appState)
                     }

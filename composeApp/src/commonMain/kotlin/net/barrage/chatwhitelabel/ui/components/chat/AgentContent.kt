@@ -29,6 +29,8 @@ fun AgentContent(
     onAgentClick: (Agent) -> Unit,
     revealState: RevealState,
     scope: CoroutineScope,
+    changeInputEnabled: (Boolean) -> Unit,
+    shouldShowOnboardingTutorial: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -62,6 +64,8 @@ fun AgentContent(
                 .toImmutableList(),
             revealState = revealState,
             scope = scope,
+            changeInputEnabled = changeInputEnabled,
+            shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
             modifier = Modifier.weight(1f),
         )
     }

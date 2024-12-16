@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -27,15 +28,34 @@ import chatwhitelabel.composeapp.generated.resources.ic_check
 import chatwhitelabel.composeapp.generated.resources.ic_three_dots
 import chatwhitelabel.composeapp.generated.resources.popup_menu_delete_chat
 import chatwhitelabel.composeapp.generated.resources.popup_menu_edit_title
+import com.svenjacobs.reveal.RevealShape
+import com.svenjacobs.reveal.RevealState
+import com.svenjacobs.reveal.revealable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.barrage.chatwhitelabel.ui.components.TypewriterText
 import net.barrage.chatwhitelabel.ui.components.TypewriterTextState
+import net.barrage.chatwhitelabel.ui.components.reveal.RevealKeys
+import net.barrage.chatwhitelabel.utils.AppContext.coreComponent
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ChatTitle(state: ChatTitleState, maxWidth: Dp, modifier: Modifier = Modifier) {
-
+fun ChatTitle(
+    state: ChatTitleState,
+    revealState: RevealState,
+    scope: CoroutineScope,
+    maxWidth: Dp,
+    modifier: Modifier = Modifier
+) {
+    LaunchedEffect(Unit) {
+        if (coreComponent.appPreferences.shouldShowChatTitleTutorial()) {
+            delay(1000)
+            revealState.reveal(RevealKeys.ChatTitle)
+        }
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -59,7 +79,20 @@ fun ChatTitle(state: ChatTitleState, maxWidth: Dp, modifier: Modifier = Modifier
                     if (state.isEditingTitle) state.onTitleChangeConfirmation
                     else state.onThreeDotsClick,
                     modifier =
-                    Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp),
+                    Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp)
+                        .revealable(
+                            key = RevealKeys.ChatTitle,
+                            state = revealState,
+                            shape = RevealShape.Circle,
+                            onClick = {
+                                scope.launch {
+                                    revealState.hide()
+                                    coreComponent.appPreferences.saveShouldShowChatTitleTutorial(
+                                        false
+                                    )
+                                }
+                            },
+                        ),
                     enabled = state.title.length in 3..255,
                 ) {
                     Icon(

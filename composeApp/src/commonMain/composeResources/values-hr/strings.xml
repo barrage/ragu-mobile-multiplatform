@@ -53,6 +53,7 @@
     <string name="reveal_account">Otključajte svoj profil: Pregledajte detalje profila ili se odjavite</string>
     <string name="reveal_agent_item">Odaberite svog AI sugovornika: Dodirnite za odabir agenta za vaš razgovor</string>
     <string name="reveal_chat_input">Razgovarajte sa svojim AI-jem: Ovdje upišite i pošaljite svoju poruku odabranom agentu</string>
+    <string name="reveal_chat_title">Persoanlizirajte svoj razgovor: Uredite naslov ili izbrišite razgovor</string>
     <string name="reveal_menu">Istražite više opcija: Dodirnite za otvaranje izbornika</string>
     <string name="reveal_menu_close">Sve gotovo? Dodirnite ovdje za zatvaranje izbornika</string>
     <string name="reveal_menu_color">Učinite ga svojim: Personalizirajte boju i varijantu teme</string>

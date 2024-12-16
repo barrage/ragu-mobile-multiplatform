@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
@@ -14,15 +15,28 @@ import chatwhitelabel.composeapp.generated.resources.no_agents_available
 import com.svenjacobs.reveal.RevealState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import net.barrage.chatwhitelabel.ui.components.reveal.RevealKeys
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun AgentList(
     agents: ImmutableList<AgentItemState>,
     revealState: RevealState,
     scope: CoroutineScope,
+    changeInputEnabled: (Boolean) -> Unit,
+    shouldShowOnboardingTutorial: Boolean,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(agents) {
+        if (agents.isNotEmpty()) {
+            if (revealState.isVisible || shouldShowOnboardingTutorial.not()) return@LaunchedEffect
+            delay(2.seconds)
+            revealState.reveal(RevealKeys.AgentItem)
+            changeInputEnabled(false)
+        }
+    }
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp),

@@ -25,6 +25,7 @@ import net.barrage.chatwhitelabel.ui.components.TopBar
 import net.barrage.chatwhitelabel.ui.components.reveal.RevealKeys
 import net.barrage.chatwhitelabel.ui.components.reveal.RevealOverlayContent
 import net.barrage.chatwhitelabel.ui.screens.history.ModalDrawer
+import net.barrage.chatwhitelabel.utils.coreComponent
 
 @Composable
 fun MainContent(
@@ -41,6 +42,7 @@ fun MainContent(
     modifier: Modifier = Modifier,
     onDarkLightModeClick: () -> Unit,
     revealCanvasState: RevealCanvasState,
+    shouldShowOnboardingTutorial: Boolean,
 ) {
     val drawerState = appState.drawerState
     val scope = rememberCoroutineScope()
@@ -68,6 +70,9 @@ fun MainContent(
                     }
 
                     RevealKeys.AgentItem -> {
+                        /**
+                         * This is the starting point of the reveal tutorial on app startup (check [net.barrage.chatwhitelabel.ui.components.chat.AgentList])
+                         */
                         delay(1000)
                         revealState.reveal(RevealKeys.ChatInput)
                     }
@@ -78,8 +83,12 @@ fun MainContent(
                     }
 
                     RevealKeys.MenuClose -> {
+                        /**
+                         * This is the ending point of the reveal tutorial on app startup
+                         */
                         delay(1000)
                         drawerState.close()
+                        coreComponent.appPreferences.saveShouldShowOnboardingTutorial(false)
                         inputEnabled.value = true
                     }
 
@@ -101,6 +110,12 @@ fun MainContent(
                     RevealKeys.MenuNewChat -> {
                         delay(1000)
                         revealState.reveal(RevealKeys.MenuHistory)
+                    }
+
+                    RevealKeys.ChatTitle -> {
+                        delay(1000)
+                        revealState.hide()
+                        coreComponent.appPreferences.saveShouldShowChatTitleTutorial(false)
                     }
                 }
             }
@@ -154,6 +169,7 @@ fun MainContent(
                     revealState = revealState,
                     inputEnabled = inputEnabled.value,
                     changeInputEnabled = { inputEnabled.value = it },
+                    shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
                 )
             }
         }
