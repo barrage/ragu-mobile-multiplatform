@@ -1,13 +1,13 @@
 ## About the Project
 
-**ChatWhitelabel**  is a Kotlin Multiplatform chat application demonstrating real-time messaging
+**Ragu Multiplatform**  is a Kotlin Multiplatform chat application demonstrating real-time messaging
 capabilities on Android and iOS platforms. It highlights the power of shared code
 using Compose Multiplatform and Kotlin Multiplatform.
 
 ### Screenshots
 
 <div align="center"> 
-  <img src="https://placehold.co/600x400?text=App+Screenshot+Here" alt="ChatWhitelabel Screenshot" />
+  <img src="https://placehold.co/600x400?text=App+Screenshot+Here" alt="Ragu Multiplatform Screenshot" />
 </div>
 
 ## Features

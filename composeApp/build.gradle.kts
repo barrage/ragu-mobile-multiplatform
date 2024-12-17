@@ -3,7 +3,7 @@ import java.io.FileInputStream
 import java.util.Properties
 
 /**
- * Gradle build configuration for the ChatWhitelabel Kotlin Multiplatform project.
+ * Gradle build configuration for the Ragu Kotlin Multiplatform project.
  * This file sets up the project for Android and iOS targets, configures dependencies,
  * and defines build settings.
  */
@@ -115,15 +115,15 @@ kotlin {
  * Android-specific configuration
  */
 android {
-    namespace = "net.barrage.chatwhitelabel"
+    namespace = "net.barrage.ragu"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "net.barrage.chatwhitelabel"
+        applicationId = "net.barrage.ragu"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 5
-        versionName = "0.0.5"
+        versionCode = 1
+        versionName = "0.0.1"
     }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 
@@ -182,11 +182,11 @@ dependencies {
 
 /*compose.desktop {
      application {
-         mainClass = "net.barrage.chatwhitelabel.MainKt"
+         mainClass = "net.barrage.ragu.MainKt"
 
          nativeDistributions {
              targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-             packageName = "net.barrage.chatwhitelabel"
+             packageName = "net.barrage.ragu"
              packageVersion = "0.0.1"
          }
      }

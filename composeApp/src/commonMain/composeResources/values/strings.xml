@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ChatWhitelabel</string>
+    <string name="app_name">Ragu</string>
     <string name="chat_header">LLM Chat</string>
     <string name="chat_sub_header">Choose an agent to start a chat with</string>
     <string name="agents_label">Agents:</string>

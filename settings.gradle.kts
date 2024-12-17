@@ -1,4 +1,4 @@
-rootProject.name = "ChatWhitelabel"
+rootProject.name = "RaguMultiplatform"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
