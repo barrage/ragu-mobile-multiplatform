@@ -136,3 +136,13 @@ This project serves as a starting point for building custom chat solutions. Modi
 with your backend, or more.
 
 ---
+
+## License
+
+This repository contains Multiplatform app, a part of Ragu, covered under the [Apache License 2.0](LICENSE), except where noted (any Ragu logos or trademarks are not covered under the Apache License, and should be explicitly noted by a LICENSE file.)
+
+Multiplatform app, a part of Ragu, is a product produced from this open source software, exclusively by Barrage d.o.o. It is distributed under our commercial terms.
+
+Others are allowed to make their own distribution of the software, but they cannot use any of the Ragu trademarks, cloud services, etc.
+
+We explicitly grant permission for you to make a build that includes our trademarks while developing Ragu itself. You may not publish or share the build, and you may not use that build to run Ragu for any other purpose.
