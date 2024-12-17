@@ -1,7 +1,10 @@
 package net.barrage.chatwhitelabel.ui.components.reveal
 
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import chatwhitelabel.composeapp.generated.resources.Res
 import chatwhitelabel.composeapp.generated.resources.reveal_account
 import chatwhitelabel.composeapp.generated.resources.reveal_agent_item
@@ -40,7 +43,7 @@ fun RevealOverlayScope.RevealOverlayContent(key: Key) {
         )
 
         RevealKeys.Account -> OverlayText(
-            modifier = Modifier.align(
+            modifier = Modifier.widthIn(0.dp, 250.dp).align(
                 verticalArrangement = RevealOverlayArrangement.Top,
             ),
             text = stringResource(Res.string.reveal_account),
@@ -80,7 +83,7 @@ fun RevealOverlayScope.RevealOverlayContent(key: Key) {
         )
 
         RevealKeys.MenuHistory -> OverlayText(
-            modifier = Modifier.align(
+            modifier = Modifier.widthIn(0.dp, 250.dp).align(
                 verticalArrangement = RevealOverlayArrangement.Top,
             ),
             text = stringResource(Res.string.reveal_menu_history),
@@ -88,7 +91,7 @@ fun RevealOverlayScope.RevealOverlayContent(key: Key) {
         )
 
         RevealKeys.MenuTheme -> OverlayText(
-            modifier = Modifier.align(
+            modifier = Modifier.widthIn(0.dp, 250.dp).align(
                 verticalArrangement = RevealOverlayArrangement.Bottom,
             ),
             text = stringResource(Res.string.reveal_menu_theme),
@@ -96,7 +99,7 @@ fun RevealOverlayScope.RevealOverlayContent(key: Key) {
         )
 
         RevealKeys.MenuNewChat -> OverlayText(
-            modifier = Modifier.align(
+            modifier = Modifier.widthIn(0.dp, 250.dp).align(
                 verticalArrangement = RevealOverlayArrangement.Bottom
             ),
             text = stringResource(Res.string.reveal_menu_new_chat),
