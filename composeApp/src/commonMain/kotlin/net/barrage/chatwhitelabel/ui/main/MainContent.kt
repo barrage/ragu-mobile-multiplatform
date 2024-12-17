@@ -47,6 +47,7 @@ fun MainContent(
     val drawerState = appState.drawerState
     val scope = rememberCoroutineScope()
     val revealState = rememberRevealState()
+    val shouldShowTutorial = remember { mutableStateOf(shouldShowOnboardingTutorial) }
     val inputEnabled = remember { mutableStateOf(true) }
     Reveal(
         onOverlayClick = { key ->
@@ -89,6 +90,7 @@ fun MainContent(
                         delay(1000)
                         drawerState.close()
                         coreComponent.appPreferences.saveShouldShowOnboardingTutorial(false)
+                        shouldShowTutorial.value = false
                         inputEnabled.value = true
                     }
 
@@ -169,7 +171,7 @@ fun MainContent(
                     revealState = revealState,
                     inputEnabled = inputEnabled.value,
                     changeInputEnabled = { inputEnabled.value = it },
-                    shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
+                    shouldShowOnboardingTutorial = shouldShowTutorial.value,
                 )
             }
         }
