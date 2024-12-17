@@ -122,8 +122,8 @@ android {
         applicationId = "net.barrage.chatwhitelabel"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 4
-        versionName = "0.0.4"
+        versionCode = 5
+        versionName = "0.0.5"
     }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 
