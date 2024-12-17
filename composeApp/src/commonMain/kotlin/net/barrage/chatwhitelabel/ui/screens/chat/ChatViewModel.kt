@@ -60,6 +60,13 @@ class ChatViewModel(
 ) : ViewModel() {
 
     /**
+     * Pagination variables for chat history.
+     */
+    private var currentChatHistoryPage = 1
+    private var isLastChatHistoryPage = false
+    private val chatHistoryPageSize = 20
+
+    /**
      * The current state of the chat screen.
      */
     private val _chatScreenState = MutableStateFlow<ChatScreenState>(ChatScreenState.Idle)
@@ -311,8 +318,7 @@ class ChatViewModel(
             if (currentState is ChatScreenState.Success && currentState.chatTitle == tempChatTitle) {
                 setEditingTitle(false)
                 tempChatTitle = "" // Clear temporary title
-            }
-            else if (currentState is ChatScreenState.Success &&
+            } else if (currentState is ChatScreenState.Success &&
                 !webSocketChatClient?.currentChatId?.value.isNullOrEmpty() &&
                 currentState.chatTitle?.isNotEmpty() == true
             ) {
@@ -474,6 +480,8 @@ class ChatViewModel(
         }
         webSocketChatClient?.setChatId(null)
         webSocketChatClient?.isChatOpen?.value = false
+        currentChatHistoryPage = 1
+        isLastChatHistoryPage = false
         updateHistory()
     }
 
@@ -511,35 +519,61 @@ class ChatViewModel(
      * Updates the chat history if the update flag is set.
      * Fetches the latest chat history and updates the history view state.
      */
-    fun updateHistory() {
+    fun updateHistory(isInitialLoad: Boolean = true) {
         if (shouldUpdateHistory) {
             viewModelScope.launch {
-                // TODO: Consider setting loading state: historyViewState = historyViewState.copy(history = HistoryScreenStates.Loading)
-                when (val response = chatUseCase.getChatHistory(1, 50)) {
+                if (isInitialLoad) {
+                    _historyViewState.value =
+                        historyViewState.value.copy(history = HistoryScreenStates.Loading)
+                    currentChatHistoryPage = 1
+                    isLastChatHistoryPage = false
+                }
+
+                when (val response =
+                    chatUseCase.getChatHistory(currentChatHistoryPage, chatHistoryPageSize)) {
                     is Response.Success -> {
-                        val mappedElements =
-                            mapElementsByTimePeriod(
-                                response.data,
-                                webSocketChatClient?.currentChatId?.value,
+                        val newElements = response.data
+                        isLastChatHistoryPage = newElements.size < chatHistoryPageSize
+
+                        val currentElements = if (isInitialLoad) {
+                            emptyList()
+                        } else {
+                            (historyViewState.value.history as? HistoryScreenStates.Success)?.data?.elements?.values?.flatten()
+                                ?: emptyList()
+                        }
+
+                        val allElements = (currentElements + newElements).distinctBy { it.id }
+
+                        val mappedElements = mapElementsByTimePeriod(
+                            allElements,
+                            webSocketChatClient?.currentChatId?.value,
+                        )
+
+                        _historyViewState.value = historyViewState.value.copy(
+                            history = HistoryScreenStates.Success(
+                                HistoryViewState(elements = mappedElements)
                             )
-                        _historyViewState.value =
-                            historyViewState.value.copy(
-                                history =
-                                HistoryScreenStates.Success(
-                                    HistoryViewState(elements = mappedElements)
-                                )
-                            )
+                        )
+
+                        currentChatHistoryPage++
                     }
 
-                    is Response.Failure ->
+                    is Response.Failure -> {
                         _historyViewState.value =
                             historyViewState.value.copy(history = HistoryScreenStates.Error)
+                    }
 
                     Response.Loading -> {}
                 }
             }
         } else {
             shouldUpdateHistory = true
+        }
+    }
+
+    fun loadMoreHistory() {
+        if (!isLastChatHistoryPage) {
+            updateHistory(isInitialLoad = false)
         }
     }
 

@@ -5,10 +5,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,6 +24,7 @@ import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryViewState
 import net.barrage.chatwhitelabel.ui.screens.history.components.history.ModalDrawerHistoryElement
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
+import net.barrage.chatwhitelabel.utils.isScrolledToEnd
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -27,6 +32,7 @@ fun ModalDrawerHistoryContent(
     viewState: HistoryScreenStates<HistoryViewState>,
     modifier: Modifier = Modifier,
     onElementClick: (ChatHistoryItem) -> Unit,
+    onScrollToBottom: () -> Unit,
 ) {
     Box(modifier = modifier) {
         when (viewState) {
@@ -53,22 +59,24 @@ fun ModalDrawerHistoryContent(
                         modifier = Modifier.padding(16.dp),
                     )
                 } else {
-                    LazyColumn(modifier = Modifier) {
+                    val listState = rememberLazyListState()
+
+                    LazyColumn(
+                        state = listState,
+                    ) {
                         viewState.data.elements.forEach { (timePeriod, elements) ->
-                            if (timePeriod != null && !elements.isEmpty()) {
+                            if (timePeriod != null && elements.isNotEmpty()) {
                                 item {
                                     Column(
-                                        modifier =
-                                        Modifier.padding(horizontal = 8.dp).padding(top = 8.dp)
+                                        modifier = Modifier
+                                            .padding(horizontal = 8.dp)
+                                            .padding(top = 8.dp)
                                     ) {
                                         Text(
                                             text = stringResource(timePeriod),
-                                            style =
-                                            MaterialTheme.typography.labelMedium
+                                            style = MaterialTheme.typography.labelMedium
                                                 .fixCenterTextOnAllPlatforms()
-                                                .copy(
-                                                    color = MaterialTheme.colorScheme.outline
-                                                ),
+                                                .copy(color = MaterialTheme.colorScheme.outline),
                                             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
                                         )
                                     }
@@ -83,8 +91,23 @@ fun ModalDrawerHistoryContent(
                             }
                         }
                     }
+
+                    // Check if we've scrolled to the bottom
+                    val endOfListReached = remember {
+                        derivedStateOf {
+                            listState.isScrolledToEnd()
+                        }
+                    }
+
+                    LaunchedEffect(endOfListReached.value) {
+                        if (endOfListReached.value) {
+                            onScrollToBottom()
+                        }
+                    }
                 }
+
             }
         }
+
     }
 }

@@ -32,9 +32,9 @@ fun AgentList(
     LaunchedEffect(agents) {
         if (agents.isNotEmpty()) {
             if (revealState.isVisible || shouldShowOnboardingTutorial.not()) return@LaunchedEffect
-            delay(2.seconds)
-            revealState.reveal(RevealKeys.AgentItem)
             changeInputEnabled(false)
+            delay(1.seconds)
+            revealState.reveal(RevealKeys.AgentItem)
         }
     }
     LazyColumn(

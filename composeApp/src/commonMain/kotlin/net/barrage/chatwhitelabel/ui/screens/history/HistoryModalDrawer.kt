@@ -122,6 +122,7 @@ fun ModalDrawer(
                     viewModel.getChatById(id = it.id, title = it.title)
                     changeDrawerVisibility()
                 },
+                onScrollToBottom = { viewModel.loadMoreHistory() },
             )
             HistoryDivider()
             val currentUserViewState by viewModel.currentUserViewState.collectAsState()
