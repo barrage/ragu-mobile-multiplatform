@@ -64,7 +64,7 @@ class ChatViewModel(
      */
     private var currentChatHistoryPage = 1
     private var isLastChatHistoryPage = false
-    private val chatHistoryPageSize = 5
+    private val chatHistoryPageSize = 20
     private var isUpdatingHistory = false
 
     /**
@@ -118,7 +118,10 @@ class ChatViewModel(
             _historyViewState.value =
                 historyViewState.value.copy(history = HistoryScreenStates.Loading)
             _currentUserViewState.value = HistoryScreenStates.Loading
-            launch { updateHistory() }
+            launch {
+                updateHistory()
+                shouldUpdateHistory = false
+            }
             launch { updateCurrentUser() }
 
             val agentsResponse = chatUseCase.getAgents()
@@ -542,12 +545,6 @@ class ChatViewModel(
                             (historyViewState.value.history as? HistoryScreenStates.Success)?.data?.elements?.values?.flatten()
                                 ?: emptyList()
                         }
-                        debugLog("New elements: ${newElements.size}")
-                        debugLog("Is last page: ${newElements.size < chatHistoryPageSize}")
-                        debugLog("Current page: $currentChatHistoryPage")
-                        debugLog("Is last page: $isLastChatHistoryPage")
-                        debugLog("Is initial load: $isInitialLoad")
-                        debugLog("Current elements: ${currentElements.size}")
 
                         val allElements = (currentElements + newElements).distinctBy { it.id }
 
