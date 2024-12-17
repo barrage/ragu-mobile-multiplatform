@@ -75,7 +75,7 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
         return safeApiCall {
             httpClient.get("chats") {
                 addCookieHeader()
-                parameter("perPage", parameters["perPage"]?.toInt() ?: 1)
+                parameter("perPage", parameters["perPage"]?.toInt() ?: 50)
                 parameter("page", parameters["page"]?.toInt() ?: 1)
                 parameter("sortBy", parameters["sortBy"] ?: "updatedAt")
                 parameter("sortOrder", parameters["sortOrder"] ?: "desc")

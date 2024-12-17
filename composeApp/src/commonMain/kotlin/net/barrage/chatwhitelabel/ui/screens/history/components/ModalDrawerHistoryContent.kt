@@ -11,8 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -24,7 +22,6 @@ import net.barrage.chatwhitelabel.ui.screens.history.HistoryScreenStates
 import net.barrage.chatwhitelabel.ui.screens.history.HistoryViewState
 import net.barrage.chatwhitelabel.ui.screens.history.components.history.ModalDrawerHistoryElement
 import net.barrage.chatwhitelabel.utils.fixCenterTextOnAllPlatforms
-import net.barrage.chatwhitelabel.utils.isScrolledToEnd
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -88,24 +85,15 @@ fun ModalDrawerHistoryContent(
                                         onClick = onElementClick,
                                     )
                                 }
+                                item {
+                                    LaunchedEffect(Unit) {
+                                        onScrollToBottom()
+                                    }
+                                }
                             }
                         }
                     }
-
-                    // Check if we've scrolled to the bottom
-                    val endOfListReached = remember {
-                        derivedStateOf {
-                            listState.isScrolledToEnd()
-                        }
-                    }
-
-                    LaunchedEffect(endOfListReached.value) {
-                        if (endOfListReached.value) {
-                            onScrollToBottom()
-                        }
-                    }
                 }
-
             }
         }
 

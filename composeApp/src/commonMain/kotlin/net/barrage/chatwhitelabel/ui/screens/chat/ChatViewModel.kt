@@ -64,7 +64,8 @@ class ChatViewModel(
      */
     private var currentChatHistoryPage = 1
     private var isLastChatHistoryPage = false
-    private val chatHistoryPageSize = 20
+    private val chatHistoryPageSize = 5
+    private var isUpdatingHistory = false
 
     /**
      * The current state of the chat screen.
@@ -520,7 +521,8 @@ class ChatViewModel(
      * Fetches the latest chat history and updates the history view state.
      */
     fun updateHistory(isInitialLoad: Boolean = true) {
-        if (shouldUpdateHistory) {
+        if (shouldUpdateHistory && !isUpdatingHistory) {
+            isUpdatingHistory = true
             viewModelScope.launch {
                 if (isInitialLoad) {
                     _historyViewState.value =
@@ -534,13 +536,18 @@ class ChatViewModel(
                     is Response.Success -> {
                         val newElements = response.data
                         isLastChatHistoryPage = newElements.size < chatHistoryPageSize
-
                         val currentElements = if (isInitialLoad) {
                             emptyList()
                         } else {
                             (historyViewState.value.history as? HistoryScreenStates.Success)?.data?.elements?.values?.flatten()
                                 ?: emptyList()
                         }
+                        debugLog("New elements: ${newElements.size}")
+                        debugLog("Is last page: ${newElements.size < chatHistoryPageSize}")
+                        debugLog("Current page: $currentChatHistoryPage")
+                        debugLog("Is last page: $isLastChatHistoryPage")
+                        debugLog("Is initial load: $isInitialLoad")
+                        debugLog("Current elements: ${currentElements.size}")
 
                         val allElements = (currentElements + newElements).distinctBy { it.id }
 
@@ -565,6 +572,7 @@ class ChatViewModel(
 
                     Response.Loading -> {}
                 }
+                isUpdatingHistory = false
             }
         } else {
             shouldUpdateHistory = true
@@ -572,8 +580,10 @@ class ChatViewModel(
     }
 
     fun loadMoreHistory() {
-        if (!isLastChatHistoryPage) {
-            updateHistory(isInitialLoad = false)
+        if (!isLastChatHistoryPage && !isUpdatingHistory) {
+            viewModelScope.launch {
+                updateHistory(isInitialLoad = false)
+            }
         }
     }
 
