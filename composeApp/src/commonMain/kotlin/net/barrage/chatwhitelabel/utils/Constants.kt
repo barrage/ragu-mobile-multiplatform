@@ -7,7 +7,7 @@ object Constants {
     /**
      * The base URL for the API.
      */
-    const val BASE_URL = "llmao-kotlin-api-staging.m2.barrage.beer"
+    const val BASE_URL = "llmao-kotlin-api-development.barrage.dev"
 
     /**
      * Object containing authentication-related constants and utilities.
@@ -27,7 +27,7 @@ object Constants {
         /**
          * The redirect URI for the OAuth flow.
          */
-        const val REDIRECT_URI = "https://llmao-kotlin-api-staging.m2.barrage.beer/oauthredirect"
+        const val REDIRECT_URI = "https://llmao-kotlin-api-development.barrage.dev/oauthredirect"
 
         /**
          * The response type for the OAuth flow. Set to "code" for authorization code flow.
