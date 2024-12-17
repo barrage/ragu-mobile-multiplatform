@@ -52,6 +52,7 @@ fun ModalDrawer(
     changeDrawerVisibility: () -> Unit,
     revealState: RevealState,
     scope: CoroutineScope,
+    inputEnabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val historyViewState by viewModel.historyViewState.collectAsState()
@@ -68,6 +69,7 @@ fun ModalDrawer(
                 onSelectVariantClick = onSelectVariantClick,
                 onDarkLightModeClick = onDarkLightModeClick,
                 revealState = revealState,
+                inputEnabled = inputEnabled,
                 scope = scope,
             )
             Column(
@@ -89,8 +91,10 @@ fun ModalDrawer(
                     modifier =
                     Modifier.fillMaxWidth()
                         .clickable {
-                            viewModel.newChat()
-                            changeDrawerVisibility()
+                            if (inputEnabled) {
+                                viewModel.newChat()
+                                changeDrawerVisibility()
+                            }
                         }
                         .padding(24.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -119,8 +123,10 @@ fun ModalDrawer(
                 ),
                 viewState = historyViewState.history,
                 onElementClick = {
-                    viewModel.getChatById(id = it.id, title = it.title)
-                    changeDrawerVisibility()
+                    if (inputEnabled) {
+                        viewModel.getChatById(id = it.id, title = it.title)
+                        changeDrawerVisibility()
+                    }
                 },
                 onScrollToBottom = { viewModel.loadMoreHistory() },
             )
@@ -129,7 +135,11 @@ fun ModalDrawer(
             CurrentUserCard(
                 modifier = Modifier.fillMaxWidth(),
                 viewState = currentUserViewState,
-                onUserClick = onUserClick,
+                onUserClick = if (inputEnabled) {
+                    onUserClick
+                } else {
+                    {}
+                },
                 revealState = revealState,
                 scope = scope,
             )

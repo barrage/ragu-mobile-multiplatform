@@ -51,6 +51,7 @@ fun ModalDrawerContentTopBar(
     modifier: Modifier = Modifier,
     onDarkLightModeClick: () -> Unit,
     revealState: RevealState,
+    inputEnabled: Boolean,
     scope: CoroutineScope,
 ) {
     val supportedThemeColumns = 4
@@ -60,7 +61,11 @@ fun ModalDrawerContentTopBar(
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
             IconButton(
-                onClick = onChangeDrawerVisibility, modifier = Modifier.revealable(
+                onClick = if (inputEnabled) {
+                    onChangeDrawerVisibility
+                } else {
+                    {}
+                }, modifier = Modifier.revealable(
                     key = RevealKeys.MenuClose,
                     shape = RevealShape.Circle,
                     state = revealState,
@@ -83,7 +88,11 @@ fun ModalDrawerContentTopBar(
         ) {
             DarkLightThemeSwitcher(
                 isDarkTheme = isDarkMode,
-                onClick = onDarkLightModeClick,
+                onClick = if (inputEnabled) {
+                    onDarkLightModeClick
+                } else {
+                    {}
+                },
                 modifier = Modifier.fillMaxHeight().revealable(
                     key = RevealKeys.MenuTheme,
                     shape = RevealShape.RoundRect(26.dp),
@@ -101,7 +110,11 @@ fun ModalDrawerContentTopBar(
             Column {
                 ThemeSelectorButton(
                     selectedTheme = currentTheme,
-                    onClick = { showPopup = !showPopup },
+                    onClick = {
+                        if (inputEnabled) {
+                            showPopup = !showPopup
+                        }
+                    },
                     modifier = Modifier.fillMaxHeight().revealable(
                         key = RevealKeys.MenuColor,
                         shape = RevealShape.Circle,

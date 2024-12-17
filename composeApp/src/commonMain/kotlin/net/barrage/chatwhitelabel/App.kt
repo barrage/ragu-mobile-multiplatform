@@ -49,6 +49,7 @@ fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = nul
     var profileVisible by remember { mutableStateOf(false) }
     var shouldShowOnboardingTutorial by remember { mutableStateOf(false) }
     val revealCanvasState = rememberRevealCanvasState()
+    val inputEnabled = remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         isDarkTheme = coreComponent.appPreferences.isDarkModeEnabled()
@@ -109,6 +110,8 @@ fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = nul
                             onProfileVisibilityChange = { profileVisible = !profileVisible },
                             revealCanvasState = revealCanvasState,
                             shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
+                            inputEnabled = inputEnabled.value,
+                            changeInputEnabled = { inputEnabled.value = it },
                         )
                         Overlays(appState)
                     }

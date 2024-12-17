@@ -43,12 +43,13 @@ fun MainContent(
     onDarkLightModeClick: () -> Unit,
     revealCanvasState: RevealCanvasState,
     shouldShowOnboardingTutorial: Boolean,
+    inputEnabled: Boolean,
+    changeInputEnabled: (Boolean) -> Unit,
 ) {
     val drawerState = appState.drawerState
     val scope = rememberCoroutineScope()
     val revealState = rememberRevealState()
     val shouldShowTutorial = remember { mutableStateOf(shouldShowOnboardingTutorial) }
-    val inputEnabled = remember { mutableStateOf(true) }
     Reveal(
         onOverlayClick = { key ->
             appState.coroutineScope.launch {
@@ -91,7 +92,7 @@ fun MainContent(
                         drawerState.close()
                         coreComponent.appPreferences.saveShouldShowOnboardingTutorial(false)
                         shouldShowTutorial.value = false
-                        inputEnabled.value = true
+                        changeInputEnabled(true)
                     }
 
                     RevealKeys.MenuColor -> {
@@ -130,7 +131,7 @@ fun MainContent(
         ModalNavigationDrawer(
             modifier = modifier,
             drawerState = drawerState,
-            gesturesEnabled = profileVisible.not() && appState.currentScreen == Chat && inputEnabled.value,
+            gesturesEnabled = profileVisible.not() && appState.currentScreen == Chat && inputEnabled,
             drawerContent = {
                 ModalDrawer(
                     isDarkMode = isDarkMode,
@@ -147,6 +148,7 @@ fun MainContent(
                     },
                     revealState = revealState,
                     scope = appState.coroutineScope,
+                    inputEnabled = inputEnabled,
                     modifier = Modifier.fillMaxWidth(0.8f),
                 )
             },
@@ -154,7 +156,11 @@ fun MainContent(
             Column(modifier = Modifier.fillMaxSize()) {
                 if (appState.currentScreen == Chat) {
                     TopBar(
-                        onMenuClick = { scope.launch { drawerState.open() } },
+                        onMenuClick = {
+                            if (inputEnabled) {
+                                scope.launch { drawerState.open() }
+                            }
+                        },
                         revealState = revealState,
                         scope = appState.coroutineScope,
                         modifier = Modifier.padding(top = 56.dp).padding(horizontal = 10.dp),
@@ -169,8 +175,8 @@ fun MainContent(
                     onLogoutSuccess = onLogoutSuccess,
                     revealCanvasState = revealCanvasState,
                     revealState = revealState,
-                    inputEnabled = inputEnabled.value,
-                    changeInputEnabled = { inputEnabled.value = it },
+                    inputEnabled = inputEnabled,
+                    changeInputEnabled = changeInputEnabled,
                     shouldShowOnboardingTutorial = shouldShowTutorial.value,
                 )
             }
