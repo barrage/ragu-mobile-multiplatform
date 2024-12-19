@@ -2,7 +2,6 @@ package net.barrage.ragu.ui.screens.chat
 
 import androidx.compose.runtime.MutableState
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import net.barrage.ragu.domain.model.Agent
 import net.barrage.ragu.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.ragu.utils.chat.WebSocketChatClient
@@ -43,16 +42,6 @@ class WebSocketManager(private val webSocketTokenUseCase: WebSocketTokenUseCase)
                 webSocketChatClient =
                     WebSocketChatClient(callback, scope, selectedAgent, webSocketTokenUseCase)
             }
-        }
-    }
-
-    /**
-     * Reconnects the WebSocket client.
-     */
-    fun reconnect() {
-        scope.launch {
-            disconnect()
-            initializeWebSocketClient(callback, scope, selectedAgent)
         }
     }
 

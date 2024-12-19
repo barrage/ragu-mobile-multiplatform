@@ -56,7 +56,7 @@ fun rememberAppState(): AppState {
     }
     LaunchedEffect(drawerState.isOpen) {
         if (drawerState.isOpen) {
-            chatViewModel.chatHistoryManager.updateHistory()
+            chatViewModel.chatHistoryManager.updateHistory(currentChatId = chatViewModel.webSocketManager.webSocketChatClient?.currentChatId?.value)
         }
     }
 

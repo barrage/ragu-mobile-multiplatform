@@ -151,7 +151,7 @@ class ChatStateManager {
     /**
      * Clears the current chat.
      */
-    fun clearChat() {
+    fun clearChat(tempChatScreenState: ChatScreenState.Success? = null) {
         updateChatScreenState { currentState ->
             when (currentState) {
                 is ChatScreenState.Success ->
@@ -165,7 +165,15 @@ class ChatStateManager {
                         isAgentActive = true,
                     )
 
-                else -> currentState
+                else -> tempChatScreenState?.copy(
+                    messages = persistentListOf(),
+                    chatTitleRes = Res.string.new_chat,
+                    chatTitle = null,
+                    isEditingTitle = false,
+                    isReceivingMessage = false,
+                    inputText = "",
+                    isAgentActive = true,
+                ) ?: currentState
             }
         }
     }

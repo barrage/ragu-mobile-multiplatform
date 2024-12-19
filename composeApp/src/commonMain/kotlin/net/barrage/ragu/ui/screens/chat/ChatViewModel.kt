@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -75,10 +76,14 @@ class ChatViewModel(
      * @param enabled Boolean indicating whether sending is enabled
      */
     fun setSendEnabled(enabled: Boolean) {
-        chatStateManager.updateChatScreenState { currentState ->
-            when (currentState) {
-                is ChatScreenState.Success -> currentState.copy(isSendEnabled = enabled)
-                else -> currentState
+        viewModelScope.launch {
+            var currentState = chatStateManager.chatScreenState.value
+            while (currentState !is ChatScreenState.Success) {
+                delay(100) // Wait for 100ms before checking again
+                currentState = chatStateManager.chatScreenState.value
+            }
+            chatStateManager.updateChatScreenState { state ->
+                (state as ChatScreenState.Success).copy(isSendEnabled = enabled)
             }
         }
     }
@@ -234,14 +239,17 @@ class ChatViewModel(
      */
     fun deleteChat() {
         viewModelScope.launch {
+            val tempChatScreenState = chatScreenState.value
             if (!webSocketManager.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()) {
+                chatStateManager.updateChatScreenState { ChatScreenState.Loading }
+                webSocketManager.stopMessageStream()
                 val response =
                     chatUseCase.deleteChat(webSocketManager.webSocketChatClient?.currentChatId?.value!!)
                 if (response is Response.Success) {
-                    chatStateManager.clearChat()
+                    chatStateManager.clearChat(if (tempChatScreenState is ChatScreenState.Success) tempChatScreenState else null)
                     webSocketManager.setChatId(null)
                 } else {
-                    // Handle error
+                    chatStateManager.updateChatScreenState { tempChatScreenState }
                 }
             }
         }
@@ -290,7 +298,7 @@ class ChatViewModel(
             val chatResponse = chatUseCase.getChatById(id)
             if (chatMessagesResponse is Response.Success && chatResponse is Response.Success) {
                 webSocketManager.setChatId(id)
-                chatHistoryManager.updateHistory()
+                chatHistoryManager.updateHistory(currentChatId = webSocketManager.webSocketChatClient?.currentChatId?.value)
                 chatStateManager.updateChatScreenState {
                     when (tempChatScreenState) {
                         is ChatScreenState.Success ->
@@ -332,7 +340,6 @@ class ChatViewModel(
             if (response is Response.Success) {
                 chatStateManager.clearChat()
                 webSocketManager.disconnect()
-                chatHistoryManager.updateHistory()
                 _currentUserViewState.value = HistoryScreenStates.Idle
                 coreComponent.appPreferences.clear()
                 onLogoutSuccess()

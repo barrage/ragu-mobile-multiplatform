@@ -65,7 +65,7 @@ class WebSocketChatClient(
     var currentChatId = mutableStateOf<String?>(null)
 
     // Flag indicating whether a chat is currently open
-    var isChatOpen = mutableStateOf(false)
+    private var isChatOpen = mutableStateOf(false)
 
     // Handler for processing incoming messages
     private val messageHandler =
