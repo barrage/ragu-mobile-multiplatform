@@ -54,10 +54,16 @@ fun rememberAppState(): AppState {
             konnection.observeHasConnection().collect { networkAvailable.value = it }
         }
     }
-    LaunchedEffect(drawerState.isOpen) { if (drawerState.isOpen) chatViewModel.updateHistory() }
+    LaunchedEffect(drawerState.isOpen) {
+        if (drawerState.isOpen) {
+            chatViewModel.chatHistoryManager.updateHistory()
+        }
+    }
 
     DisposableEffect(coroutineScope) {
-        onDispose { chatViewModel.webSocketChatClient?.disconnect() }
+        onDispose {
+            chatViewModel.webSocketManager.disconnect()
+        }
     }
 
     return remember(navController, coroutineScope, chatViewModel, networkAvailable, currentScreen) {

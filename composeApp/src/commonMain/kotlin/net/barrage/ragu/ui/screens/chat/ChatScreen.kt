@@ -114,8 +114,8 @@ fun ChatScreen(
     }
     LaunchedEffect(networkAvailable) {
         when {
-            !networkAvailable -> viewModel.webSocketChatClient?.disconnect()
-            else -> viewModel.webSocketChatClient?.reconnect()
+            !networkAvailable -> viewModel.webSocketManager.disconnect()
+            else -> viewModel.webSocketManager.webSocketChatClient?.reconnect()
         }
     }
 
@@ -142,7 +142,7 @@ fun ChatScreen(
                 is ChatScreenState.Success -> {
                     if (
                         state.messages.isNotEmpty() ||
-                        viewModel.webSocketChatClient?.currentChatId?.value != null
+                        viewModel.webSocketManager.webSocketChatClient?.currentChatId?.value != null
                     ) {
                         ChatTitle(
                             state =
@@ -179,7 +179,7 @@ fun ChatScreen(
 
                     if (
                         state.messages.isEmpty() &&
-                        viewModel.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
+                        viewModel.webSocketManager.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
                     ) {
                         AgentContent(
                             agents = state.agents.toImmutableList(),
@@ -228,7 +228,7 @@ fun ChatScreen(
                                     onInputTextChange = { viewModel.updateInputText(it) },
                                     onSendMessage = { viewModel.sendMessage() },
                                     onStopReceivingMessage = {
-                                        viewModel.webSocketChatClient?.stopMessageStream()
+                                        viewModel.webSocketManager.webSocketChatClient?.stopMessageStream()
                                     },
                                     isEnabled = state.isSendEnabled && state.agents.isNotEmpty() && inputEnabled,
                                     isReceivingMessage = state.isReceivingMessage,
@@ -347,7 +347,7 @@ fun ChatScreen(
 }
 
 private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: CoroutineScope) {
-    if (viewModel.webSocketChatClient == null) {
+    if (viewModel.webSocketManager.webSocketChatClient == null) {
         viewModel.initializeWebSocketClient(
             object : ReceiveMessageCallback {
                 var addNewMessage = true
@@ -391,7 +391,7 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                 }
 
                 override fun closeChat() {
-                    viewModel.onChatClosed()
+                    viewModel.chatStateManager.clearChat()
                 }
             },
             scope = scope,
