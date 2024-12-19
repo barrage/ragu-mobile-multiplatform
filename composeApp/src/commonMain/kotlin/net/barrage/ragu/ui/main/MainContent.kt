@@ -163,6 +163,7 @@ fun MainContent(
                         },
                         revealState = revealState,
                         scope = appState.coroutineScope,
+                        drawerState = drawerState,
                         modifier = Modifier.padding(top = 56.dp).padding(horizontal = 10.dp),
                     )
                 }

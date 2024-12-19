@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +25,7 @@ fun TopBar(
     onMenuClick: () -> Unit,
     revealState: RevealState,
     scope: CoroutineScope,
+    drawerState: DrawerState,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
@@ -36,7 +38,8 @@ fun TopBar(
                     scope.launch {
                         revealState.hide()
                         delay(1000)
-                        onMenuClick()
+                        drawerState.open()
+                        revealState.reveal(RevealKeys.MenuTheme)
                     }
                 },
             )
