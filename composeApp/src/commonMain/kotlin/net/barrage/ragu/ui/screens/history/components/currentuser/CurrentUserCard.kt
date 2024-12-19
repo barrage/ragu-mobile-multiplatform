@@ -27,6 +27,7 @@ import com.svenjacobs.reveal.RevealShape
 import com.svenjacobs.reveal.RevealState
 import com.svenjacobs.reveal.revealable
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.ui.screens.history.HistoryScreenStates
@@ -53,6 +54,8 @@ fun CurrentUserCard(
                 onClick = {
                     scope.launch {
                         revealState.hide()
+                        delay(1000)
+                        revealState.reveal(RevealKeys.MenuClose)
                     }
                 },
             )

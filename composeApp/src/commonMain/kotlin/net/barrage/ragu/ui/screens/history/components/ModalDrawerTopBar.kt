@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,7 @@ import net.barrage.ragu.ui.screens.history.HistoryModalDrawerContentViewState
 import net.barrage.ragu.ui.screens.history.components.topbar.DarkLightThemeSwitcher
 import net.barrage.ragu.ui.screens.history.components.topbar.ThemePopup
 import net.barrage.ragu.ui.screens.history.components.topbar.ThemeSelectorButton
+import net.barrage.ragu.utils.coreComponent
 import kotlin.math.ceil
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -52,6 +54,8 @@ fun ModalDrawerContentTopBar(
     onDarkLightModeClick: () -> Unit,
     revealState: RevealState,
     inputEnabled: Boolean,
+    changeInputEnabled: (Boolean) -> Unit,
+    shouldShowTutorial: MutableState<Boolean>,
     scope: CoroutineScope,
 ) {
     val supportedThemeColumns = 4
@@ -73,7 +77,10 @@ fun ModalDrawerContentTopBar(
                         scope.launch {
                             revealState.hide()
                             delay(1000)
-                            revealState.reveal(RevealKeys.MenuTheme)
+                            onChangeDrawerVisibility()
+                            coreComponent.appPreferences.saveShouldShowOnboardingTutorial(false)
+                            shouldShowTutorial.value = false
+                            changeInputEnabled(true)
                         }
                     },
                 )

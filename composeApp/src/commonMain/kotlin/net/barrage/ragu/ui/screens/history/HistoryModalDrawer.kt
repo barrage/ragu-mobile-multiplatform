@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -53,6 +54,8 @@ fun ModalDrawer(
     revealState: RevealState,
     scope: CoroutineScope,
     inputEnabled: Boolean,
+    changeInputEnabled: (Boolean) -> Unit,
+    shouldShowTutorial: MutableState<Boolean>,
     modifier: Modifier = Modifier,
 ) {
     val historyViewState by viewModel.historyViewState.collectAsState()
@@ -70,6 +73,8 @@ fun ModalDrawer(
                 onDarkLightModeClick = onDarkLightModeClick,
                 revealState = revealState,
                 inputEnabled = inputEnabled,
+                changeInputEnabled = changeInputEnabled,
+                shouldShowTutorial = shouldShowTutorial,
                 scope = scope,
             )
             Column(

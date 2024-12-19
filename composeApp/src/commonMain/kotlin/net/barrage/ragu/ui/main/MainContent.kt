@@ -149,6 +149,8 @@ fun MainContent(
                     revealState = revealState,
                     scope = appState.coroutineScope,
                     inputEnabled = inputEnabled,
+                    changeInputEnabled = changeInputEnabled,
+                    shouldShowTutorial = shouldShowTutorial,
                     modifier = Modifier.fillMaxWidth(0.8f),
                 )
             },
