@@ -123,7 +123,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "0.0.1"
+        versionName = "0.1.0"
     }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 
@@ -187,7 +187,7 @@ dependencies {
          nativeDistributions {
              targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
              packageName = "net.barrage.ragu"
-             packageVersion = "0.0.1"
+             packageVersion = "0.1.0"
          }
      }
  }*/
