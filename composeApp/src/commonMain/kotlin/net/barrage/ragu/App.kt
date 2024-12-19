@@ -38,7 +38,11 @@ import net.barrage.ragu.utils.coreComponent
  *                      indicating whether dark mode is enabled.
  */
 @Composable
-fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = null) {
+fun App(
+    modifier: Modifier = Modifier,
+    onThemeChange: ((Boolean) -> Unit)? = null,
+    onInputEnabled: ((Boolean) -> Unit)? = null
+) {
     val appState = rememberAppState()
     var deepLink by remember { mutableStateOf<DeepLink?>(null) }
     DeepLinkListener { deepLink = it }
@@ -111,7 +115,10 @@ fun App(modifier: Modifier = Modifier, onThemeChange: ((Boolean) -> Unit)? = nul
                             revealCanvasState = revealCanvasState,
                             shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
                             inputEnabled = inputEnabled.value,
-                            changeInputEnabled = { inputEnabled.value = it },
+                            changeInputEnabled = {
+                                inputEnabled.value = it
+                                onInputEnabled?.invoke(it)
+                            },
                         )
                         Overlays(appState)
                     }

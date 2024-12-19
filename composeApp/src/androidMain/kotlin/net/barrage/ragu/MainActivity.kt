@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import dev.theolm.rinku.compose.ext.Rinku
+import net.barrage.ragu.utils.debugLog
 
 /**
  * The main activity for the Android application.
@@ -23,6 +24,7 @@ class MainActivity : ComponentActivity() {
 
     private var backPressedTime: Long = 0
     private val backPressedInterval: Long = 2000 // 2 seconds
+    private val inputEnabled = mutableStateOf(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,16 +47,24 @@ class MainActivity : ComponentActivity() {
                         },
                     )
                 }
-                App(onThemeChange = { darkTheme -> isDarkTheme = darkTheme })
+                App(onThemeChange = { darkTheme -> isDarkTheme = darkTheme }, onInputEnabled = {
+                    inputEnabled.value = it
+                })
             }
         }
     }
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (!onBackPressedDispatcher.hasEnabledCallbacks()) {
+
+        if (!onBackPressedDispatcher.hasEnabledCallbacks() || inputEnabled.value.not()) {
+            debugLog("inputEnabled.value: ${inputEnabled.value}")
             if (backPressedTime + backPressedInterval > System.currentTimeMillis()) {
-                super.onBackPressed()
+                if (inputEnabled.value.not()) {
+                    finish()
+                } else {
+                    super.onBackPressed()
+                }
                 return
             } else {
                 Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
