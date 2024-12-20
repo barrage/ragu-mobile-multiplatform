@@ -2,6 +2,7 @@ package net.barrage.ragu.ui.screens.chat
 
 import androidx.compose.runtime.MutableState
 import kotlinx.coroutines.CoroutineScope
+import net.barrage.ragu.domain.Response
 import net.barrage.ragu.domain.model.Agent
 import net.barrage.ragu.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.ragu.utils.chat.WebSocketChatClient
@@ -37,7 +38,7 @@ class WebSocketManager(private val webSocketTokenUseCase: WebSocketTokenUseCase)
         this.selectedAgent = selectedAgent
 
         val token = webSocketTokenUseCase()
-        if (token is net.barrage.ragu.domain.Response.Success) {
+        if (token is Response.Success) {
             if (webSocketChatClient == null) {
                 webSocketChatClient =
                     WebSocketChatClient(callback, scope, selectedAgent, webSocketTokenUseCase)
@@ -75,6 +76,5 @@ class WebSocketManager(private val webSocketTokenUseCase: WebSocketTokenUseCase)
      */
     fun disconnect() {
         webSocketChatClient?.disconnect()
-        webSocketChatClient = null
     }
 }
