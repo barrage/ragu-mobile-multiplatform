@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -24,6 +25,7 @@ import net.barrage.ragu.navigation.Chat
 import net.barrage.ragu.ui.components.TopBar
 import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.ui.components.reveal.RevealOverlayContent
+import net.barrage.ragu.ui.screens.chat.ChatScreenState
 import net.barrage.ragu.ui.screens.history.ModalDrawer
 import net.barrage.ragu.utils.coreComponent
 
@@ -131,7 +133,7 @@ fun MainContent(
         ModalNavigationDrawer(
             modifier = modifier,
             drawerState = drawerState,
-            gesturesEnabled = profileVisible.not() && appState.currentScreen == Chat && inputEnabled,
+            gesturesEnabled = profileVisible.not() && appState.currentScreen == Chat && appState.chatViewModel.chatScreenState.collectAsState().value is ChatScreenState.Success && inputEnabled,
             drawerContent = {
                 ModalDrawer(
                     isDarkMode = isDarkMode,
@@ -156,7 +158,7 @@ fun MainContent(
             },
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                if (appState.currentScreen == Chat) {
+                if (appState.currentScreen == Chat && appState.chatViewModel.chatScreenState.collectAsState().value is ChatScreenState.Success) {
                     TopBar(
                         onMenuClick = {
                             if (inputEnabled) {

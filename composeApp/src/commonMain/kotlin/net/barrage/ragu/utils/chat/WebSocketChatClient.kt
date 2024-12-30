@@ -125,6 +125,7 @@ class WebSocketChatClient(
                 receiveMessageCallback.enableSending()
                 session = this
                 handleIncomingMessages(this)
+                isChatOpen.value = false
             }
         } catch (e: Exception) {
             debugLogError("Connection failed", e)
@@ -247,6 +248,7 @@ class WebSocketChatClient(
             session?.close()
             session = null
             isChatOpen.value = false
+            receiveMessageCallback.stopReceivingMessage()
             debugLog("WebSocket Disconnected")
         }
     }
