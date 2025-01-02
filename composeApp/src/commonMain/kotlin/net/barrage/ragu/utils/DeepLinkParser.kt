@@ -46,7 +46,7 @@ object DeepLinkParser {
      * @return true if the URI is valid, false otherwise.
      */
     private fun isValidUri(uri: io.ktor.http.Url): Boolean {
-        return uri.host == "llmao-kotlin-api-development.barrage.dev" &&
-                uri.encodedPath == "/oauthredirect"
+        return uri.host == Constants.BASE_URL &&
+                uri.encodedPath == Constants.Auth.REDIRECT_PATH
     }
 }
