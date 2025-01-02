@@ -130,6 +130,35 @@ development: [Multiplatform Setup](https://www.jetbrains.com/help/kotlin-multipl
 
 ---
 
+### Android App Signing
+
+This project uses a `keystore.properties` file for secure Android app signing. This file is not included in the repository for security reasons.
+
+#### Setting up keystore.properties
+
+1. Create a file named `keystore.properties` in the root directory of the project.
+2. Add the following properties to the file:
+    ```
+    storeFile=path/to/your/keystore.jks
+    storePassword=your_store_password
+    keyAlias=your_key_alias
+    keyPassword=your_key_password
+    ```
+3. Replace the values with your actual keystore information:
+    - `storeFile`: Path to your keystore file (e.g., `release_keystore.jks`)
+    - `storePassword`: Password for your keystore
+    - `keyAlias`: Alias of the key in the keystore
+    - `keyPassword`: Password for the key
+
+#### Security Note
+
+- Never commit the `keystore.properties` file or your actual keystore to version control.
+- Keep your keystore and its passwords secure and private.
+
+The app's `build.gradle.kts` file is configured to use these properties for signing the release version of the app. If the `keystore.properties` file is not found, an empty signing configuration will be created, allowing the build process to continue without signing.
+
+---
+
 ## Usage
 
 This project serves as a starting point for building custom chat solutions. Modify the UI, integrate
