@@ -116,7 +116,7 @@ fun ChatScreen(
             chatScreenState is ChatScreenState.Success &&
             (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
         ) {
-            delay(100)
+            delay(200)
             lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
         }
     }
