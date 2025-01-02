@@ -76,6 +76,29 @@ The project follows a typical Kotlin Multiplatform structure:
 - `gradle/`: Gradle configuration files
 - `build.gradle.kts`: Main Gradle build script
 
+#### Configuration Constants
+
+The application uses a set of configuration constants defined in
+`composeApp/src/commonMain/kotlin/net/barrage/ragu/utils/Constants.kt`. These constants include:
+
+##### API Configuration
+
+- `BASE_URL`: The base URL for the API
+    - Current value: `"llmao-kotlin-api-development.barrage.dev"`
+
+##### Authentication Constants
+
+- `REDIRECT_PATH`: The path for OAuth redirection
+    - Current value: `"/oauthredirect"`
+- `REDIRECT_URI`: The full redirect URI for the OAuth flow
+    - Current value: `"https://llmao-kotlin-api-development.barrage.dev/oauthredirect"`
+
+The `Constants.kt` file also includes private constants for Google OAuth configuration, such as the
+authorization URL, client ID, response type, and requested scopes.
+
+**Note:** Ensure that the BASE_URL and REDIRECT_URI are correctly set for your environment. Update
+these values in the `Constants.kt` file when deploying to your environment.
+
 ### Architecture
 
 This project follows a Clean Architecture approach with MVVM (Model-View-ViewModel) for the
@@ -132,7 +155,8 @@ development: [Multiplatform Setup](https://www.jetbrains.com/help/kotlin-multipl
 
 ### Android App Signing
 
-This project uses a `keystore.properties` file for secure Android app signing. This file is not included in the repository for security reasons.
+This project uses a `keystore.properties` file for secure Android app signing. This file is not
+included in the repository for security reasons.
 
 #### Setting up keystore.properties
 
@@ -155,7 +179,9 @@ This project uses a `keystore.properties` file for secure Android app signing. T
 - Never commit the `keystore.properties` file or your actual keystore to version control.
 - Keep your keystore and its passwords secure and private.
 
-The app's `build.gradle.kts` file is configured to use these properties for signing the release version of the app. If the `keystore.properties` file is not found, an empty signing configuration will be created, allowing the build process to continue without signing.
+The app's `build.gradle.kts` file is configured to use these properties for signing the release
+version of the app. If the `keystore.properties` file is not found, an empty signing configuration
+will be created, allowing the build process to continue without signing.
 
 ---
 
@@ -168,10 +194,16 @@ with your backend, or more.
 
 ## License
 
-This repository contains Multiplatform app, a part of Ragu, covered under the [Apache License 2.0](LICENSE), except where noted (any Ragu logos or trademarks are not covered under the Apache License, and should be explicitly noted by a LICENSE file.)
+This repository contains Multiplatform app, a part of Ragu, covered under
+the [Apache License 2.0](LICENSE), except where noted (any Ragu logos or trademarks are not covered
+under the Apache License, and should be explicitly noted by a LICENSE file.)
 
-Multiplatform app, a part of Ragu, is a product produced from this open source software, exclusively by Barrage d.o.o. It is distributed under our commercial terms.
+Multiplatform app, a part of Ragu, is a product produced from this open source software, exclusively
+by Barrage d.o.o. It is distributed under our commercial terms.
 
-Others are allowed to make their own distribution of the software, but they cannot use any of the Ragu trademarks, cloud services, etc.
+Others are allowed to make their own distribution of the software, but they cannot use any of the
+Ragu trademarks, cloud services, etc.
 
-We explicitly grant permission for you to make a build that includes our trademarks while developing Ragu itself. You may not publish or share the build, and you may not use that build to run Ragu for any other purpose.
+We explicitly grant permission for you to make a build that includes our trademarks while developing
+Ragu itself. You may not publish or share the build, and you may not use that build to run Ragu for
+any other purpose.
