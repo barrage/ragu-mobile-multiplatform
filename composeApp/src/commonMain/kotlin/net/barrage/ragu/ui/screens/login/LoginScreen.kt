@@ -148,6 +148,7 @@ fun LoginContent(onGoogleLogin: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         colors =
         CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        elevation = CardDefaults.cardElevation(16.dp),
         modifier = modifier.fillMaxWidth(),
     ) {
         Column(
@@ -170,7 +171,6 @@ fun LoginContent(onGoogleLogin: () -> Unit, modifier: Modifier = Modifier) {
                 onClick = onGoogleLogin,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                border = ButtonDefaults.outlinedButtonBorder(true),
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
