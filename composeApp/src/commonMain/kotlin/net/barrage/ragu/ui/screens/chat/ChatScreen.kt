@@ -35,6 +35,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.Lifecycle
 import com.svenjacobs.reveal.Reveal
 import com.svenjacobs.reveal.RevealCanvasState
 import com.svenjacobs.reveal.RevealState
@@ -78,6 +79,7 @@ fun ChatScreen(
     revealCanvasState: RevealCanvasState,
     revealState: RevealState,
     shouldShowOnboardingTutorial: Boolean,
+    checkAuth: () -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
@@ -92,6 +94,12 @@ fun ChatScreen(
     val density = LocalDensity.current
     var width by remember { mutableStateOf(0.dp) }
     val clipboardManager = LocalClipboardManager.current
+
+    OnEventListener {
+        if (it == Lifecycle.Event.ON_RESUME) {
+            checkAuth()
+        }
+    }
 
     LaunchedEffect(chatScreenState) {
         if (

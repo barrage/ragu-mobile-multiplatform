@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -54,9 +55,18 @@ fun rememberAppState(): AppState {
             konnection.observeHasConnection().collect { networkAvailable.value = it }
         }
     }
-    LaunchedEffect(drawerState.isOpen) {
-        if (drawerState.isOpen) {
-            chatViewModel.chatHistoryManager.updateHistory(currentChatId = chatViewModel.webSocketManager.webSocketChatClient?.currentChatId?.value)
+    DisposableEffect(drawerState) {
+        val job = coroutineScope.launch {
+            snapshotFlow { drawerState.isOpen }.collect { isOpen ->
+                if (isOpen) {
+                    chatViewModel.chatHistoryManager.updateHistory(
+                        currentChatId = chatViewModel.webSocketManager.webSocketChatClient?.currentChatId?.value
+                    )
+                }
+            }
+        }
+        onDispose {
+            job.cancel()
         }
     }
 

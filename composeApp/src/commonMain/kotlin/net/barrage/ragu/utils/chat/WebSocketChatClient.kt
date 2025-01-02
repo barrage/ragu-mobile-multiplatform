@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -108,13 +109,30 @@ class WebSocketChatClient(
 
     /** Fetches a new WebSocket token */
     private suspend fun getWsToken(): Boolean {
-        val response = webSocketTokenUseCase()
-        return if (response is Response.Success) {
-            wsToken = response.data
-            true
-        } else {
-            false
+        var result = false
+        webSocketTokenUseCase().collectLatest { response ->
+            result = when (response) {
+                is Response.Success -> {
+                    wsToken = response.data
+                    true
+                }
+
+                is Response.Loading -> {
+                    // Optionally handle loading state
+                    false
+                }
+
+                else -> {
+                    // Handle failure cases
+                    debugLogError(
+                        "Failed to obtain WebSocket token",
+                        (response as? Response.Failure)?.e
+                    )
+                    false
+                }
+            }
         }
+        return result
     }
 
     /** Establishes a WebSocket connection to the server. */
@@ -157,7 +175,6 @@ class WebSocketChatClient(
         } catch (e: CancellationException) {
             debugLog("WebSocket cancelled: ${e.message}")
             receiveMessageCallback.disableSending()
-            reconnect()
         } catch (e: Exception) {
             debugLogError("Error handling incoming messages", e)
             receiveMessageCallback.disableSending()

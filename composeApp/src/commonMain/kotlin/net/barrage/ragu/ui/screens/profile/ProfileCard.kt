@@ -63,7 +63,7 @@ fun ProfileContent(
                 HistoryScreenStates.Idle -> {}
 
                 HistoryScreenStates.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier)
+                    CircularProgressIndicator()
                 }
 
                 is HistoryScreenStates.Success -> {

@@ -31,12 +31,10 @@ import net.barrage.ragu.domain.Response
 suspend inline fun <reified T> safeApiCall(apiCall: () -> HttpResponse): Response<T> {
     return try {
         val response = apiCall()
-        if (response.status.value in 200..299) {
-            // Successful response (2xx status code)
-            Response.Success(response.body() as T)
-        } else {
-            // Non-2xx status code
-            Response.Failure(
+        when (response.status.value) {
+            in 200..299 -> Response.Success(response.body() as T)
+            401 -> Response.Unauthorized
+            else -> Response.Failure(
                 Exception("HTTP error ${response.status.value} ${response.status.description}")
             )
         }
@@ -44,8 +42,11 @@ suspend inline fun <reified T> safeApiCall(apiCall: () -> HttpResponse): Respons
         // 3xx - responses
         Response.Failure(e)
     } catch (e: ClientRequestException) {
-        // 4xx - responses
-        Response.Failure(e)
+        if (e.response.status.value == 401) {
+            Response.Unauthorized
+        } else {
+            Response.Failure(e)
+        }
     } catch (e: ServerResponseException) {
         // 5xx - responses
         Response.Failure(e)

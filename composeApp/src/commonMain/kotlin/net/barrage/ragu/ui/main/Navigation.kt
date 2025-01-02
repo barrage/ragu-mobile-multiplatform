@@ -4,27 +4,30 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.svenjacobs.reveal.RevealCanvasState
 import com.svenjacobs.reveal.RevealState
 import dev.theolm.rinku.DeepLink
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import net.barrage.ragu.domain.Response
 import net.barrage.ragu.domain.usecase.user.CurrentUserUseCase
 import net.barrage.ragu.navigation.Chat
 import net.barrage.ragu.navigation.Empty
-import net.barrage.ragu.navigation.FellowNavigation
 import net.barrage.ragu.navigation.Login
 import net.barrage.ragu.ui.components.keyboardAsState
 import net.barrage.ragu.ui.screens.chat.ChatScreen
@@ -54,12 +57,21 @@ fun AppNavHost(
     LaunchedEffect(appState.networkAvailable.value) {
         if (!appState.networkAvailable.value || startDestination != null) return@LaunchedEffect
         appState.coroutineScope.launch {
-            startDestination =
-                if (currentUserUseCase() is Response.Success) {
-                    Chat.route
-                } else {
-                    FellowNavigation.startDestination
+            currentUserUseCase().collectLatest {
+                startDestination = when (it) {
+                    is Response.Success -> {
+                        Chat.route
+                    }
+
+                    is Response.Unauthorized -> {
+                        Login.route
+                    }
+
+                    else -> {
+                        null
+                    }
                 }
+            }
         }
     }
 
@@ -84,8 +96,7 @@ fun AppNavHost(
                     changeProfileVisibility = changeProfileVisibility,
                     networkAvailable = appState.networkAvailable.value,
                     onLogoutSuccess = {
-                        appState.loginViewModel.clearViewModel()
-                        appState.navController.navigateSingleTopTo(Login.route)
+                        startDestination = Login.route
                         onLogoutSuccess()
                     },
                     inputEnabled = inputEnabled,
@@ -93,6 +104,15 @@ fun AppNavHost(
                     revealCanvasState = revealCanvasState,
                     revealState = revealState,
                     shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
+                    checkAuth = {
+                        appState.coroutineScope.launch {
+                            currentUserUseCase().collectLatest {
+                                if (it is Response.Unauthorized) {
+                                    onLogoutSuccess()
+                                }
+                            }
+                        }
+                    },
                 )
             }
             composable(Login.route) {
@@ -107,7 +127,10 @@ fun AppNavHost(
                         }
                     },
                     deepLink = deepLink,
-                    navigateToChat = { appState.navController.navigateSingleTopTo(Chat.route) },
+                    navigateToChat = {
+                        appState.navController.navigateToChat()
+                    },
+                    scope = appState.coroutineScope,
                     viewModel = loginViewModel,
                     modifier = Modifier.fillMaxSize(),
                 )
@@ -118,13 +141,26 @@ fun AppNavHost(
                 }
             }
         }
+    } else {
+        Box(modifier = Modifier.fillMaxSize().padding(20.dp)) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        }
     }
 }
 
-fun NavHostController.navigateSingleTopTo(route: String) =
-    this.navigate(route) {
-        popUpTo(this@navigateSingleTopTo.graph.findStartDestination().route ?: return@navigate) {
-            saveState = true
+fun NavHostController.navigateToChat() =
+    this.navigate(Chat.route) {
+        popUpTo(Login.route) {
+            inclusive = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+
+fun NavHostController.navigateToLogin() =
+    this.navigate(Login.route) {
+        popUpTo(Chat.route) {
+            inclusive = true
         }
         launchSingleTop = true
         restoreState = true

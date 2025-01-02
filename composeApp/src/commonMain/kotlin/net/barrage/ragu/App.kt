@@ -25,6 +25,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.barrage.ragu.ui.main.MainContent
 import net.barrage.ragu.ui.main.Overlays
+import net.barrage.ragu.ui.main.navigateToLogin
 import net.barrage.ragu.ui.main.rememberAppState
 import net.barrage.ragu.ui.theme.CustomTheme
 import net.barrage.ragu.utils.coreComponent
@@ -45,7 +46,6 @@ fun App(
 ) {
     val appState = rememberAppState()
     var deepLink by remember { mutableStateOf<DeepLink?>(null) }
-    DeepLinkListener { deepLink = it }
     var isDarkTheme by remember { mutableStateOf(true) }
     var selectedTheme by remember { mutableStateOf(White) }
     var selectedVariant by remember { mutableStateOf(PaletteStyle.TonalSpot) }
@@ -55,6 +55,7 @@ fun App(
     val revealCanvasState = rememberRevealCanvasState()
     val inputEnabled = remember { mutableStateOf(true) }
 
+    DeepLinkListener { deepLink = it }
     LaunchedEffect(Unit) {
         isDarkTheme = coreComponent.appPreferences.isDarkModeEnabled()
         selectedTheme = coreComponent.appPreferences.getThemeColor()
@@ -105,11 +106,14 @@ fun App(
                                 selectedVariant = PaletteStyle.TonalSpot
                                 isDarkTheme = false
                                 deepLink = null
+                                appState.chatViewModel.clearViewModel()
+                                appState.loginViewModel.clearViewModel()
                                 CoroutineScope(Dispatchers.IO).launch {
                                     coreComponent.appPreferences.saveThemeColor(selectedTheme)
                                     coreComponent.appPreferences.saveThemeVariant(selectedVariant)
                                     coreComponent.appPreferences.changeDarkMode(isDarkTheme)
                                 }
+                                appState.navController.navigateToLogin()
                             },
                             onProfileVisibilityChange = { profileVisible = !profileVisible },
                             revealCanvasState = revealCanvasState,

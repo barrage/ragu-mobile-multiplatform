@@ -7,6 +7,7 @@ import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
@@ -61,36 +62,38 @@ class ChatHistoryManager(private val chatUseCase: ChatUseCase) {
             currentChatHistoryPage = 1
             isLastChatHistoryPage = false
         }
+        chatUseCase.getChatHistory(currentChatHistoryPage, chatHistoryPageSize)
+            .collectLatest { response ->
+                when (response) {
+                    is Response.Success -> {
+                        val newElements = response.data
+                        isLastChatHistoryPage = newElements.size < chatHistoryPageSize
+                        val currentElements = if (isInitialLoad) {
+                            emptyList()
+                        } else {
+                            (historyViewState.value.history as? HistoryScreenStates.Success)?.data?.elements?.values?.flatten()
+                                ?: emptyList()
+                        }
 
-        when (val response =
-            chatUseCase.getChatHistory(currentChatHistoryPage, chatHistoryPageSize)) {
-            is Response.Success -> {
-                val newElements = response.data
-                isLastChatHistoryPage = newElements.size < chatHistoryPageSize
-                val currentElements = if (isInitialLoad) {
-                    emptyList()
-                } else {
-                    (historyViewState.value.history as? HistoryScreenStates.Success)?.data?.elements?.values?.flatten()
-                        ?: emptyList()
+                        val allElements = (currentElements + newElements).distinctBy { it.id }
+                        val mappedElements = mapElementsByTimePeriod(allElements, currentChatId)
+
+                        _historyViewState.value = historyViewState.value.copy(
+                            history = HistoryScreenStates.Success(HistoryViewState(elements = mappedElements))
+                        )
+
+                        currentChatHistoryPage++
+                    }
+
+                    is Response.Failure -> {
+                        _historyViewState.value =
+                            historyViewState.value.copy(history = HistoryScreenStates.Error)
+                    }
+
+                    Response.Loading -> {}
+                    Response.Unauthorized -> {}
                 }
-
-                val allElements = (currentElements + newElements).distinctBy { it.id }
-                val mappedElements = mapElementsByTimePeriod(allElements, currentChatId)
-
-                _historyViewState.value = historyViewState.value.copy(
-                    history = HistoryScreenStates.Success(HistoryViewState(elements = mappedElements))
-                )
-
-                currentChatHistoryPage++
             }
-
-            is Response.Failure -> {
-                _historyViewState.value =
-                    historyViewState.value.copy(history = HistoryScreenStates.Error)
-            }
-
-            Response.Loading -> {}
-        }
         isUpdatingHistory = false
     }
 

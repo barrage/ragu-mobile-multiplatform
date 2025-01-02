@@ -2,13 +2,14 @@ package net.barrage.ragu.domain.usecase.auth
 
 import io.ktor.http.Parameters
 import io.ktor.http.parameters
+import kotlinx.coroutines.flow.Flow
 import net.barrage.ragu.domain.Response
 import net.barrage.ragu.domain.model.AuthToken
 import net.barrage.ragu.domain.repository.AuthRepository
 import net.barrage.ragu.utils.Constants
 
 class LoginUseCase(private val authRepository: AuthRepository) {
-    suspend operator fun invoke(code: String, codeVerifier: String): Response<AuthToken> =
+    suspend operator fun invoke(code: String, codeVerifier: String): Flow<Response<AuthToken>> =
         authRepository.login(createLoginParameters(code, codeVerifier))
 
     private fun createLoginParameters(code: String, codeVerifier: String): Parameters {

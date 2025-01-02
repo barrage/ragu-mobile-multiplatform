@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import net.barrage.ragu.domain.Response
 import net.barrage.ragu.domain.usecase.auth.LoginUseCase
@@ -51,18 +52,20 @@ class LoginViewModel(
      *
      * @param code The authorization code received from the authentication server
      */
+
     suspend fun login(code: String) {
         _loginState.value = LoginScreenState.Loading
         val codeVerifier = tokenStorage.getCodeVerifier()
 
         if (codeVerifier == null) {
-            _loginState.value = LoginScreenState.Error(messageRes = Res.string.code_verifier_null)
+            _loginState.value =
+                LoginScreenState.Error(messageRes = Res.string.code_verifier_null)
             debugLogError("Login failed: Code verifier is null")
             return
         }
 
-        _loginState.value =
-            when (val result = loginUseCase(code, codeVerifier)) {
+        loginUseCase(code, codeVerifier).collectLatest { result ->
+            _loginState.value = when (result) {
                 is Response.Success -> {
                     clearCodeVerifier()
                     tokenStorage.saveCookie(result.data.value)
@@ -79,12 +82,14 @@ class LoginViewModel(
                     )
                 }
 
+                is Response.Loading -> LoginScreenState.Loading
                 else -> {
                     debugLogError("Unexpected login result")
                     clearCodeVerifier()
                     LoginScreenState.Error(messageRes = Res.string.unexpected_error)
                 }
             }
+        }
     }
 
     /**
@@ -92,22 +97,25 @@ class LoginViewModel(
      */
     private fun getCurrentUser() {
         viewModelScope.launch {
-            _loginState.value =
-                when (val result = currentUserUseCase()) {
-                    is Response.Success -> LoginScreenState.Success
-                    is Response.Failure -> {
-                        debugLogError("Failed to get current user", result.e)
-                        LoginScreenState.Error(
-                            message = result.e?.message,
-                            messageRes = Res.string.unexpected_error,
-                        )
-                    }
+            currentUserUseCase().collectLatest { response ->
+                _loginState.value =
+                    when (response) {
+                        is Response.Success -> LoginScreenState.Success
+                        is Response.Failure -> {
+                            debugLogError("Failed to get current user", response.e)
+                            LoginScreenState.Error(
+                                message = response.e?.message,
+                                messageRes = Res.string.unexpected_error,
+                            )
+                        }
 
-                    else -> {
-                        debugLogError("Unexpected result when getting current user")
-                        LoginScreenState.Error(messageRes = Res.string.unexpected_error)
+                        else -> {
+                            debugLogError("Unexpected result when getting current user")
+                            LoginScreenState.Error(messageRes = Res.string.unexpected_error)
+                        }
+
                     }
-                }
+            }
         }
     }
 

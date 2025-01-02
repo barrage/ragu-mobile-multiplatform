@@ -9,6 +9,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import net.barrage.ragu.data.remote.dto.history.SenderType
 import net.barrage.ragu.domain.Response
@@ -97,36 +99,49 @@ class ChatViewModel(
             launch { chatHistoryManager.updateHistory() }
             launch { updateCurrentUser() }
 
-            val agentsResponse = chatUseCase.getAgents()
-            if (agentsResponse is Response.Success) {
-                chatStateManager.updateChatScreenState { currentState ->
-                    when (currentState) {
-                        is ChatScreenState.Success -> {
-                            val firstAgent = agentsResponse.data.firstOrNull()
-                            if (firstAgent != null) {
-                                chatStateManager.setAgent(firstAgent)
-                            }
-                            currentState.copy(
-                                agents = agentsResponse.data.toImmutableList(),
-                                isAgentActive = true,
-                            )
-                        }
+            chatUseCase.getAgents().collectLatest { agentsResponse ->
+                when (agentsResponse) {
+                    is Response.Loading -> {
+                        chatStateManager.updateChatScreenState { ChatScreenState.Loading }
+                    }
 
-                        else -> {
-                            val firstAgent = agentsResponse.data.firstOrNull()
-                            if (firstAgent != null) {
-                                chatStateManager.setAgent(firstAgent)
+                    is Response.Success -> {
+                        chatStateManager.updateChatScreenState { currentState ->
+                            when (currentState) {
+                                is ChatScreenState.Success -> {
+                                    val firstAgent = agentsResponse.data.firstOrNull()
+                                    if (firstAgent != null) {
+                                        chatStateManager.setAgent(firstAgent)
+                                    }
+                                    currentState.copy(
+                                        agents = agentsResponse.data.toImmutableList(),
+                                        isAgentActive = true
+                                    )
+                                }
+
+                                else -> {
+                                    val firstAgent = agentsResponse.data.firstOrNull()
+                                    if (firstAgent != null) {
+                                        chatStateManager.setAgent(firstAgent)
+                                    }
+                                    ChatScreenState.Success(
+                                        agents = agentsResponse.data.toImmutableList(),
+                                        messages = persistentListOf(),
+                                        isAgentActive = true
+                                    )
+                                }
                             }
-                            ChatScreenState.Success(
-                                agents = agentsResponse.data.toImmutableList(),
-                                messages = persistentListOf(),
-                                isAgentActive = true,
-                            )
                         }
                     }
+
+                    is Response.Failure -> {
+                        chatStateManager.updateChatScreenState { ChatScreenState.Error(Res.string.failed_to_load_agents) }
+                    }
+
+                    is Response.Unauthorized -> {
+                        // Handle unauthorized response, perhaps by redirecting to login
+                    }
                 }
-            } else {
-                chatStateManager.updateChatScreenState { ChatScreenState.Error(Res.string.failed_to_load_agents) }
             }
         }
     }
@@ -294,38 +309,47 @@ class ChatViewModel(
                 webSocketManager.stopMessageStream()
             }
             chatStateManager.updateChatScreenState { ChatScreenState.Loading }
-            val chatMessagesResponse = chatUseCase.getChatMessagesById(id)
-            val chatResponse = chatUseCase.getChatById(id)
-            if (chatMessagesResponse is Response.Success && chatResponse is Response.Success) {
-                webSocketManager.setChatId(id)
-                chatHistoryManager.updateHistory(currentChatId = webSocketManager.webSocketChatClient?.currentChatId?.value)
-                chatStateManager.updateChatScreenState {
-                    when (tempChatScreenState) {
-                        is ChatScreenState.Success ->
-                            tempChatScreenState.copy(
-                                messages = chatMessagesResponse.data.toImmutableList(),
-                                chatTitle = title,
-                                isEditingTitle = false,
-                                isReceivingMessage = false,
-                                inputText = "",
-                                isAgentActive = chatResponse.data.agent.active,
-                            )
 
-                        else ->
-                            ChatScreenState.Success(
-                                agents = persistentListOf(),
-                                messages = chatMessagesResponse.data.toImmutableList(),
-                                chatTitle = title,
-                                isEditingTitle = false,
-                                isReceivingMessage = false,
-                                inputText = "",
-                                isAgentActive = true,
-                            )
+            chatUseCase.getChatMessagesById(id)
+                .combine(chatUseCase.getChatById(id)) { messagesResponse, chatResponse ->
+                    Pair(messagesResponse, chatResponse)
+                }
+                .collect { (chatMessagesResponse, chatResponse) ->
+                    when {
+                        chatMessagesResponse is Response.Success && chatResponse is Response.Success -> {
+                            webSocketManager.setChatId(id)
+                            chatHistoryManager.updateHistory(currentChatId = webSocketManager.webSocketChatClient?.currentChatId?.value)
+                            chatStateManager.updateChatScreenState {
+                                when (tempChatScreenState) {
+                                    is ChatScreenState.Success ->
+                                        tempChatScreenState.copy(
+                                            messages = chatMessagesResponse.data.toImmutableList(),
+                                            chatTitle = title,
+                                            isEditingTitle = false,
+                                            isReceivingMessage = false,
+                                            inputText = "",
+                                            isAgentActive = chatResponse.data.agent.active,
+                                        )
+
+                                    else ->
+                                        ChatScreenState.Success(
+                                            agents = persistentListOf(),
+                                            messages = chatMessagesResponse.data.toImmutableList(),
+                                            chatTitle = title,
+                                            isEditingTitle = false,
+                                            isReceivingMessage = false,
+                                            inputText = "",
+                                            isAgentActive = true,
+                                        )
+                                }
+                            }
+                        }
+
+                        else -> {
+                            // Handle error
+                        }
                     }
                 }
-            } else {
-                // Handle error
-            }
         }
     }
 
@@ -335,17 +359,37 @@ class ChatViewModel(
      * @param onLogoutSuccess Callback to be invoked on successful logout
      */
     fun logout(onLogoutSuccess: () -> Unit) {
+        val tempChatScreenState = chatScreenState.value
         viewModelScope.launch {
-            val response = logoutUseCase()
-            if (response is Response.Success) {
-                chatStateManager.clearChat()
-                webSocketManager.disconnect()
-                _currentUserViewState.value = HistoryScreenStates.Idle
-                coreComponent.appPreferences.clear()
-                onLogoutSuccess()
-            } else {
-                // Handle logout failure
+            logoutUseCase().collectLatest { response ->
+                when (response) {
+                    is Response.Success -> {
+                        onLogoutSuccess()
+                    }
+
+                    is Response.Failure -> {
+                        // Handle logout failure
+                        chatStateManager.updateChatScreenState { tempChatScreenState }
+                    }
+
+                    is Response.Loading -> {
+                        chatStateManager.updateChatScreenState { ChatScreenState.Loading }
+                    }
+
+                    else -> {
+                        // Handle other cases
+                    }
+                }
             }
+        }
+    }
+
+    fun clearViewModel() {
+        chatStateManager.clearChat()
+        webSocketManager.disconnect()
+        _currentUserViewState.value = HistoryScreenStates.Idle
+        viewModelScope.launch {
+            coreComponent.appPreferences.clear()
         }
     }
 
@@ -361,11 +405,19 @@ class ChatViewModel(
     /**
      * Updates the current user information.
      */
-    private suspend fun updateCurrentUser() {
-        _currentUserViewState.value = when (val response = currentUserUseCase.invoke()) {
-            is Response.Success -> HistoryScreenStates.Success(response.data.toViewState())
-            is Response.Failure -> HistoryScreenStates.Error
-            Response.Loading -> HistoryScreenStates.Loading
+    private fun updateCurrentUser() {
+        viewModelScope.launch {
+            currentUserUseCase().collect { response ->
+                _currentUserViewState.value = when (response) {
+                    is Response.Success -> {
+                        HistoryScreenStates.Success(response.data.toViewState())
+                    }
+
+                    is Response.Failure -> HistoryScreenStates.Error
+                    is Response.Loading -> HistoryScreenStates.Loading
+                    is Response.Unauthorized -> HistoryScreenStates.Error
+                }
+            }
         }
     }
 

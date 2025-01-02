@@ -25,4 +25,5 @@ sealed class Response<out T> {
      * @property e The exception that occurred during the API call, if any.
      */
     data class Failure(val e: Exception?) : Response<Nothing>()
+    data object Unauthorized : Response<Nothing>()
 }

@@ -20,15 +20,17 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.theolm.rinku.DeepLink
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.barrage.ragu.ui.components.AppIconCard
 import net.barrage.ragu.ui.components.ErrorDialog
@@ -53,21 +55,30 @@ fun LoginScreen(
     onGoogleLogin: (String) -> Unit,
     navigateToChat: () -> Unit,
     deepLink: DeepLink?,
+    scope: CoroutineScope,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = koinViewModel(),
 ) {
     val loginState by viewModel.loginState.collectAsState()
-    val scope = rememberCoroutineScope()
 
     val rememberedOnGoogleLogin by rememberUpdatedState(onGoogleLogin)
     val rememberedNavigateToChat by rememberUpdatedState(navigateToChat)
 
-    LaunchedEffect(deepLink) {
-        if (deepLink != null && loginState is LoginScreenState.Idle) {
-            val code = DeepLinkParser.extractCodeFromDeepLink(deepLink.data)
-            if (code != null) {
-                viewModel.login(code)
-            }
+    DisposableEffect(deepLink) {
+        val job = scope.launch {
+            snapshotFlow { deepLink }
+                .collect { currentDeepLink ->
+                    if (currentDeepLink != null && loginState is LoginScreenState.Idle) {
+                        val code = DeepLinkParser.extractCodeFromDeepLink(currentDeepLink.data)
+                        if (code != null) {
+                            viewModel.login(code)
+                        }
+                    }
+                }
+        }
+
+        onDispose {
+            job.cancel()
         }
     }
 
