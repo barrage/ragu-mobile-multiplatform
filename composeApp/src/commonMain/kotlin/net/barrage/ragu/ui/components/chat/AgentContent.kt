@@ -24,13 +24,13 @@ import ragumultiplatform.composeapp.generated.resources.chat_sub_header
 
 @Composable
 fun AgentContent(
+    onAgentClick: (Agent) -> Unit,
     agents: ImmutableList<Agent>,
     selectedAgent: Agent?,
-    onAgentClick: (Agent) -> Unit,
     revealState: RevealState,
     scope: CoroutineScope,
-    changeInputEnabled: (Boolean) -> Unit,
     shouldShowOnboardingTutorial: Boolean,
+    changeInputEnabled: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {

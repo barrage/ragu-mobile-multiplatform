@@ -31,22 +31,22 @@ import net.barrage.ragu.utils.coreComponent
 
 @Composable
 fun MainContent(
+    onProfileVisibilityChange: () -> Unit,
+    onLogoutSuccess: () -> Unit,
+    onDarkLightModeClick: () -> Unit,
+    changeInputEnabled: (Boolean) -> Unit,
+    onSelectThemeClick: (Color) -> Unit,
+    onSelectVariantClick: (PaletteStyle) -> Unit,
     appState: AppState,
     currentTheme: Color,
     currentVariant: PaletteStyle,
-    isDarkMode: Boolean,
-    profileVisible: Boolean,
     deepLink: DeepLink?,
-    onSelectThemeClick: (Color) -> Unit,
-    onSelectVariantClick: (PaletteStyle) -> Unit,
-    onProfileVisibilityChange: () -> Unit,
-    onLogoutSuccess: () -> Unit,
-    modifier: Modifier = Modifier,
-    onDarkLightModeClick: () -> Unit,
     revealCanvasState: RevealCanvasState,
     shouldShowOnboardingTutorial: Boolean,
     inputEnabled: Boolean,
-    changeInputEnabled: (Boolean) -> Unit,
+    isDarkMode: Boolean,
+    profileVisible: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val drawerState = appState.drawerState
     val scope = rememberCoroutineScope()

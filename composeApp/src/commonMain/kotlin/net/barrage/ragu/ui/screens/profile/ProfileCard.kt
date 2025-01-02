@@ -39,10 +39,10 @@ import ragumultiplatform.composeapp.generated.resources.sign_out
 
 @Composable
 fun ProfileContent(
-    viewState: HistoryScreenStates<ProfileViewState>,
     onCloseClick: () -> Unit,
-    modifier: Modifier = Modifier,
     onLogoutClick: () -> Unit,
+    viewState: HistoryScreenStates<ProfileViewState>,
+    modifier: Modifier = Modifier,
 ) {
     Card(
         shape = RoundedCornerShape(28.dp),

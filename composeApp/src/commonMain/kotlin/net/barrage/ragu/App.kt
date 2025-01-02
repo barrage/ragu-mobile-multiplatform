@@ -27,7 +27,7 @@ import net.barrage.ragu.ui.main.MainContent
 import net.barrage.ragu.ui.main.Overlays
 import net.barrage.ragu.ui.main.navigateToLogin
 import net.barrage.ragu.ui.main.rememberAppState
-import net.barrage.ragu.ui.theme.CustomTheme
+import net.barrage.ragu.ui.theme.RaguTheme
 import net.barrage.ragu.utils.coreComponent
 
 /**
@@ -66,7 +66,7 @@ fun App(
     }
     LaunchedEffect(isDarkTheme) { onThemeChange?.invoke(isDarkTheme) }
     AnimatedVisibility(isThemeLoaded, enter = fadeIn() + expandVertically()) {
-        CustomTheme(
+        RaguTheme(
             seedColor = selectedTheme,
             useDarkTheme = isDarkTheme,
             style = selectedVariant,

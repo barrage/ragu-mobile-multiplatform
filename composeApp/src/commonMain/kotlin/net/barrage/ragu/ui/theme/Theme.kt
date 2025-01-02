@@ -7,7 +7,7 @@ import com.materialkolor.DynamicMaterialTheme
 import com.materialkolor.PaletteStyle
 
 @Composable
-fun CustomTheme(
+fun RaguTheme(
     seedColor: Color,
     style: PaletteStyle,
     useDarkTheme: Boolean = isSystemInDarkTheme(),

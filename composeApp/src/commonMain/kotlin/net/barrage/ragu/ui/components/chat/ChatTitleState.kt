@@ -4,9 +4,6 @@ import com.svenjacobs.reveal.RevealCanvasState
 import com.svenjacobs.reveal.RevealState
 
 data class ChatTitleState(
-    val title: String,
-    val isMenuVisible: Boolean,
-    val isEditingTitle: Boolean,
     val onThreeDotsClick: () -> Unit,
     val onEditTitleClick: () -> Unit,
     val onDeleteChatClick: () -> Unit,
@@ -14,6 +11,9 @@ data class ChatTitleState(
     val onTitleChange: (String) -> Unit,
     val onTitleChangeConfirmation: () -> Unit,
     val onTitleChangeDismiss: () -> Unit,
+    val title: String,
+    val isMenuVisible: Boolean,
+    val isEditingTitle: Boolean,
     val revealCanvasState: RevealCanvasState,
     val revealState: RevealState,
 )

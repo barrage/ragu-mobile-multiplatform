@@ -42,19 +42,19 @@ import ragumultiplatform.composeapp.generated.resources.new_chat
 
 @Composable
 fun ModalDrawer(
-    currentTheme: Color,
-    currentVariant: PaletteStyle,
-    isDarkMode: Boolean,
-    viewModel: ChatViewModel,
-    onSelectThemeClick: (Color) -> Unit,
-    onSelectVariantClick: (PaletteStyle) -> Unit,
     onDarkLightModeClick: () -> Unit,
     onUserClick: () -> Unit,
     changeDrawerVisibility: () -> Unit,
+    changeInputEnabled: (Boolean) -> Unit,
+    onSelectThemeClick: (Color) -> Unit,
+    onSelectVariantClick: (PaletteStyle) -> Unit,
+    currentTheme: Color,
+    currentVariant: PaletteStyle,
+    viewModel: ChatViewModel,
     revealState: RevealState,
     scope: CoroutineScope,
+    isDarkMode: Boolean,
     inputEnabled: Boolean,
-    changeInputEnabled: (Boolean) -> Unit,
     shouldShowTutorial: MutableState<Boolean>,
     modifier: Modifier = Modifier,
 ) {

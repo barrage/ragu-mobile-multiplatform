@@ -43,20 +43,20 @@ import kotlin.math.ceil
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ModalDrawerContentTopBar(
+    onDarkLightModeClick: () -> Unit,
+    onChangeDrawerVisibility: () -> Unit,
+    onSelectThemeClick: (Color) -> Unit,
+    onSelectVariantClick: (PaletteStyle) -> Unit,
     viewState: HistoryModalDrawerContentViewState,
     currentTheme: Color,
     currentVariant: PaletteStyle,
     isDarkMode: Boolean,
-    onSelectThemeClick: (Color) -> Unit,
-    onSelectVariantClick: (PaletteStyle) -> Unit,
-    onChangeDrawerVisibility: () -> Unit,
-    modifier: Modifier = Modifier,
-    onDarkLightModeClick: () -> Unit,
     revealState: RevealState,
     inputEnabled: Boolean,
-    changeInputEnabled: (Boolean) -> Unit,
     shouldShowTutorial: MutableState<Boolean>,
+    changeInputEnabled: (Boolean) -> Unit,
     scope: CoroutineScope,
+    modifier: Modifier = Modifier,
 ) {
     val supportedThemeColumns = 4
     val themeRows = ceil(viewState.supportedThemes.size.toFloat() / supportedThemeColumns).toInt()

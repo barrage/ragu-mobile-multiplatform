@@ -38,17 +38,17 @@ import org.koin.compose.koinInject
 
 @Composable
 fun AppNavHost(
+    onLogoutSuccess: () -> Unit,
+    changeProfileVisibility: () -> Unit,
+    changeInputEnabled: (Boolean) -> Unit,
     appState: AppState,
     deepLink: DeepLink?,
-    profileVisible: Boolean,
-    onLogoutSuccess: () -> Unit,
-    modifier: Modifier = Modifier,
-    changeProfileVisibility: () -> Unit,
     revealCanvasState: RevealCanvasState,
     revealState: RevealState,
-    inputEnabled: Boolean,
-    changeInputEnabled: (Boolean) -> Unit,
+    profileVisible: Boolean,
     shouldShowOnboardingTutorial: Boolean,
+    inputEnabled: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val currentUserUseCase: CurrentUserUseCase = koinInject()
     var startDestination by remember { mutableStateOf<String?>(null) }

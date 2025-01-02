@@ -66,20 +66,20 @@ import ragumultiplatform.composeapp.generated.resources.yes
 
 @Composable
 fun ChatScreen(
-    viewModel: ChatViewModel,
-    isKeyboardOpen: Boolean,
-    profileVisible: Boolean,
-    networkAvailable: Boolean,
-    scope: CoroutineScope,
     onLogoutSuccess: () -> Unit,
-    modifier: Modifier = Modifier,
     changeProfileVisibility: () -> Unit,
-    inputEnabled: Boolean,
     changeInputEnabled: (Boolean) -> Unit,
+    viewModel: ChatViewModel,
+    scope: CoroutineScope,
     revealCanvasState: RevealCanvasState,
     revealState: RevealState,
     shouldShowOnboardingTutorial: Boolean,
+    isKeyboardOpen: Boolean,
+    profileVisible: Boolean,
+    networkAvailable: Boolean,
+    inputEnabled: Boolean,
     checkAuth: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
