@@ -18,22 +18,23 @@ import kotlinx.coroutines.flow.map
  */
 interface ThemePreferences {
     /**
+     * Saves the dark mode setting.
+     * @param isEnabled Whether dark mode should be enabled or disabled.
+     * @return The updated Preferences.
+     */
+    suspend fun saveDarkModeEnabled(isEnabled: Boolean): Preferences
+
+    /**
      * Checks if dark mode is enabled.
      * @return true if dark mode is enabled, false otherwise.
      */
-    suspend fun isDarkModeEnabled(): Boolean
+    suspend fun getDarkModeEnabled(): Boolean
 
     /**
-     * Retrieves the current theme color.
-     * @return The current Color used for theming.
+     * Clears the dark mode setting.
+     * @return The updated Preferences.
      */
-    suspend fun getThemeColor(): Color
-
-    /**
-     * Retrieves the current theme variant.
-     * @return The current PaletteStyle used for theming.
-     */
-    suspend fun getThemeVariant(): PaletteStyle
+    suspend fun clearDarkModeEnabled(): Preferences
 
     /**
      * Saves a new theme color.
@@ -43,6 +44,18 @@ interface ThemePreferences {
     suspend fun saveThemeColor(color: Color): Preferences
 
     /**
+     * Retrieves the current theme color.
+     * @return The current Color used for theming.
+     */
+    suspend fun getThemeColor(): Color
+
+    /**
+     * Clears the saved theme color.
+     * @return The updated Preferences.
+     */
+    suspend fun clearThemeColor(): Preferences
+
+    /**
      * Saves a new theme variant.
      * @param variant The PaletteStyle to be saved as the new theme variant.
      * @return The updated Preferences.
@@ -50,11 +63,16 @@ interface ThemePreferences {
     suspend fun saveThemeVariant(variant: PaletteStyle): Preferences
 
     /**
-     * Changes the dark mode setting.
-     * @param isEnabled Whether dark mode should be enabled or disabled.
+     * Retrieves the current theme variant.
+     * @return The current PaletteStyle used for theming.
+     */
+    suspend fun getThemeVariant(): PaletteStyle
+
+    /**
+     * Clears the saved theme variant.
      * @return The updated Preferences.
      */
-    suspend fun changeDarkMode(isEnabled: Boolean): Preferences
+    suspend fun clearThemeVariant(): Preferences
 }
 
 /**
@@ -104,10 +122,10 @@ interface AuthPreferences {
  * Interface for the reveal app tutorial
  */
 interface TutorialPreferences {
-    suspend fun shouldShowOnboardingTutorial(): Boolean
-    suspend fun shouldShowChatTitleTutorial(): Boolean
     suspend fun saveShouldShowOnboardingTutorial(shouldShowTutorial: Boolean): Preferences
+    suspend fun getShouldShowOnboardingTutorial(): Boolean
     suspend fun saveShouldShowChatTitleTutorial(shouldShowTutorial: Boolean): Preferences
+    suspend fun getShouldShowChatTitleTutorial(): Boolean
 }
 
 /**
@@ -118,7 +136,7 @@ interface AppPreferences : ThemePreferences, AuthPreferences, TutorialPreference
      * Clears all saved preferences.
      * @return The updated (empty) Preferences.
      */
-    suspend fun clear(): Preferences
+    suspend fun clear()
 }
 
 /**
@@ -131,8 +149,13 @@ internal class AppPreferencesImpl(private val dataStore: DataStore<Preferences>)
     AuthPreferences by AuthPreferencesImpl(dataStore),
     TutorialPreferences by TutorialPreferencesImpl(dataStore) {
 
-    override suspend fun clear(): Preferences =
-        dataStore.edit { preferences -> preferences.clear() }
+    override suspend fun clear() {
+        clearDarkModeEnabled()
+        clearThemeColor()
+        clearThemeVariant()
+        clearCookie()
+        clearCodeVerifier()
+    }
 }
 
 /**
@@ -151,15 +174,29 @@ private class ThemePreferencesImpl(private val dataStore: DataStore<Preferences>
     private val darkModeKey = booleanPreferencesKey("$PREFS_TAG_KEY$IS_DARK_MODE_ENABLED")
     private val themeKey = intPreferencesKey("$PREFS_TAG_KEY$THEME")
     private val variantKey = stringPreferencesKey("$PREFS_TAG_KEY$VARIANT")
+    override suspend fun saveDarkModeEnabled(isEnabled: Boolean): Preferences =
+        dataStore.edit { preferences -> preferences[darkModeKey] = isEnabled }
 
-    override suspend fun isDarkModeEnabled() =
+    override suspend fun getDarkModeEnabled(): Boolean =
         dataStore.data.map { preferences -> preferences[darkModeKey] ?: false }.first()
+
+    override suspend fun clearDarkModeEnabled(): Preferences =
+        dataStore.edit { preferences -> preferences.remove(darkModeKey) }
+
+    override suspend fun saveThemeColor(color: Color): Preferences =
+        dataStore.edit { preferences -> preferences[themeKey] = color.toArgb() }
 
     override suspend fun getThemeColor(): Color {
         val color =
             (dataStore.data.map { preferences -> preferences[themeKey] }.first() ?: White.toArgb())
         return Color(color)
     }
+
+    override suspend fun clearThemeColor(): Preferences =
+        dataStore.edit { preferences -> preferences.remove(themeKey) }
+
+    override suspend fun saveThemeVariant(variant: PaletteStyle): Preferences =
+        dataStore.edit { preferences -> preferences[variantKey] = variant.name }
 
     override suspend fun getThemeVariant(): PaletteStyle {
         val variant =
@@ -168,16 +205,8 @@ private class ThemePreferencesImpl(private val dataStore: DataStore<Preferences>
         return PaletteStyle.valueOf(variant)
     }
 
-    override suspend fun saveThemeColor(color: Color): Preferences {
-        return dataStore.edit { preferences -> preferences[themeKey] = color.toArgb() }
-    }
-
-    override suspend fun saveThemeVariant(variant: PaletteStyle): Preferences {
-        return dataStore.edit { preferences -> preferences[variantKey] = variant.name }
-    }
-
-    override suspend fun changeDarkMode(isEnabled: Boolean) =
-        dataStore.edit { preferences -> preferences[darkModeKey] = isEnabled }
+    override suspend fun clearThemeVariant(): Preferences =
+        dataStore.edit { preferences -> preferences.remove(variantKey) }
 }
 
 /**
@@ -231,16 +260,17 @@ private class TutorialPreferencesImpl(private val dataStore: DataStore<Preferenc
     private val showChatTitleTutorialKey =
         booleanPreferencesKey("$PREFS_TAG_KEY$CHAT_TITLE_TUTORIAL_REVEALED")
 
-    override suspend fun shouldShowOnboardingTutorial(): Boolean =
-        dataStore.data.map { preferences -> preferences[showOnboardingTutorialKey] ?: true }.first()
-
-    override suspend fun shouldShowChatTitleTutorial(): Boolean =
-        dataStore.data.map { preferences -> preferences[showChatTitleTutorialKey] ?: true }.first()
-
     override suspend fun saveShouldShowOnboardingTutorial(shouldShowTutorial: Boolean): Preferences =
         dataStore.edit { preferences ->
             preferences[showOnboardingTutorialKey] = shouldShowTutorial
         }
+
+    override suspend fun getShouldShowOnboardingTutorial(): Boolean =
+        dataStore.data.map { preferences -> preferences[showOnboardingTutorialKey] ?: true }.first()
+
+    override suspend fun getShouldShowChatTitleTutorial(): Boolean =
+        dataStore.data.map { preferences -> preferences[showChatTitleTutorialKey] ?: true }.first()
+
 
     override suspend fun saveShouldShowChatTitleTutorial(shouldShowTutorial: Boolean): Preferences =
         dataStore.edit { preferences -> preferences[showChatTitleTutorialKey] = shouldShowTutorial }

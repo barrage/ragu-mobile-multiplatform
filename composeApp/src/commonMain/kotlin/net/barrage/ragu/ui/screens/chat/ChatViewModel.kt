@@ -22,7 +22,6 @@ import net.barrage.ragu.domain.usecase.user.CurrentUserUseCase
 import net.barrage.ragu.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.ragu.ui.screens.history.HistoryScreenStates
 import net.barrage.ragu.ui.screens.profile.viewstate.ProfileViewState
-import net.barrage.ragu.utils.coreComponent
 import net.barrage.ragu.utils.debugLog
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.failed_to_load_agents
@@ -388,9 +387,6 @@ class ChatViewModel(
         chatStateManager.clearChat()
         webSocketManager.disconnect()
         _currentUserViewState.value = HistoryScreenStates.Idle
-        viewModelScope.launch {
-            coreComponent.appPreferences.clear()
-        }
     }
 
     /**

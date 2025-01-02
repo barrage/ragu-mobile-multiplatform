@@ -56,7 +56,7 @@ fun ChatTitle(
 ) {
     var shouldShowTutorial by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        shouldShowTutorial = coreComponent.appPreferences.shouldShowChatTitleTutorial()
+        shouldShowTutorial = coreComponent.appPreferences.getShouldShowChatTitleTutorial()
         if (shouldShowTutorial) {
             delay(1000)
             revealState.reveal(RevealKeys.ChatTitle)

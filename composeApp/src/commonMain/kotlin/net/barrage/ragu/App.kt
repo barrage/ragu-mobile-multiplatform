@@ -57,10 +57,11 @@ fun App(
 
     DeepLinkListener { deepLink = it }
     LaunchedEffect(Unit) {
-        isDarkTheme = coreComponent.appPreferences.isDarkModeEnabled()
+        isDarkTheme = coreComponent.appPreferences.getDarkModeEnabled()
         selectedTheme = coreComponent.appPreferences.getThemeColor()
         selectedVariant = coreComponent.appPreferences.getThemeVariant()
-        shouldShowOnboardingTutorial = coreComponent.appPreferences.shouldShowOnboardingTutorial()
+        shouldShowOnboardingTutorial =
+            coreComponent.appPreferences.getShouldShowOnboardingTutorial()
         isThemeLoaded = true
     }
     LaunchedEffect(isDarkTheme) { onThemeChange?.invoke(isDarkTheme) }
@@ -97,7 +98,7 @@ fun App(
                             },
                             onDarkLightModeClick = {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    coreComponent.appPreferences.changeDarkMode(isDarkTheme)
+                                    coreComponent.appPreferences.saveDarkModeEnabled(isDarkTheme)
                                 }
                                 isDarkTheme = !isDarkTheme
                             },
@@ -109,9 +110,10 @@ fun App(
                                 appState.chatViewModel.clearViewModel()
                                 appState.loginViewModel.clearViewModel()
                                 CoroutineScope(Dispatchers.IO).launch {
+                                    coreComponent.appPreferences.clear()
                                     coreComponent.appPreferences.saveThemeColor(selectedTheme)
                                     coreComponent.appPreferences.saveThemeVariant(selectedVariant)
-                                    coreComponent.appPreferences.changeDarkMode(isDarkTheme)
+                                    coreComponent.appPreferences.saveDarkModeEnabled(isDarkTheme)
                                 }
                                 appState.navController.navigateToLogin()
                             },
