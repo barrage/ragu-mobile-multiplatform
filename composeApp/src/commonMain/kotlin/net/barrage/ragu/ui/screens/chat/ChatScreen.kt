@@ -101,29 +101,27 @@ fun ChatScreen(
         }
     }
 
-    LaunchedEffect(chatScreenState) {
-        if (
-            chatScreenState is ChatScreenState.Success &&
-            (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
-        ) {
-            lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
+    if (
+        chatScreenState is ChatScreenState.Success &&
+        (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
+    ) {
+        LaunchedEffect((chatScreenState as ChatScreenState.Success).messages) {
+            lazyListState.animateScrollToItem(0)
         }
     }
-
     LaunchedEffect(isKeyboardOpen) {
         if (
             isKeyboardOpen &&
             chatScreenState is ChatScreenState.Success &&
             (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
         ) {
-            delay(200)
-            lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
+            lazyListState.animateScrollToItem(0)
         }
     }
     LaunchedEffect(networkAvailable) {
         when {
             !networkAvailable -> viewModel.webSocketManager.disconnect()
-            else -> viewModel.webSocketManager.webSocketChatClient?.reconnect()
+            else -> viewModel.webSocketManager.reconnect()
         }
     }
 
@@ -150,7 +148,7 @@ fun ChatScreen(
                 is ChatScreenState.Success -> {
                     if (
                         state.messages.isNotEmpty() ||
-                        viewModel.webSocketManager.webSocketChatClient?.currentChatId?.value != null
+                        viewModel.webSocketManager.getChatId() != null
                     ) {
                         ChatTitle(
                             state =
@@ -187,7 +185,7 @@ fun ChatScreen(
 
                     if (
                         state.messages.isEmpty() &&
-                        viewModel.webSocketManager.webSocketChatClient?.currentChatId?.value.isNullOrEmpty()
+                        viewModel.webSocketManager.getChatId().isNullOrEmpty()
                     ) {
                         AgentContent(
                             agents = state.agents.toImmutableList(),
@@ -236,7 +234,7 @@ fun ChatScreen(
                                     onInputTextChange = { viewModel.updateInputText(it) },
                                     onSendMessage = { viewModel.sendMessage() },
                                     onStopReceivingMessage = {
-                                        viewModel.webSocketManager.webSocketChatClient?.stopMessageStream()
+                                        viewModel.webSocketManager.stopMessageStream()
                                     },
                                     isEnabled = state.isSendEnabled && state.agents.isNotEmpty() && inputEnabled,
                                     isReceivingMessage = state.isReceivingMessage,
@@ -393,9 +391,13 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                     viewModel.setChatTitle(title, chatId)
                 }
 
-                override fun onError(error: String) {
-                    viewModel.addMessage(error, senderType = SenderType.ERROR)
-                    viewModel.setReceivingMessage(false)
+                override fun onError(error: String, retry: Boolean) {
+                    if (retry) {
+                        viewModel.webSocketManager.retryLastMessage()
+                    } else {
+                        viewModel.addMessage(error, senderType = SenderType.ERROR)
+                        viewModel.setReceivingMessage(false)
+                    }
                 }
 
                 override fun closeChat() {

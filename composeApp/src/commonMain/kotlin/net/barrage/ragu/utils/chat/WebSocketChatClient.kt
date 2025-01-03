@@ -76,6 +76,9 @@ class WebSocketChatClient(
             handleChatOpen = { isChatOpen.value = it },
         )
 
+    // Last message sent, used for retrying failed messages
+    private var lastMessage: String? = null
+
     /** Public function to trigger reconnection from outside */
     fun reconnect() {
         scope.launch {
@@ -190,6 +193,7 @@ class WebSocketChatClient(
         debugLog("Sending message: $message")
         debugLog("Chat is open: ${isChatOpen.value}")
         debugLog("Current Chat ID: ${currentChatId.value}")
+        lastMessage = message
         scope.launch {
             if (!isChatOpen.value) {
                 if (currentChatId.value != null) {
@@ -270,20 +274,6 @@ class WebSocketChatClient(
         }
     }
 
-    /** Closes the current chat session. */
-    fun closeChat() {
-        if (currentChatId.value != null) {
-            debugLog("Closing chat")
-            val closeChatMessage = buildJsonObject {
-                put("type", "system")
-                put("payload", buildJsonObject { put("type", "chat_close") })
-            }
-            sendJsonMessage(closeChatMessage)
-            currentChatId.value = null
-            isChatOpen.value = false
-        }
-    }
-
     /** Sends a message to stop the current message stream. */
     fun stopMessageStream() {
         val stopStreamMessage = buildJsonObject {
@@ -297,5 +287,17 @@ class WebSocketChatClient(
     fun setChatId(chatId: String?) {
         debugLog("Set Chat ID: $chatId")
         currentChatId.value = chatId
+        isChatOpen.value = false
+    }
+
+    /**
+     * Retries the last sent message.
+     */
+    fun retryLastMessage() {
+        debugLog("Retrying last message")
+        lastMessage?.let { lastMessage ->
+            isChatOpen.value = !isChatOpen.value
+            sendMessage(lastMessage)
+        }
     }
 }

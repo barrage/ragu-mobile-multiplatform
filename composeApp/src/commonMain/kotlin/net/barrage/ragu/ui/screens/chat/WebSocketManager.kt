@@ -30,9 +30,7 @@ class WebSocketManager(private val webSocketTokenUseCase: WebSocketTokenUseCase)
      * @param selectedAgent The currently selected agent
      */
     suspend fun initializeWebSocketClient(
-        callback: ReceiveMessageCallback,
-        scope: CoroutineScope,
-        selectedAgent: MutableState<Agent?>
+        callback: ReceiveMessageCallback, scope: CoroutineScope, selectedAgent: MutableState<Agent?>
     ) {
         this.callback = callback
         this.scope = scope
@@ -73,10 +71,26 @@ class WebSocketManager(private val webSocketTokenUseCase: WebSocketTokenUseCase)
         webSocketChatClient?.setChatId(chatId)
     }
 
+    fun getChatId() = webSocketChatClient?.currentChatId?.value
+
     /**
      * Disconnects the WebSocket client.
      */
     fun disconnect() {
         webSocketChatClient?.disconnect()
+    }
+
+    /**
+     * Reconnects the WebSocket client.
+     */
+    fun reconnect() {
+        webSocketChatClient?.reconnect()
+    }
+
+    /**
+     * Retries the last message.
+     */
+    fun retryLastMessage() {
+        webSocketChatClient?.retryLastMessage()
     }
 }

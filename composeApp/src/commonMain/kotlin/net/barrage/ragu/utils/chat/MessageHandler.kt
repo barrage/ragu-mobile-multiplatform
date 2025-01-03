@@ -25,6 +25,9 @@ class MessageHandler(
     /** Function to send the first message when a chat is opened. */
     var sendFirstMessage: () -> Unit = {}
 
+    /** Previous error message for handling retries. */
+    private var previousErrorDescription: String? = null
+
     /**
      * Handles incoming WebSocket text frames.
      *
@@ -108,7 +111,11 @@ class MessageHandler(
         val reason = jsonMessage["reason"]?.toString()?.trim('"')
         val description = jsonMessage["description"]?.toString()?.trim('"')
         debugLog("WebSocket Error: $reason - $description")
-        receiveMessageCallback.onError("$reason: $description")
+        receiveMessageCallback.onError(
+            "$reason: $description",
+            retry = previousErrorDescription != description
+        )
+        previousErrorDescription = description
     }
 
     /**

@@ -28,8 +28,9 @@ fun MessageList(
         contentPadding = PaddingValues(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
         state = lazyListState,
+        reverseLayout = true,
     ) {
-        items(messages) { item ->
+        items(messages.reversed()) { item ->
             MessageItem(
                 chatMessage = item,
                 onCopy = onCopy,
