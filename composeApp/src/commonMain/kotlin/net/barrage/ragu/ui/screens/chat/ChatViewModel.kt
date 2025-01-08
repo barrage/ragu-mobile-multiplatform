@@ -57,6 +57,10 @@ class ChatViewModel(
     val currentUserViewState: StateFlow<HistoryScreenStates<ProfileViewState>> =
         _currentUserViewState.asStateFlow()
 
+    private var currentChatMessagesPage = 1
+    private var isLastChatMessagesPage = false
+    private val chatMessagesPageSize = 21
+
     /**
      * Sets the receiving message state in the chat screen.
      *
@@ -301,6 +305,8 @@ class ChatViewModel(
             if (webSocketManager.webSocketChatClient?.currentChatId?.value == id) {
                 return@launch
             }
+            currentChatMessagesPage = 1
+            isLastChatMessagesPage = false
             val tempChatScreenState = chatScreenState.value
             if (tempChatScreenState is ChatScreenState.Success &&
                 tempChatScreenState.isReceivingMessage
@@ -309,7 +315,11 @@ class ChatViewModel(
             }
             chatStateManager.updateChatScreenState { ChatScreenState.Loading }
 
-            chatUseCase.getChatMessagesById(id)
+            chatUseCase.getChatMessagesById(
+                id,
+                pageSize = chatMessagesPageSize,
+                page = currentChatMessagesPage
+            )
                 .combine(chatUseCase.getChatById(id)) { messagesResponse, chatResponse ->
                     Pair(messagesResponse, chatResponse)
                 }
@@ -349,6 +359,78 @@ class ChatViewModel(
                         }
                     }
                 }
+        }
+    }
+
+    /**
+     * Loads chat messages for a specific chat.
+     *
+     * @param chatId The ID of the chat to load messages for.
+     * @param isInitialLoad Whether this is the initial load of messages. If true, it resets pagination.
+     */
+    private fun loadChatMessages(chatId: String, isInitialLoad: Boolean = true) {
+        viewModelScope.launch {
+            if (isInitialLoad) {
+                currentChatMessagesPage = 1
+                isLastChatMessagesPage = false
+            }
+
+            chatStateManager.updateChatScreenState { currentState ->
+                when (currentState) {
+                    is ChatScreenState.Success -> currentState.copy(isLoadingMessages = true)
+                    else -> currentState
+                }
+            }
+
+            chatUseCase.getChatMessagesById(chatId, currentChatMessagesPage, chatMessagesPageSize)
+                .collectLatest { messagesResponse ->
+                    when (messagesResponse) {
+                        is Response.Success -> {
+                            val newMessages = messagesResponse.data
+                            isLastChatMessagesPage = newMessages.size < chatMessagesPageSize
+
+                            chatStateManager.updateChatScreenState { currentState ->
+                                when (currentState) {
+                                    is ChatScreenState.Success -> {
+                                        val updatedMessages = if (isInitialLoad) {
+                                            newMessages.toImmutableList()
+                                        } else {
+                                            (currentState.messages.reversed() + newMessages.reversed())
+                                        }
+                                        currentState.copy(
+                                            messages = updatedMessages.reversed().toImmutableList(),
+                                            isLoadingMessages = false
+                                        )
+                                    }
+
+                                    else -> currentState
+                                }
+                            }
+
+                        }
+
+                        is Response.Failure -> {
+                            // Handle error
+                        }
+
+                        else -> {
+                            // Handle other response types
+                        }
+                    }
+                }
+        }
+    }
+
+    /**
+     * Loads more chat messages for the current chat.
+     * This function should be called when the user scrolls to the top of the message list.
+     */
+    fun loadMoreChatMessages() {
+        if (!isLastChatMessagesPage) {
+            webSocketManager.getChatId()?.let { chatId ->
+                currentChatMessagesPage++
+                loadChatMessages(chatId, isInitialLoad = false)
+            }
         }
     }
 

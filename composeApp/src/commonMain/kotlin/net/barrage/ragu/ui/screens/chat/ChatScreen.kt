@@ -1,10 +1,14 @@
 package net.barrage.ragu.ui.screens.chat
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -105,7 +109,7 @@ fun ChatScreen(
         chatScreenState is ChatScreenState.Success &&
         (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
     ) {
-        LaunchedEffect((chatScreenState as ChatScreenState.Success).messages) {
+        LaunchedEffect((chatScreenState as ChatScreenState.Success).messages.last()) {
             lazyListState.animateScrollToItem(0)
         }
     }
@@ -198,6 +202,17 @@ fun ChatScreen(
                             modifier = Modifier.weight(1f),
                         )
                     } else {
+                        AnimatedVisibility(state.isLoadingMessages) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                            LaunchedEffect(Unit) {
+                                lazyListState.animateScrollBy(1000f)
+                            }
+                        }
                         MessageList(
                             messages = state.messages.toImmutableList(),
                             lazyListState = lazyListState,
@@ -208,6 +223,7 @@ fun ChatScreen(
                             },
                             onPositiveEvaluation = { viewModel.evaluateMessage(it, true) },
                             onNegativeEvaluation = { viewModel.evaluateMessage(it, false) },
+                            onScrollToTop = { viewModel.loadMoreChatMessages() },
                             modifier = Modifier.weight(1f),
                         )
                     }

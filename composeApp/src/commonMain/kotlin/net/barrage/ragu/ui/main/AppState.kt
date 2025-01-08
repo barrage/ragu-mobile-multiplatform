@@ -19,8 +19,8 @@ import dev.tmapps.konnection.Konnection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.barrage.ragu.navigation.Empty
-import net.barrage.ragu.navigation.FellowNavigation
 import net.barrage.ragu.navigation.NavDestination
+import net.barrage.ragu.navigation.RaguNavigation
 import net.barrage.ragu.ui.screens.chat.ChatViewModel
 import net.barrage.ragu.ui.screens.login.LoginViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -47,7 +47,7 @@ fun rememberAppState(): AppState {
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
     val currentScreen =
-        FellowNavigation.screens.find { it.route == currentDestination?.route } ?: Empty
+        RaguNavigation.screens.find { it.route == currentDestination?.route } ?: Empty
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     LaunchedEffect(Unit) {

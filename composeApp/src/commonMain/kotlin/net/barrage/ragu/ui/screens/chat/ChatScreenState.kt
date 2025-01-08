@@ -22,6 +22,7 @@ sealed class ChatScreenState {
         val chatTitleRes: StringResource = Res.string.new_chat,
         val chatTitle: String? = null,
         val isAgentActive: Boolean,
+        val isLoadingMessages: Boolean = false,
     ) : ChatScreenState()
 
     data class Error(val message: StringResource) : ChatScreenState()

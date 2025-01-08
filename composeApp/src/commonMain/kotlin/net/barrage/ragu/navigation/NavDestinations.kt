@@ -32,6 +32,14 @@ object Login : NavDestination {
 /**
  * Represents an Empty screen destination.
  */
+object Error : NavDestination {
+    override val route = "error"
+    override val name = "Error"
+}
+
+/**
+ * Represents an Empty screen destination.
+ */
 object Empty : NavDestination {
     override val route = "empty"
     override val name = "Empty"
@@ -40,9 +48,9 @@ object Empty : NavDestination {
 /**
  * Contains navigation-related information for the app.
  */
-object FellowNavigation {
+object RaguNavigation {
     /** List of all available screen destinations */
-    val screens = persistentListOf(Chat, Login, Empty)
+    val screens = persistentListOf(Chat, Login, Empty, Error)
 
     /** The initial destination route when the app starts */
     val startDestination = Login.route

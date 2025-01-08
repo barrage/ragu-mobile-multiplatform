@@ -28,11 +28,15 @@ class HistoryRepositoryImpl(private val api: Api) : HistoryRepository {
             }
         }
 
-    override suspend fun getChatMessagesById(chatId: String): Flow<Response<List<ChatMessageItem>>> =
+    override suspend fun getChatMessagesById(
+        chatId: String,
+        page: Int,
+        pageSize: Int
+    ): Flow<Response<List<ChatMessageItem>>> =
         flow {
             emit(Response.Loading)
             try {
-                when (val response = api.getChatMessagesById(chatId)) {
+                when (val response = api.getChatMessagesById(chatId, page, pageSize)) {
                     is Response.Success ->
                         emit(Response.Success(response.data.map { it.toDomain() }
                             .sortedBy { it.updatedAt }))

@@ -13,7 +13,8 @@ class ChatUseCase(
 ) {
     suspend fun getChatHistory(page: Int, pageSize: Int) = getChatHistoryUseCase(page, pageSize)
 
-    suspend fun getChatMessagesById(id: String) = getChatMessagesByIdUseCase(id)
+    suspend fun getChatMessagesById(id: String, page: Int, pageSize: Int) =
+        getChatMessagesByIdUseCase(id, page, pageSize)
 
     suspend fun updateChatTitle(chatId: String, title: String) =
         updateChatTitleUseCase(chatId, title)

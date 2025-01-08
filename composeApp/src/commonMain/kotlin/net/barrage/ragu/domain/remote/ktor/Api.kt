@@ -45,7 +45,11 @@ interface Api {
      * @param chatId The ID of the chat.
      * @return A Response containing a List of ChatMessageItemDTO.
      */
-    suspend fun getChatMessagesById(chatId: String): Response<List<ChatMessageItemDTO>>
+    suspend fun getChatMessagesById(
+        chatId: String,
+        page: Int,
+        pageSize: Int
+    ): Response<List<ChatMessageItemDTO>>
 
     /**
      * Retrieves a WebSocket token.

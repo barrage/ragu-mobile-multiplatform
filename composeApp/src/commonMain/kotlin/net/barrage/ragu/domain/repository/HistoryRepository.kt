@@ -11,7 +11,11 @@ import net.barrage.ragu.domain.model.ChatMessageItem
 interface HistoryRepository {
     suspend fun getChats(parameters: Parameters): Flow<Response<ImmutableList<ChatHistoryItem>>>
 
-    suspend fun getChatMessagesById(chatId: String): Flow<Response<List<ChatMessageItem>>>
+    suspend fun getChatMessagesById(
+        chatId: String,
+        page: Int,
+        pageSize: Int
+    ): Flow<Response<List<ChatMessageItem>>>
 
     suspend fun getChatById(chatId: String): Flow<Response<ChatItem>>
 }

@@ -28,9 +28,12 @@ import net.barrage.ragu.domain.Response
 import net.barrage.ragu.domain.usecase.user.CurrentUserUseCase
 import net.barrage.ragu.navigation.Chat
 import net.barrage.ragu.navigation.Empty
+import net.barrage.ragu.navigation.Error
 import net.barrage.ragu.navigation.Login
+import net.barrage.ragu.navigation.RaguNavigation
 import net.barrage.ragu.ui.components.keyboardAsState
 import net.barrage.ragu.ui.screens.chat.ChatScreen
+import net.barrage.ragu.ui.screens.error.ErrorScreen
 import net.barrage.ragu.ui.screens.login.LoginScreen
 import net.barrage.ragu.utils.Constants
 import net.barrage.ragu.utils.getAndroidVersion
@@ -67,6 +70,10 @@ fun AppNavHost(
                         Login.route
                     }
 
+                    is Response.Failure -> {
+                        Error.route
+                    }
+
                     else -> {
                         null
                     }
@@ -96,7 +103,7 @@ fun AppNavHost(
                     changeProfileVisibility = changeProfileVisibility,
                     networkAvailable = appState.networkAvailable.value,
                     onLogoutSuccess = {
-                        startDestination = Login.route
+                        startDestination = RaguNavigation.startDestination
                         onLogoutSuccess()
                     },
                     inputEnabled = inputEnabled,
@@ -138,6 +145,11 @@ fun AppNavHost(
             composable(Empty.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     // EmptyScreen()
+                }
+            }
+            composable(Error.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    ErrorScreen()
                 }
             }
         }

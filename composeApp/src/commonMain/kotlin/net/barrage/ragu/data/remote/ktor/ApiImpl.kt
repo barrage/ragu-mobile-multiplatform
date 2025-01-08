@@ -89,9 +89,17 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
      * @param chatId The ID of the chat.
      * @return A Response containing a List of ChatMessageItemDTO or an error.
      */
-    override suspend fun getChatMessagesById(chatId: String): Response<List<ChatMessageItemDTO>> {
+    override suspend fun getChatMessagesById(
+        chatId: String,
+        page: Int,
+        pageSize: Int
+    ): Response<List<ChatMessageItemDTO>> {
         return safeApiCall {
-            httpClient.get("chats/$chatId/messages") { addCookieHeader() }
+            httpClient.get("chats/$chatId/messages") {
+                addCookieHeader()
+                parameter("perPage", pageSize)
+                parameter("page", page)
+            }
         }
     }
 
