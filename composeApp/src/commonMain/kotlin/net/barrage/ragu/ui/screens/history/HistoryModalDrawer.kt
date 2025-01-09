@@ -37,7 +37,7 @@ import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
-import ragumultiplatform.composeapp.generated.resources.ic_brain
+import ragumultiplatform.composeapp.generated.resources.ic_ragu
 import ragumultiplatform.composeapp.generated.resources.new_chat
 
 @Composable
@@ -104,7 +104,11 @@ fun ModalDrawer(
                         .padding(24.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(painter = painterResource(Res.drawable.ic_brain), null)
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_ragu),
+                        null,
+                        modifier = Modifier.width(32.dp)
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         stringResource(Res.string.new_chat),

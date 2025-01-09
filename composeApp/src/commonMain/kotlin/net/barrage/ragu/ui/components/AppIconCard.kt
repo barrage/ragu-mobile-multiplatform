@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import ragumultiplatform.composeapp.generated.resources.Res
-import ragumultiplatform.composeapp.generated.resources.ic_brain
+import ragumultiplatform.composeapp.generated.resources.ic_ragu
 
 @Composable
 fun AppIconCard(modifier: Modifier = Modifier) {
@@ -23,9 +23,9 @@ fun AppIconCard(modifier: Modifier = Modifier) {
         modifier = modifier,
     ) {
         Icon(
-            painter = painterResource(Res.drawable.ic_brain),
+            painter = painterResource(Res.drawable.ic_ragu),
             contentDescription = null,
-            modifier = Modifier.size(80.dp).padding(12.dp),
+            modifier = Modifier.size(90.dp).padding(12.dp),
             tint = MaterialTheme.colorScheme.onSurface,
         )
     }

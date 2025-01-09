@@ -38,8 +38,8 @@ import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.assistant_icon_content_description
 import ragumultiplatform.composeapp.generated.resources.copy_button_content_description
-import ragumultiplatform.composeapp.generated.resources.ic_brain
 import ragumultiplatform.composeapp.generated.resources.ic_copy
+import ragumultiplatform.composeapp.generated.resources.ic_ragu
 import ragumultiplatform.composeapp.generated.resources.ic_thumb_down
 import ragumultiplatform.composeapp.generated.resources.ic_thumb_up
 import ragumultiplatform.composeapp.generated.resources.negative_evaluation_button_content_description
@@ -185,7 +185,7 @@ private fun SenderIcon(senderType: SenderType, modifier: Modifier = Modifier) {
                 SenderType.ASSISTANT,
                 SenderType.ERROR ->
                     Icon(
-                        painterResource(Res.drawable.ic_brain),
+                        painterResource(Res.drawable.ic_ragu),
                         contentDescription =
                         stringResource(Res.string.assistant_icon_content_description),
                         modifier = Modifier.size(18.dp),
