@@ -326,6 +326,8 @@ class ChatViewModel(
                 .collect { (chatMessagesResponse, chatResponse) ->
                     when {
                         chatMessagesResponse is Response.Success && chatResponse is Response.Success -> {
+                            isLastChatMessagesPage =
+                                chatMessagesResponse.data.size < chatMessagesPageSize
                             webSocketManager.setChatId(id)
                             chatHistoryManager.updateHistory(currentChatId = webSocketManager.webSocketChatClient?.currentChatId?.value)
                             chatStateManager.updateChatScreenState {
@@ -426,7 +428,7 @@ class ChatViewModel(
      * This function should be called when the user scrolls to the top of the message list.
      */
     fun loadMoreChatMessages() {
-        if (!isLastChatMessagesPage) {
+        if (!isLastChatMessagesPage && chatScreenState.value is ChatScreenState.Success && !(chatScreenState.value as ChatScreenState.Success).isLoadingMessages) {
             webSocketManager.getChatId()?.let { chatId ->
                 currentChatMessagesPage++
                 loadChatMessages(chatId, isInitialLoad = false)

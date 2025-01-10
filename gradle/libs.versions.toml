@@ -11,8 +11,8 @@ kotlin = "2.1.0"
 koin = "4.0.1"
 kotlinxCollectionsImmutable = "0.3.8"
 kotlinxDatetime = "0.6.1"
-compottie = "2.0.0-rc02"
-landscapistCoil = "2.4.5"
+#compottie = "2.0.0-rc02"
+landscapistCoil = "2.4.6"
 materialKolor = "2.0.0"
 markdownRenderer = "0.29.0"
 napier = "2.7.1"
@@ -42,7 +42,7 @@ konnection = { module = "dev.tmapps:konnection", version.ref = "konnection" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
-compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
+#compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 landscapist-coil = { module = "com.github.skydoves:landscapist-coil3", version.ref = "landscapistCoil" }
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 multiplatform-markdown-renderer-code = { module = "com.mikepenz:multiplatform-markdown-renderer-code", version.ref = "markdownRenderer" }

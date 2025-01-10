@@ -81,7 +81,6 @@ kotlin {
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.collections.immutable)
-            implementation(libs.compottie)
             implementation(libs.konnection)
             implementation(libs.ktor.client.websockets)
             implementation(libs.ktor.client.core)
