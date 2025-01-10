@@ -4,12 +4,6 @@
 capabilities on Android and iOS platforms. It highlights the power of shared code
 using Compose Multiplatform and Kotlin Multiplatform.
 
-### Screenshots
-
-<div align="center"> 
-  <img src="https://placehold.co/600x400?text=App+Screenshot+Here" alt="Ragu Multiplatform Screenshot" />
-</div>
-
 ## Features
 
 - Real-time messaging across Android and iOS platforms
