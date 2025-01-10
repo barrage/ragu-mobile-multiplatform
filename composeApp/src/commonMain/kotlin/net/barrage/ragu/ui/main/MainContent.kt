@@ -153,6 +153,7 @@ fun MainContent(
                     inputEnabled = inputEnabled,
                     changeInputEnabled = changeInputEnabled,
                     shouldShowTutorial = shouldShowTutorial,
+                    onUnauthorized = onLogoutSuccess,
                     modifier = Modifier.fillMaxWidth(0.8f),
                 )
             },

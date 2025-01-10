@@ -62,5 +62,6 @@
     <string name="reveal_menu_theme">Dan ili noć? Odaberite savršeni način prikaza</string>
     <string name="reveal_menu_item">Ponovno otvorite prošli razgovor: Dodirnite za nastavak gdje ste stali</string>
     <string name="reveal_title_menu">Organizirajte svoje misli: Uredite naslov razgovora ili obrišite povijest</string>
+    <string name="failed_to_load_chat_messages">Pogreška pri učitavanju poruka razgovora</string>
 
 </resources>

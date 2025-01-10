@@ -298,6 +298,12 @@ fun ChatScreen(
                         CircularProgressIndicator()
                     }
                 }
+
+                is ChatScreenState.Unauthorized -> {
+                    LaunchedEffect(Unit) {
+                        onLogoutSuccess()
+                    }
+                }
             }
         }
 
@@ -314,6 +320,7 @@ fun ChatScreen(
                         changeProfileVisibility()
                         showLogoutConfirmation = true
                     },
+                    onUnauthorized = onLogoutSuccess,
                 )
             }
         }

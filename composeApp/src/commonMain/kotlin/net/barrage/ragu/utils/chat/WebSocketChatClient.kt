@@ -270,6 +270,7 @@ class WebSocketChatClient(
             session = null
             isChatOpen.value = false
             receiveMessageCallback.stopReceivingMessage()
+            currentChatId.value = null
             debugLog("WebSocket Disconnected")
         }
     }

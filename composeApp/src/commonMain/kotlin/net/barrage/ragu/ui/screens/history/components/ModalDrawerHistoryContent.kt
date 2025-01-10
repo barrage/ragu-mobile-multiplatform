@@ -30,10 +30,11 @@ fun ModalDrawerHistoryContent(
     modifier: Modifier = Modifier,
     onElementClick: (ChatHistoryItem) -> Unit,
     onScrollToBottom: () -> Unit,
+    onUnauthorized: () -> Unit,
 ) {
     Box(modifier = modifier) {
         when (viewState) {
-            HistoryScreenStates.Error -> {
+            is HistoryScreenStates.Error -> {
                 Text(
                     text = stringResource(Res.string.error_loading_data),
                     color = MaterialTheme.colorScheme.error,
@@ -42,9 +43,9 @@ fun ModalDrawerHistoryContent(
                 )
             }
 
-            HistoryScreenStates.Idle -> {}
+            is HistoryScreenStates.Idle -> {}
 
-            HistoryScreenStates.Loading -> {
+            is HistoryScreenStates.Loading -> {
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
             }
 
@@ -95,7 +96,10 @@ fun ModalDrawerHistoryContent(
                     }
                 }
             }
-        }
 
+            is HistoryScreenStates.Unauthorized -> {
+                onUnauthorized()
+            }
+        }
     }
 }

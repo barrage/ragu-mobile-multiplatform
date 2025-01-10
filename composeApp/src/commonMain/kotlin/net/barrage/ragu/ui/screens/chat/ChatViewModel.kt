@@ -25,6 +25,7 @@ import net.barrage.ragu.ui.screens.profile.viewstate.ProfileViewState
 import net.barrage.ragu.utils.debugLog
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.failed_to_load_agents
+import ragumultiplatform.composeapp.generated.resources.failed_to_load_chat_messages
 
 /**
  * ViewModel for managing the chat screen state and operations.
@@ -313,7 +314,6 @@ class ChatViewModel(
             ) {
                 webSocketManager.stopMessageStream()
             }
-            chatStateManager.updateChatScreenState { ChatScreenState.Loading }
 
             chatUseCase.getChatMessagesById(
                 id,
@@ -356,9 +356,20 @@ class ChatViewModel(
                             }
                         }
 
-                        else -> {
-                            // Handle error
+                        chatMessagesResponse is Response.Failure || chatResponse is Response.Failure -> {
+                            chatStateManager.updateChatScreenState {
+                                ChatScreenState.Error(Res.string.failed_to_load_chat_messages)
+                            }
                         }
+
+                        chatMessagesResponse is Response.Loading || chatResponse is Response.Loading -> {
+                            chatStateManager.updateChatScreenState { ChatScreenState.Loading }
+                        }
+
+                        chatMessagesResponse is Response.Unauthorized || chatResponse is Response.Unauthorized -> {
+                            chatStateManager.updateChatScreenState { ChatScreenState.Unauthorized }
+                        }
+
                     }
                 }
         }
@@ -375,13 +386,6 @@ class ChatViewModel(
             if (isInitialLoad) {
                 currentChatMessagesPage = 1
                 isLastChatMessagesPage = false
-            }
-
-            chatStateManager.updateChatScreenState { currentState ->
-                when (currentState) {
-                    is ChatScreenState.Success -> currentState.copy(isLoadingMessages = true)
-                    else -> currentState
-                }
             }
 
             chatUseCase.getChatMessagesById(chatId, currentChatMessagesPage, chatMessagesPageSize)
@@ -411,12 +415,29 @@ class ChatViewModel(
 
                         }
 
-                        is Response.Failure -> {
-                            // Handle error
+                        is Response.Loading -> {
+                            chatStateManager.updateChatScreenState { currentState ->
+                                when (currentState) {
+                                    is ChatScreenState.Success -> currentState.copy(
+                                        isLoadingMessages = true
+                                    )
+
+                                    else -> currentState
+                                }
+                            }
                         }
 
-                        else -> {
-                            // Handle other response types
+                        is Response.Failure -> {
+                            // Handle error
+                            chatStateManager.updateChatScreenState {
+                                ChatScreenState.Error(Res.string.failed_to_load_chat_messages)
+                            }
+                        }
+
+                        is Response.Unauthorized -> {
+                            chatStateManager.updateChatScreenState {
+                                ChatScreenState.Unauthorized
+                            }
                         }
                     }
                 }
@@ -459,8 +480,8 @@ class ChatViewModel(
                         chatStateManager.updateChatScreenState { ChatScreenState.Loading }
                     }
 
-                    else -> {
-                        // Handle other cases
+                    is Response.Unauthorized -> {
+                        chatStateManager.updateChatScreenState { ChatScreenState.Unauthorized }
                     }
                 }
             }
@@ -495,7 +516,7 @@ class ChatViewModel(
 
                     is Response.Failure -> HistoryScreenStates.Error
                     is Response.Loading -> HistoryScreenStates.Loading
-                    is Response.Unauthorized -> HistoryScreenStates.Error
+                    is Response.Unauthorized -> HistoryScreenStates.Unauthorized
                 }
             }
         }

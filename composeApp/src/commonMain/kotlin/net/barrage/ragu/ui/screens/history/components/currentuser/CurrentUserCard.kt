@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,11 +42,12 @@ import ragumultiplatform.composeapp.generated.resources.error_loading_data
 
 @Composable
 fun CurrentUserCard(
-    viewState: HistoryScreenStates<ProfileViewState>,
-    modifier: Modifier = Modifier,
     onUserClick: () -> Unit,
+    onUnauthorized: () -> Unit,
+    viewState: HistoryScreenStates<ProfileViewState>,
     revealState: RevealState,
     scope: CoroutineScope,
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier.padding(16.dp)
@@ -65,7 +67,7 @@ fun CurrentUserCard(
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             when (viewState) {
-                HistoryScreenStates.Error -> {
+                is HistoryScreenStates.Error -> {
                     Text(
                         text = stringResource(Res.string.error_loading_data),
                         color = MaterialTheme.colorScheme.error,
@@ -74,9 +76,9 @@ fun CurrentUserCard(
                     )
                 }
 
-                HistoryScreenStates.Idle -> {}
+                is HistoryScreenStates.Idle -> {}
 
-                HistoryScreenStates.Loading -> {
+                is HistoryScreenStates.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center).padding(vertical = 8.dp)
                             .then(Modifier.size(28.dp))
@@ -110,6 +112,12 @@ fun CurrentUserCard(
                                 overflow = Ellipsis,
                             )
                         }
+                    }
+                }
+
+                is HistoryScreenStates.Unauthorized -> {
+                    LaunchedEffect(Unit) {
+                        onUnauthorized()
                     }
                 }
             }

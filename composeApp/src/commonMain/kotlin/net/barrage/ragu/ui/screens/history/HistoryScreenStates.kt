@@ -8,4 +8,5 @@ sealed class HistoryScreenStates<out T> {
     data class Success<out T>(val data: T) : HistoryScreenStates<T>()
 
     data object Error : HistoryScreenStates<Nothing>()
+    data object Unauthorized : HistoryScreenStates<Nothing>()
 }

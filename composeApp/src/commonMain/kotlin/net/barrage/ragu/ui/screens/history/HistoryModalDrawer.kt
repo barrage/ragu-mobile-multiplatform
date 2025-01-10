@@ -45,6 +45,7 @@ fun ModalDrawer(
     onDarkLightModeClick: () -> Unit,
     onUserClick: () -> Unit,
     changeDrawerVisibility: () -> Unit,
+    onUnauthorized: () -> Unit,
     changeInputEnabled: (Boolean) -> Unit,
     onSelectThemeClick: (Color) -> Unit,
     onSelectVariantClick: (PaletteStyle) -> Unit,
@@ -138,6 +139,7 @@ fun ModalDrawer(
                     }
                 },
                 onScrollToBottom = { viewModel.loadMoreHistory() },
+                onUnauthorized = onUnauthorized,
             )
             HistoryDivider()
             val currentUserViewState by viewModel.currentUserViewState.collectAsState()
@@ -151,6 +153,7 @@ fun ModalDrawer(
                 },
                 revealState = revealState,
                 scope = scope,
+                onUnauthorized = onUnauthorized,
             )
         }
     }

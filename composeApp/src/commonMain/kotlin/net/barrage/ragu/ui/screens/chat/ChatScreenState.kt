@@ -26,4 +26,5 @@ sealed class ChatScreenState {
     ) : ChatScreenState()
 
     data class Error(val message: StringResource) : ChatScreenState()
+    data object Unauthorized : ChatScreenState()
 }

@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +42,7 @@ import ragumultiplatform.composeapp.generated.resources.sign_out
 fun ProfileContent(
     onCloseClick: () -> Unit,
     onLogoutClick: () -> Unit,
+    onUnauthorized: () -> Unit,
     viewState: HistoryScreenStates<ProfileViewState>,
     modifier: Modifier = Modifier,
 ) {
@@ -51,7 +53,7 @@ fun ProfileContent(
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             when (viewState) {
-                HistoryScreenStates.Error -> {
+                is HistoryScreenStates.Error -> {
                     Text(
                         text = stringResource(Res.string.error_occurred),
                         style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
@@ -60,9 +62,9 @@ fun ProfileContent(
                     )
                 }
 
-                HistoryScreenStates.Idle -> {}
+                is HistoryScreenStates.Idle -> {}
 
-                HistoryScreenStates.Loading -> {
+                is HistoryScreenStates.Loading -> {
                     CircularProgressIndicator()
                 }
 
@@ -98,6 +100,12 @@ fun ProfileContent(
                                     .fixCenterTextOnAllPlatforms(),
                             )
                         }
+                    }
+                }
+
+                is HistoryScreenStates.Unauthorized -> {
+                    LaunchedEffect(Unit) {
+                        onUnauthorized()
                     }
                 }
             }

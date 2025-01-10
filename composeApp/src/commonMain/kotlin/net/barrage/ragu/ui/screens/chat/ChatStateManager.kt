@@ -173,7 +173,7 @@ class ChatStateManager {
                     isReceivingMessage = false,
                     inputText = "",
                     isAgentActive = true,
-                ) ?: currentState
+                ) ?: ChatScreenState.Idle
             }
         }
     }
