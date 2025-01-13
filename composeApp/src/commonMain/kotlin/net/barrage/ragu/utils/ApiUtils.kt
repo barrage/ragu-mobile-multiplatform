@@ -5,6 +5,7 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.request
 import net.barrage.ragu.domain.Response
 
 /**
@@ -31,17 +32,29 @@ import net.barrage.ragu.domain.Response
 suspend inline fun <reified T> safeApiCall(apiCall: () -> HttpResponse): Response<T> {
     return try {
         val response = apiCall()
+        CrashlyticsLog.logException(Exception("Test exception"))
         when (response.status.value) {
             in 200..299 -> Response.Success(response.body() as T)
-            401 -> Response.Unauthorized
-            else -> Response.Failure(
-                Exception("HTTP error ${response.status.value} ${response.status.description}")
-            )
+            401 -> {
+                CrashlyticsLog.log("API call: ${response.status.value} ${response.status.description} ${response.request.url}")
+                CrashlyticsLog.logException(Exception("Unauthorized API call"))
+                Response.Unauthorized
+            }
+
+            else -> {
+                CrashlyticsLog.log("API call: ${response.status.value} ${response.status.description} ${response.request.url}")
+                CrashlyticsLog.logException(Exception("HTTP error"))
+                Response.Failure(
+                    Exception("HTTP error ${response.status.value} ${response.status.description}")
+                )
+            }
         }
     } catch (e: RedirectResponseException) {
         // 3xx - responses
+        CrashlyticsLog.logException(e)
         Response.Failure(e)
     } catch (e: ClientRequestException) {
+        CrashlyticsLog.logException(e)
         if (e.response.status.value == 401) {
             Response.Unauthorized
         } else {
@@ -49,9 +62,11 @@ suspend inline fun <reified T> safeApiCall(apiCall: () -> HttpResponse): Respons
         }
     } catch (e: ServerResponseException) {
         // 5xx - responses
+        CrashlyticsLog.logException(e)
         Response.Failure(e)
     } catch (e: Exception) {
         // Unknown errors
+        CrashlyticsLog.logException(e)
         Response.Failure(e)
     }
 }

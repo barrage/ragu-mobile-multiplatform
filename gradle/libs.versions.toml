@@ -63,7 +63,7 @@ androidx-startup = { module = "androidx.startup:startup-runtime", version.ref = 
 #Firebase Android
 firebase-android-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseAndroidBom" }
 firebase-android-crashlytics-ktx = { module = "com.google.firebase:firebase-crashlytics-ktx" }
-#firebase-android-common-ktx = { module = "com.google.firebase:firebase-common-ktx" }
+firebase-android-common-ktx = { module = "com.google.firebase:firebase-common-ktx" }
 #firebase-android-firestore = { module = "com.google.firebase:firebase-firestore-ktx" }
 #firebase-android-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
 

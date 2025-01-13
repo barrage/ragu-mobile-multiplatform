@@ -50,8 +50,8 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(project.dependencies.platform(libs.firebase.android.bom))
             implementation(libs.firebase.android.crashlytics.ktx)
+            implementation(libs.firebase.android.common.ktx)
             implementation(libs.ktor.client.cio)
-            api(libs.gitlive.firebase.kotlin.crashlytics)
             implementation(libs.androidx.startup)
         }
 
@@ -60,7 +60,6 @@ kotlin {
          */
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
-            api(libs.gitlive.firebase.kotlin.crashlytics)
         }
 
         /**
@@ -99,6 +98,7 @@ kotlin {
             implementation(libs.multiplatform.markdown.renderer.code)
             implementation(libs.reveal.core)
             implementation(libs.reveal.shapes)
+            api(libs.gitlive.firebase.kotlin.crashlytics)
         }
 
         /*desktopMain.dependencies {
