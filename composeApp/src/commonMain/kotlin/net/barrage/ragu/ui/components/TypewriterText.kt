@@ -29,11 +29,12 @@ fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
     var textFieldValue by remember { mutableStateOf(TextFieldValue(text = "")) }
     val focusRequester = remember { FocusRequester() }
     var previousText by remember { mutableStateOf("") }
+    var previousTextFieldValue by remember { mutableStateOf(TextFieldValue(text = "")) }
 
     LaunchedEffect(state.text) {
         if (state.text != previousText && !state.isEditing) {
             displayText = ""
-            val totalDuration = 500L // 1 second in milliseconds
+            val totalDuration = 500L // half a second in milliseconds
             val charCount = state.text.length
             val delayPerChar = if (charCount > 1) totalDuration / (charCount - 1) else totalDuration
 
@@ -63,7 +64,10 @@ fun TypewriterText(state: TypewriterTextState, modifier: Modifier = Modifier) {
                 value = textFieldValue,
                 onValueChange = {
                     textFieldValue = it
-                    state.onTextChange(it.text)
+                    if (it.text != previousTextFieldValue.text) {
+                        state.onTextChange(it.text)
+                    }
+                    previousTextFieldValue = it
                 },
                 textStyle = state.textStyle
                     .copy(color = state.textColor, textAlign = TextAlign.End)
