@@ -1,3 +1,9 @@
 package net.barrage.ragu.ui.screens.profile.viewstate
 
-data class ProfileHeaderViewState(val profileImage: String, val name: String, val active: Boolean)
+import androidx.compose.ui.graphics.ImageBitmap
+
+data class ProfileHeaderViewState(
+    val profileImage: ImageBitmap?,
+    val name: String,
+    val active: Boolean
+)

@@ -2,6 +2,7 @@ package net.barrage.ragu.ui.screens.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.preat.peekaboo.image.picker.toImageBitmap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -537,6 +538,24 @@ class ChatViewModel(
             if (!message.chatId.isNullOrEmpty() && !message.id.isNullOrEmpty()) {
                 val result = chatUseCase.evaluateMessage(message.chatId, message.id, evaluation)
                 debugLog("Evaluation result: $result")
+            }
+        }
+    }
+
+    fun updateProfileImage(imageByteArray: ByteArray) {
+        val tempCurrentUserViewState = _currentUserViewState.value
+        _currentUserViewState.value = HistoryScreenStates.Loading
+
+        viewModelScope.launch {
+            delay(1000)
+            if (tempCurrentUserViewState is HistoryScreenStates.Success<ProfileViewState>) {
+                _currentUserViewState.value = tempCurrentUserViewState.copy(
+                    data = tempCurrentUserViewState.data.copy(
+                        header = tempCurrentUserViewState.data.header.copy(
+                            profileImage = imageByteArray.toImageBitmap()
+                        )
+                    )
+                )
             }
         }
     }

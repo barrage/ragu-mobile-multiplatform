@@ -321,6 +321,7 @@ fun ChatScreen(
                         showLogoutConfirmation = true
                     },
                     onUnauthorized = onLogoutSuccess,
+                    onImagePicked = { viewModel.updateProfileImage(it) },
                     scope = scope,
                 )
             }

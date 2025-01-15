@@ -31,7 +31,7 @@ data class CurrentUser(
     fun toViewState(): ProfileViewState =
         ProfileViewState(
             id = id,
-            header = ProfileHeaderViewState(profileImage = "", name = fullName, active = active),
+            header = ProfileHeaderViewState(profileImage = null, name = fullName, active = active),
             email = email,
             content =
             persistentMapOf(

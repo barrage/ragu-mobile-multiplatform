@@ -44,6 +44,7 @@ fun ProfileContent(
     onCloseClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onUnauthorized: () -> Unit,
+    onImagePicked: (ByteArray) -> Unit,
     viewState: HistoryScreenStates<ProfileViewState>,
     scope: CoroutineScope,
     modifier: Modifier = Modifier,
@@ -53,7 +54,7 @@ fun ProfileContent(
         colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
         modifier = modifier
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
             when (viewState) {
                 is HistoryScreenStates.Error -> {
                     Text(
@@ -67,7 +68,7 @@ fun ProfileContent(
                 is HistoryScreenStates.Idle -> {}
 
                 is HistoryScreenStates.Loading -> {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
 
                 is HistoryScreenStates.Success -> {
@@ -87,6 +88,7 @@ fun ProfileContent(
                         ProfileCardHeader(
                             modifier = Modifier.padding(vertical = 16.dp),
                             viewState = viewState.data.header,
+                            onImagePicked = onImagePicked,
                             scope = scope,
                         )
                         ProfileSpacer()
