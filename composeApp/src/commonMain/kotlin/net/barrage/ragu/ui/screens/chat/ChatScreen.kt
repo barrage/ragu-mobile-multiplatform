@@ -321,6 +321,7 @@ fun ChatScreen(
                         showLogoutConfirmation = true
                     },
                     onUnauthorized = onLogoutSuccess,
+                    scope = scope,
                 )
             }
         }
