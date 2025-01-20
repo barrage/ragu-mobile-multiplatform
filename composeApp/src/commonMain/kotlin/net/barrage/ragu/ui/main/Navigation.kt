@@ -120,6 +120,7 @@ fun AppNavHost(
                             }
                         }
                     },
+                    permissionController = appState.permissionController,
                 )
             }
             composable(Login.route) {

@@ -100,6 +100,8 @@ kotlin {
             implementation(libs.reveal.shapes)
             api(libs.gitlive.firebase.kotlin.crashlytics)
             implementation(libs.peekaboo.image.picker)
+            implementation(libs.camerak)
+            implementation(libs.moko.permissions)
         }
 
         /*desktopMain.dependencies {

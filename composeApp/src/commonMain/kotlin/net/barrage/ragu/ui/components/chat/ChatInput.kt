@@ -33,6 +33,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.ui.theme.customTypography
+import org.jetbrains.compose.resources.painterResource
+import ragumultiplatform.composeapp.generated.resources.Res
+import ragumultiplatform.composeapp.generated.resources.ic_camera_add
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -79,18 +82,52 @@ fun ChatInput(
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
                 unfocusedContainerColor =
-                TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.4f),
+                if (state.inputText.isEmpty()) TextFieldDefaults.colors().focusedContainerColor.copy(
+                    alpha = 0.4f
+                ) else TextFieldDefaults.colors().focusedContainerColor,
                 disabledContainerColor =
                 TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.2f),
                 unfocusedPlaceholderColor =
-                TextFieldDefaults.colors().unfocusedPlaceholderColor.copy(alpha = 0.6f),
+                if (state.inputText.isEmpty()) TextFieldDefaults.colors().unfocusedPlaceholderColor.copy(
+                    alpha = 0.6f
+                ) else TextFieldDefaults.colors().unfocusedPlaceholderColor,
                 disabledPlaceholderColor =
                 TextFieldDefaults.colors().disabledPlaceholderColor.copy(alpha = 0.2f),
                 unfocusedSuffixColor =
-                TextFieldDefaults.colors().unfocusedSuffixColor.copy(alpha = 0.6f),
+                if (state.inputText.isEmpty()) TextFieldDefaults.colors().unfocusedSuffixColor.copy(
+                    alpha = 0.6f
+                ) else TextFieldDefaults.colors().unfocusedSuffixColor,
                 disabledSuffixColor =
                 TextFieldDefaults.colors().disabledSuffixColor.copy(alpha = 0.2f),
+                unfocusedPrefixColor = if (state.inputText.isEmpty()) TextFieldDefaults.colors().unfocusedPrefixColor.copy(
+                    alpha = 0.6f
+                ) else TextFieldDefaults.colors().unfocusedPrefixColor,
+                disabledPrefixColor = TextFieldDefaults.colors().disabledPrefixColor.copy(alpha = 0.2f),
+                unfocusedTextColor = if (state.inputText.isEmpty()) TextFieldDefaults.colors().unfocusedTextColor.copy(
+                    alpha = 0.6f
+                ) else TextFieldDefaults.colors().unfocusedTextColor,
+                disabledTextColor = TextFieldDefaults.colors().disabledTextColor.copy(alpha = 0.2f),
             ),
+            prefix = {
+                CompositionLocalProvider(
+                    LocalMinimumInteractiveComponentEnforcement provides false
+                ) {
+                    IconButton(
+                        onClick = {
+                            state.onCameraClick()
+                            state.focusManager.clearFocus()
+                        },
+                        enabled = state.isEnabled && state.isReceivingMessage.not(),
+                        modifier = Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
+                            .padding(end = 4.dp),
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_camera_add),
+                            contentDescription = null,
+                        )
+                    }
+                }
+            },
             suffix = {
                 CompositionLocalProvider(
                     LocalMinimumInteractiveComponentEnforcement provides false

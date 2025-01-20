@@ -3,9 +3,9 @@ agp = "8.7.3"
 android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "35"
-androidx-activityCompose = "1.9.3"
+androidx-activityCompose = "1.10.0"
 compose-plugin = "1.7.3"
-datastorePreferencesCore = "1.1.1"
+datastorePreferencesCore = "1.1.2"
 konnection = "1.4.3"
 kotlin = "2.1.0"
 koin = "4.0.1"
@@ -22,7 +22,7 @@ ktor = "3.0.3"
 gradlePlugins-crashlytics = "3.0.2"
 googleServices = "4.4.2"
 #Firebase Android
-firebaseAndroidBom = "33.7.0"
+firebaseAndroidBom = "33.8.0"
 #Gitlive
 firebaseGitLiveSdk = "2.1.0"
 reveal = "3.1.1"
@@ -33,6 +33,8 @@ androidx-startup = "1.2.0"
 kotlinCryptoBom = "0.5.6"
 kotlinSecureCrypto = "0.3.2"
 peekaboo = "0.5.2"
+camerak = "0.0.8"
+mokoPermissions = "0.18.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -83,6 +85,12 @@ kotlin-crypto-secure-random = { module = "org.kotlincrypto:secure-random", versi
 
 #Peekaboo
 peekaboo-image-picker = { module = "io.github.onseok:peekaboo-image-picker", version.ref = "peekaboo" }
+
+#CameraK
+camerak = { module = "io.github.kashif-mehmood-km:camerak", version.ref = "camerak" }
+
+#MOKO Permissions
+moko-permissions = { module = "dev.icerock.moko:permissions-compose", version.ref = "mokoPermissions" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

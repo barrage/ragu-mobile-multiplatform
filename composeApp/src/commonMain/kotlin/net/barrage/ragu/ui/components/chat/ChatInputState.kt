@@ -7,6 +7,7 @@ data class ChatInputState(
     val onInputTextChange: (String) -> Unit,
     val onSendMessage: () -> Unit,
     val onStopReceivingMessage: () -> Unit,
+    val onCameraClick: () -> Unit,
     val inputText: String,
     val isEnabled: Boolean,
     val isReceivingMessage: Boolean,

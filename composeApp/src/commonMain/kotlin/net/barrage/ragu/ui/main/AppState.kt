@@ -15,6 +15,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.compose.PermissionsControllerFactory
+import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import dev.tmapps.konnection.Konnection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -33,6 +36,7 @@ data class AppState(
     val networkAvailable: State<Boolean>,
     val currentScreen: NavDestination,
     val drawerState: DrawerState,
+    val permissionController: PermissionsController,
 )
 
 @Composable
@@ -49,6 +53,10 @@ fun rememberAppState(): AppState {
     val currentScreen =
         RaguNavigation.screens.find { it.route == currentDestination?.route } ?: Empty
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val permissionFactory: PermissionsControllerFactory = rememberPermissionsControllerFactory()
+    val permissionController: PermissionsController = remember(permissionFactory) {
+        permissionFactory.createPermissionsController()
+    }
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -85,6 +93,7 @@ fun rememberAppState(): AppState {
             networkAvailable,
             currentScreen,
             drawerState,
+            permissionController,
         )
     }
 }
