@@ -18,10 +18,12 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.highlightedCodeBlock
@@ -40,8 +42,8 @@ import ragumultiplatform.composeapp.generated.resources.assistant_icon_content_d
 import ragumultiplatform.composeapp.generated.resources.copy_button_content_description
 import ragumultiplatform.composeapp.generated.resources.ic_copy
 import ragumultiplatform.composeapp.generated.resources.ic_ragu
-import ragumultiplatform.composeapp.generated.resources.ic_thumb_down
-import ragumultiplatform.composeapp.generated.resources.ic_thumb_up
+import ragumultiplatform.composeapp.generated.resources.ic_thumb
+import ragumultiplatform.composeapp.generated.resources.ic_thumb_filled
 import ragumultiplatform.composeapp.generated.resources.negative_evaluation_button_content_description
 import ragumultiplatform.composeapp.generated.resources.positive_evaluation_button_content_description
 import ragumultiplatform.composeapp.generated.resources.user_icon_content_description
@@ -137,6 +139,7 @@ fun MessageItem(
                                 painterResource(Res.drawable.ic_copy),
                                 contentDescription =
                                 stringResource(Res.string.copy_button_content_description),
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(16.dp),
                             )
                         }
@@ -147,11 +150,14 @@ fun MessageItem(
                                 .size(24.dp),
                         ) {
                             Icon(
-                                painterResource(Res.drawable.ic_thumb_up),
+                                if (chatMessage.evaluation == true) painterResource(Res.drawable.ic_thumb_filled) else painterResource(
+                                    Res.drawable.ic_thumb
+                                ),
                                 contentDescription =
                                 stringResource(
                                     Res.string.positive_evaluation_button_content_description
                                 ),
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(16.dp),
                             )
                         }
@@ -162,12 +168,15 @@ fun MessageItem(
                                 .size(24.dp),
                         ) {
                             Icon(
-                                painterResource(Res.drawable.ic_thumb_down),
+                                if (chatMessage.evaluation == false) painterResource(Res.drawable.ic_thumb_filled) else painterResource(
+                                    Res.drawable.ic_thumb
+                                ),
                                 contentDescription =
                                 stringResource(
                                     Res.string.negative_evaluation_button_content_description
                                 ),
-                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(16.dp).rotate(180F),
                             )
                         }
                     }

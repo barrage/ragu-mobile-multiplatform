@@ -535,12 +535,17 @@ class ChatViewModel(
      *
      * @param message The message to evaluate
      * @param evaluation The evaluation result (true for positive, false for negative)
+     * @param feedback Optional feedback string for the evaluation
      */
-    fun evaluateMessage(message: ChatMessageItem, evaluation: Boolean) {
+    fun evaluateMessage(message: ChatMessageItem, evaluation: Boolean, feedback: String?) {
         viewModelScope.launch {
             if (!message.chatId.isNullOrEmpty() && !message.id.isNullOrEmpty()) {
-                val result = chatUseCase.evaluateMessage(message.chatId, message.id, evaluation)
+                val result =
+                    chatUseCase.evaluateMessage(message.chatId, message.id, evaluation, feedback)
                 debugLog("Evaluation result: $result")
+                if (result is Response.Success) {
+                    chatStateManager.updateMessageEvaluation(message, evaluation)
+                }
             }
         }
     }

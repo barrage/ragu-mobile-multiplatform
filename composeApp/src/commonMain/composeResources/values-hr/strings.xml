@@ -63,5 +63,7 @@
     <string name="reveal_menu_item">Ponovno otvorite prošli razgovor: Dodirnite za nastavak gdje ste stali</string>
     <string name="reveal_title_menu">Organizirajte svoje misli: Uredite naslov razgovora ili obrišite povijest</string>
     <string name="failed_to_load_chat_messages">Pogreška pri učitavanju poruka razgovora</string>
-
+    <string name="send">Pošalji</string>
+    <string name="additional_evaluation_feedback_title">Dodatne povratne informacije</string>
+    <string name="additional_evaluation_feedback_label">Molimo navedite dodatne povratne informacije, što bi se moglo poboljšati? (neobavezno)</string>
 </resources>

@@ -15,5 +15,6 @@ class ChatRepositoryImpl(private val api: Api) : ChatRepository {
         chatId: String,
         messageId: String,
         evaluation: Boolean,
+        feedback: String?
     ): Response<HttpResponse> = api.evaluateMessage(chatId, messageId, evaluation)
 }

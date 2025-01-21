@@ -12,5 +12,6 @@ interface ChatRepository {
         chatId: String,
         messageId: String,
         evaluation: Boolean,
+        feedback: String?
     ): Response<HttpResponse>
 }

@@ -21,8 +21,13 @@ class ChatUseCase(
 
     suspend fun deleteChat(chatId: String) = deleteChatUseCase(chatId)
 
-    suspend fun evaluateMessage(chatId: String, messageId: String, evaluation: Boolean) =
-        evaluateMessageUseCase(chatId, messageId, evaluation)
+    suspend fun evaluateMessage(
+        chatId: String,
+        messageId: String,
+        evaluation: Boolean,
+        feedback: String?
+    ) =
+        evaluateMessageUseCase(chatId, messageId, evaluation, feedback)
 
     suspend fun getChatById(id: String) = getChatByIdUseCase(id)
 

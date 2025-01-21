@@ -9,17 +9,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,6 +58,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.barrage.ragu.data.remote.dto.history.SenderType
+import net.barrage.ragu.domain.model.ChatMessageItem
 import net.barrage.ragu.ui.components.chat.AgentContent
 import net.barrage.ragu.ui.components.chat.ChatInput
 import net.barrage.ragu.ui.components.chat.ChatInputState
@@ -68,10 +73,13 @@ import net.barrage.ragu.utils.debugLog
 import net.barrage.ragu.utils.debugLogError
 import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
+import ragumultiplatform.composeapp.generated.resources.additional_evaluation_feedback_label
+import ragumultiplatform.composeapp.generated.resources.additional_evaluation_feedback_title
 import ragumultiplatform.composeapp.generated.resources.agent_inactive_text
 import ragumultiplatform.composeapp.generated.resources.delete_chat_description
 import ragumultiplatform.composeapp.generated.resources.delete_chat_title
 import ragumultiplatform.composeapp.generated.resources.no
+import ragumultiplatform.composeapp.generated.resources.send
 import ragumultiplatform.composeapp.generated.resources.sign_out_description
 import ragumultiplatform.composeapp.generated.resources.sign_out_title
 import ragumultiplatform.composeapp.generated.resources.yes
@@ -101,6 +109,9 @@ fun ChatScreen(
     var menuVisible by remember { mutableStateOf(false) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
     var showLogoutConfirmation by remember { mutableStateOf(false) }
+    var evaluatingMessage: ChatMessageItem? by remember { mutableStateOf(null) }
+    var additionalEvaluationFeedback by remember { mutableStateOf("") }
+    var additionalEvaluationFeedbackVisible by remember { mutableStateOf(false) }
 
     val chatScreenState by viewModel.chatScreenState.collectAsState()
     val profileViewState by viewModel.currentUserViewState.collectAsState()
@@ -114,20 +125,13 @@ fun ChatScreen(
         }
     }
 
-    if (
-        chatScreenState is ChatScreenState.Success &&
-        (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
-    ) {
+    if (chatScreenState is ChatScreenState.Success && (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()) {
         LaunchedEffect((chatScreenState as ChatScreenState.Success).messages.last()) {
             lazyListState.animateScrollToItem(0)
         }
     }
     LaunchedEffect(isKeyboardOpen) {
-        if (
-            isKeyboardOpen &&
-            chatScreenState is ChatScreenState.Success &&
-            (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()
-        ) {
+        if (isKeyboardOpen && chatScreenState is ChatScreenState.Success && (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()) {
             lazyListState.animateScrollToItem(0)
         }
     }
@@ -145,30 +149,18 @@ fun ChatScreen(
 
     BindEffect(permissionController)
 
-    Box(
-        modifier =
-        modifier.fillMaxSize().onGloballyPositioned {
-            with(density) { width = it.size.width.toDp() - 80.dp }
-        }
-    ) {
-        Column(
-            modifier =
-            Modifier.fillMaxSize()
-                .clickable(chatInteractionSource, null) {
-                    if (chatInputFocused) focusManager.clearFocus()
-                }
-                .imePadding()
-        ) {
+    Box(modifier = modifier.fillMaxSize().onGloballyPositioned {
+        with(density) { width = it.size.width.toDp() - 80.dp }
+    }) {
+        Column(modifier = Modifier.fillMaxSize().clickable(chatInteractionSource, null) {
+            if (chatInputFocused) focusManager.clearFocus()
+        }.imePadding()) {
             when (val state = chatScreenState) {
                 is ChatScreenState.Success -> {
-                    if (
-                        state.messages.isNotEmpty()
-                    ) {
+                    if (state.messages.isNotEmpty()) {
                         ChatTitle(
-                            state =
-                            ChatTitleState(
-                                title =
-                                state.chatTitle ?: stringResource(state.chatTitleRes),
+                            state = ChatTitleState(
+                                title = state.chatTitle ?: stringResource(state.chatTitleRes),
                                 isMenuVisible = menuVisible,
                                 isEditingTitle = state.isEditingTitle,
                                 onThreeDotsClick = { menuVisible = true },
@@ -197,9 +189,7 @@ fun ChatScreen(
                         )
                     }
 
-                    if (
-                        state.messages.isEmpty()
-                    ) {
+                    if (state.messages.isEmpty()) {
                         AgentContent(
                             agents = state.agents.toImmutableList(),
                             selectedAgent = viewModel.selectedAgent.collectAsState().value,
@@ -226,15 +216,60 @@ fun ChatScreen(
                             messages = state.messages.toImmutableList(),
                             lazyListState = lazyListState,
                             onCopy = {
-                                clipboardManager.setText(
-                                    buildAnnotatedString { append(it.content) }
-                                )
+                                clipboardManager.setText(buildAnnotatedString { append(it.content) })
                             },
-                            onPositiveEvaluation = { viewModel.evaluateMessage(it, true) },
-                            onNegativeEvaluation = { viewModel.evaluateMessage(it, false) },
+                            onPositiveEvaluation = { viewModel.evaluateMessage(it, true, "") },
+                            onNegativeEvaluation = {
+                                evaluatingMessage = it
+                                additionalEvaluationFeedbackVisible = true
+                            },
                             onScrollToTop = { viewModel.loadMoreChatMessages() },
                             modifier = Modifier.weight(1f),
                         )
+                    }
+                    if (additionalEvaluationFeedbackVisible) {
+                        Dialog(
+                            onDismissRequest = {
+                                additionalEvaluationFeedbackVisible = false
+                                additionalEvaluationFeedback = ""
+                            },
+                            properties = DialogProperties(usePlatformDefaultWidth = false),
+                        ) {
+                            Card(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+                                Column(
+                                    modifier = Modifier.padding(20.dp),
+                                ) {
+                                    Text(
+                                        stringResource(Res.string.additional_evaluation_feedback_title),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    OutlinedTextField(
+                                        value = additionalEvaluationFeedback,
+                                        onValueChange = { additionalEvaluationFeedback = it },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        placeholder = { Text(stringResource(Res.string.additional_evaluation_feedback_label)) },
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Button(
+                                        onClick = {
+                                            evaluatingMessage?.let {
+                                                viewModel.evaluateMessage(
+                                                    it,
+                                                    false,
+                                                    additionalEvaluationFeedback.ifEmpty { null }
+                                                )
+                                            }
+                                            additionalEvaluationFeedbackVisible = false
+                                            additionalEvaluationFeedback = ""
+                                        },
+                                        modifier = Modifier.align(Alignment.End),
+                                    ) {
+                                        Text(stringResource(Res.string.send))
+                                    }
+                                }
+                            }
+                        }
                     }
                     if (state.isAgentActive) {
                         Reveal(
@@ -253,9 +288,7 @@ fun ChatScreen(
                             overlayContent = { key -> RevealOverlayContent(key) },
                         ) {
                             ChatInput(
-                                state =
-                                ChatInputState(
-                                    inputText = state.inputText,
+                                state = ChatInputState(inputText = state.inputText,
                                     onInputTextChange = { viewModel.updateInputText(it) },
                                     onSendMessage = { viewModel.sendMessage() },
                                     onStopReceivingMessage = {
@@ -287,23 +320,18 @@ fun ChatScreen(
                                                 debugLogError("Camera permission denied always", e)
                                             } catch (e: RequestCanceledException) {
                                                 debugLogError(
-                                                    "Camera permission request cancelled",
-                                                    e
+                                                    "Camera permission request cancelled", e
                                                 )
                                             }
                                         }
-                                    }
-                                ),
-                                revealState = revealState,
-                                scope = scope
+                                    }), revealState = revealState, scope = scope
                             )
                         }
                     } else {
                         Card(
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.padding(horizontal = 20.dp),
-                            colors =
-                            CardDefaults.cardColors(
+                            colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceContainer
                             ),
                             border = CardDefaults.outlinedCardBorder(enabled = true),
@@ -324,11 +352,10 @@ fun ChatScreen(
                     }
                 }
 
-                is ChatScreenState.Error ->
-                    ErrorContent(
-                        errorMessage = stringResource(state.message),
-                        onRetry = { viewModel.loadAllData() },
-                    )
+                is ChatScreenState.Error -> ErrorContent(
+                    errorMessage = stringResource(state.message),
+                    onRetry = { viewModel.loadAllData() },
+                )
 
                 is ChatScreenState.Idle -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -370,12 +397,10 @@ fun ChatScreen(
             title = { Text(stringResource(Res.string.delete_chat_title)) },
             text = { Text(stringResource(Res.string.delete_chat_description)) },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.deleteChat()
-                        showDeleteConfirmation = false
-                    }
-                ) {
+                TextButton(onClick = {
+                    viewModel.deleteChat()
+                    showDeleteConfirmation = false
+                }) {
                     Text(stringResource(Res.string.yes))
                 }
             },
@@ -394,12 +419,10 @@ fun ChatScreen(
             title = { Text(stringResource(Res.string.sign_out_title)) },
             text = { Text(stringResource(Res.string.sign_out_description)) },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.logout(onLogoutSuccess)
-                        showLogoutConfirmation = false
-                    }
-                ) {
+                TextButton(onClick = {
+                    viewModel.logout(onLogoutSuccess)
+                    showLogoutConfirmation = false
+                }) {
                     Text(stringResource(Res.string.yes))
                 }
             },

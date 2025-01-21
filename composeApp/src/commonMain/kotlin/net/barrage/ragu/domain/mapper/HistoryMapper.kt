@@ -28,4 +28,5 @@ fun ChatMessageItemDTO.toDomain() =
         content = content,
         sender = sender,
         senderType = senderType,
+        evaluation = evaluation,
     )

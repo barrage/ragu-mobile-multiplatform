@@ -89,6 +89,7 @@ interface Api {
         chatId: String,
         messageId: String,
         evaluation: Boolean,
+        feedback: String? = null
     ): Response<HttpResponse>
 
     /**

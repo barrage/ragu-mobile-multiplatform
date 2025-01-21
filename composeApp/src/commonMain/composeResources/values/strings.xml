@@ -63,4 +63,8 @@
     <string name="reveal_menu_item">Reopen a past conversation: Tap to continue where you left off</string>
     <string name="reveal_title_menu">Organize your thoughts: Edit chat title or clear history</string>
     <string name="failed_to_load_chat_messages">Failed to load chat messages</string>
+    <string name="send">Send</string>
+    <string name="additional_evaluation_feedback_title">Additional feedback</string>
+    <string name="additional_evaluation_feedback_label">Please provide additional feedback, what could be improved? (optional)</string>
+
 </resources>

@@ -10,4 +10,5 @@ data class ChatMessageItem(
     val sender: String? = "",
     val senderType: SenderType,
     val updatedAt: String? = "",
+    val evaluation: Boolean? = null,
 )

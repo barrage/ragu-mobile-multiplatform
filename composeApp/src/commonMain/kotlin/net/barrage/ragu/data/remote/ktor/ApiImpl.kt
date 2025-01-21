@@ -165,11 +165,17 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
         chatId: String,
         messageId: String,
         evaluation: Boolean,
+        feedback: String?
     ): Response<HttpResponse> {
         return safeApiCall {
             httpClient.patch("chats/$chatId/messages/$messageId") {
                 addCookieHeader()
-                setBody(mapOf("evaluation" to evaluation))
+                setBody(buildMap {
+                    put("evaluation", evaluation)
+                    if (feedback != null) {
+                        put("feedback", feedback)
+                    }
+                })
             }
         }
     }

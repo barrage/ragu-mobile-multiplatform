@@ -171,4 +171,23 @@ class ChatStateManager {
             }
         }
     }
+
+    fun updateMessageEvaluation(message: ChatMessageItem, evaluation: Boolean) {
+        updateChatScreenState { currentState ->
+            when (currentState) {
+                is ChatScreenState.Success -> {
+                    val updatedMessages = currentState.messages.map {
+                        if (it.id == message.id) {
+                            it.copy(evaluation = evaluation)
+                        } else {
+                            it
+                        }
+                    }
+                    currentState.copy(messages = updatedMessages.toImmutableList())
+                }
+
+                else -> currentState
+            }
+        }
+    }
 }
