@@ -225,6 +225,13 @@ fun ChatScreen(
                                 )
                             },
                             onNegativeEvaluation = {
+                                if (it.evaluation == false) {
+                                    viewModel.evaluateMessage(
+                                        it,
+                                        null
+                                    )
+                                    return@MessageList
+                                }
                                 evaluatingMessage = it
                                 additionalEvaluationFeedbackVisible = true
                             },
