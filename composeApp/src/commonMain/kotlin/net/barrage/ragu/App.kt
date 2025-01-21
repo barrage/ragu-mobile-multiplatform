@@ -5,6 +5,9 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,8 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.unit.dp
 import com.materialkolor.PaletteStyle
 import com.svenjacobs.reveal.RevealCanvas
 import com.svenjacobs.reveal.rememberRevealCanvasState
@@ -28,7 +33,11 @@ import net.barrage.ragu.ui.main.Overlays
 import net.barrage.ragu.ui.main.navigateToLogin
 import net.barrage.ragu.ui.main.rememberAppState
 import net.barrage.ragu.ui.theme.RaguTheme
+import net.barrage.ragu.utils.SnackbarHelper
 import net.barrage.ragu.utils.coreComponent
+import org.jetbrains.compose.resources.stringResource
+import ragumultiplatform.composeapp.generated.resources.Res
+import ragumultiplatform.composeapp.generated.resources.message_evaluated
 
 /**
  * The main composable function for the application.
@@ -54,6 +63,10 @@ fun App(
     var shouldShowOnboardingTutorial by remember { mutableStateOf(false) }
     val revealCanvasState = rememberRevealCanvasState()
     val inputEnabled = remember { mutableStateOf(true) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarMessages = mapOf(
+        Res.string.message_evaluated to stringResource(Res.string.message_evaluated)
+    )
 
     DeepLinkListener { deepLink = it }
     LaunchedEffect(Unit) {
@@ -63,6 +76,11 @@ fun App(
         shouldShowOnboardingTutorial =
             coreComponent.appPreferences.getShouldShowOnboardingTutorial()
         isThemeLoaded = true
+        SnackbarHelper.initialize(
+            snackbarHostState,
+            appState.coroutineScope,
+            getString = { snackbarMessages[it] ?: "" }
+        )
     }
     LaunchedEffect(isDarkTheme) { onThemeChange?.invoke(isDarkTheme) }
     AnimatedVisibility(isThemeLoaded, enter = fadeIn() + expandVertically()) {
@@ -127,6 +145,11 @@ fun App(
                             },
                         )
                         Overlays(appState)
+                        SnackbarHost(
+                            hostState = snackbarHostState,
+                            modifier = Modifier.align(Alignment.BottomCenter)
+                                .padding(bottom = 20.dp)
+                        )
                     }
                 }
             }

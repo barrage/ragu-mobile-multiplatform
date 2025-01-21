@@ -66,4 +66,5 @@
     <string name="send">Pošalji</string>
     <string name="additional_evaluation_feedback_title">Dodatne povratne informacije</string>
     <string name="additional_evaluation_feedback_label">Molimo navedite dodatne povratne informacije, što bi se moglo poboljšati? (neobavezno)</string>
+    <string name="message_evaluated">Hvala na povratnoj informaciji!</string>
 </resources>

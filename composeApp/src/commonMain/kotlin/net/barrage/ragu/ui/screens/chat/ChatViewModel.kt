@@ -23,10 +23,13 @@ import net.barrage.ragu.domain.usecase.user.CurrentUserUseCase
 import net.barrage.ragu.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.ragu.ui.screens.history.HistoryScreenStates
 import net.barrage.ragu.ui.screens.profile.viewstate.ProfileViewState
+import net.barrage.ragu.utils.SnackbarHelper
 import net.barrage.ragu.utils.debugLog
+import net.barrage.ragu.utils.debugLogError
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.failed_to_load_agents
 import ragumultiplatform.composeapp.generated.resources.failed_to_load_chat_messages
+import ragumultiplatform.composeapp.generated.resources.message_evaluated
 
 /**
  * ViewModel for managing the chat screen state and operations.
@@ -545,6 +548,12 @@ class ChatViewModel(
                 debugLog("Evaluation result: $result")
                 if (result is Response.Success) {
                     chatStateManager.updateMessageEvaluation(message, evaluation)
+                    try {
+                        SnackbarHelper.getInstance()
+                            .showSnackbar(messageRes = Res.string.message_evaluated)
+                    } catch (e: IllegalStateException) {
+                        debugLogError("Failed to show snackbar", e)
+                    }
                 }
             }
         }
