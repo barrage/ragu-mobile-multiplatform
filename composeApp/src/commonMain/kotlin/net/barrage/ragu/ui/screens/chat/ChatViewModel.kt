@@ -540,7 +540,7 @@ class ChatViewModel(
      * @param evaluation The evaluation result (true for positive, false for negative)
      * @param feedback Optional feedback string for the evaluation
      */
-    fun evaluateMessage(message: ChatMessageItem, evaluation: Boolean, feedback: String?) {
+    fun evaluateMessage(message: ChatMessageItem, evaluation: Boolean?, feedback: String? = null) {
         viewModelScope.launch {
             if (!message.chatId.isNullOrEmpty() && !message.id.isNullOrEmpty()) {
                 val result =

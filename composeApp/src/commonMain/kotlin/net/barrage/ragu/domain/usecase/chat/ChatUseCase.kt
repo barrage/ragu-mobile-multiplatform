@@ -24,7 +24,7 @@ class ChatUseCase(
     suspend fun evaluateMessage(
         chatId: String,
         messageId: String,
-        evaluation: Boolean,
+        evaluation: Boolean?,
         feedback: String?
     ) =
         evaluateMessageUseCase(chatId, messageId, evaluation, feedback)

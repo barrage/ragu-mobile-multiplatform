@@ -88,7 +88,7 @@ interface Api {
     suspend fun evaluateMessage(
         chatId: String,
         messageId: String,
-        evaluation: Boolean,
+        evaluation: Boolean?,
         feedback: String? = null
     ): Response<HttpResponse>
 

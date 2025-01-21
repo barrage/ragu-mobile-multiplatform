@@ -11,7 +11,7 @@ interface ChatRepository {
     suspend fun evaluateMessage(
         chatId: String,
         messageId: String,
-        evaluation: Boolean,
+        evaluation: Boolean?,
         feedback: String?
     ): Response<HttpResponse>
 }

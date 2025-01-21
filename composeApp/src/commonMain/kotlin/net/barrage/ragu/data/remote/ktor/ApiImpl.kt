@@ -164,7 +164,7 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
     override suspend fun evaluateMessage(
         chatId: String,
         messageId: String,
-        evaluation: Boolean,
+        evaluation: Boolean?,
         feedback: String?
     ): Response<HttpResponse> {
         return safeApiCall {
@@ -172,9 +172,8 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
                 addCookieHeader()
                 setBody(buildMap {
                     put("evaluation", evaluation)
-                    if (feedback != null) {
-                        put("feedback", feedback)
-                    }
+                    put("feedback", feedback)
+
                 })
             }
         }

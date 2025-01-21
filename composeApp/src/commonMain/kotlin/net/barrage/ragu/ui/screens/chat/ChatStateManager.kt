@@ -172,7 +172,7 @@ class ChatStateManager {
         }
     }
 
-    fun updateMessageEvaluation(message: ChatMessageItem, evaluation: Boolean) {
+    fun updateMessageEvaluation(message: ChatMessageItem, evaluation: Boolean?) {
         updateChatScreenState { currentState ->
             when (currentState) {
                 is ChatScreenState.Success -> {

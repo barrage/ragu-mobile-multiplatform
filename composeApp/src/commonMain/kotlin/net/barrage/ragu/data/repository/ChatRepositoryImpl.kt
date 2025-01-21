@@ -14,7 +14,7 @@ class ChatRepositoryImpl(private val api: Api) : ChatRepository {
     override suspend fun evaluateMessage(
         chatId: String,
         messageId: String,
-        evaluation: Boolean,
+        evaluation: Boolean?,
         feedback: String?
     ): Response<HttpResponse> = api.evaluateMessage(chatId, messageId, evaluation)
 }

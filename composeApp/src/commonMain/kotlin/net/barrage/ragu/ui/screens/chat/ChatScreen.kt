@@ -218,7 +218,12 @@ fun ChatScreen(
                             onCopy = {
                                 clipboardManager.setText(buildAnnotatedString { append(it.content) })
                             },
-                            onPositiveEvaluation = { viewModel.evaluateMessage(it, true, "") },
+                            onPositiveEvaluation = {
+                                viewModel.evaluateMessage(
+                                    it,
+                                    if (it.evaluation == true) null else true
+                                )
+                            },
                             onNegativeEvaluation = {
                                 evaluatingMessage = it
                                 additionalEvaluationFeedbackVisible = true
@@ -256,7 +261,7 @@ fun ChatScreen(
                                             evaluatingMessage?.let {
                                                 viewModel.evaluateMessage(
                                                     it,
-                                                    false,
+                                                    if (it.evaluation == false) null else false,
                                                     additionalEvaluationFeedback.ifEmpty { null }
                                                 )
                                             }
