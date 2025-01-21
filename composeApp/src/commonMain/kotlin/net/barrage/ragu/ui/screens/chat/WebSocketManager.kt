@@ -1,7 +1,7 @@
 package net.barrage.ragu.ui.screens.chat
 
-import androidx.compose.runtime.MutableState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import net.barrage.ragu.domain.Response
 import net.barrage.ragu.domain.model.Agent
@@ -20,7 +20,6 @@ class WebSocketManager(private val webSocketTokenUseCase: WebSocketTokenUseCase)
 
     private lateinit var scope: CoroutineScope
     private lateinit var callback: ReceiveMessageCallback
-    private lateinit var selectedAgent: MutableState<Agent?>
 
     /**
      * Initializes the WebSocket client.
@@ -30,11 +29,10 @@ class WebSocketManager(private val webSocketTokenUseCase: WebSocketTokenUseCase)
      * @param selectedAgent The currently selected agent
      */
     suspend fun initializeWebSocketClient(
-        callback: ReceiveMessageCallback, scope: CoroutineScope, selectedAgent: MutableState<Agent?>
+        callback: ReceiveMessageCallback, scope: CoroutineScope, selectedAgent: Flow<Agent?>
     ) {
         this.callback = callback
         this.scope = scope
-        this.selectedAgent = selectedAgent
 
         webSocketTokenUseCase().collectLatest { token ->
             if (token is Response.Success) {

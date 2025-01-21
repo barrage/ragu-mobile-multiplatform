@@ -1,14 +1,11 @@
 package net.barrage.ragu.ui.screens.chat
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import net.barrage.ragu.data.remote.dto.history.SenderType
-import net.barrage.ragu.domain.model.Agent
 import net.barrage.ragu.domain.model.ChatMessageItem
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.new_chat
@@ -20,9 +17,6 @@ class ChatStateManager {
 
     private val _chatScreenState = MutableStateFlow<ChatScreenState>(ChatScreenState.Idle)
     val chatScreenState: StateFlow<ChatScreenState> = _chatScreenState.asStateFlow()
-
-    var selectedAgent: MutableState<Agent?> = mutableStateOf(null)
-        private set
 
     private var tempChatTitle: String = ""
 
@@ -176,14 +170,5 @@ class ChatStateManager {
                 ) ?: ChatScreenState.Idle
             }
         }
-    }
-
-    /**
-     * Sets the current agent for the chat.
-     *
-     * @param agent The agent to set
-     */
-    fun setAgent(agent: Agent) {
-        selectedAgent.value = agent
     }
 }

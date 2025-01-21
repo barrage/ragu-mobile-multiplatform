@@ -162,8 +162,7 @@ fun ChatScreen(
             when (val state = chatScreenState) {
                 is ChatScreenState.Success -> {
                     if (
-                        state.messages.isNotEmpty() ||
-                        viewModel.webSocketManager.getChatId() != null
+                        state.messages.isNotEmpty()
                     ) {
                         ChatTitle(
                             state =
@@ -199,12 +198,11 @@ fun ChatScreen(
                     }
 
                     if (
-                        state.messages.isEmpty() &&
-                        viewModel.webSocketManager.getChatId().isNullOrEmpty()
+                        state.messages.isEmpty()
                     ) {
                         AgentContent(
                             agents = state.agents.toImmutableList(),
-                            selectedAgent = viewModel.selectedAgent.value,
+                            selectedAgent = viewModel.selectedAgent.collectAsState().value,
                             onAgentClick = { selectedAgent -> viewModel.setAgent(selectedAgent) },
                             revealState = revealState,
                             scope = scope,

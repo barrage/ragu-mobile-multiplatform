@@ -100,7 +100,7 @@ fun ChatTitle(
                                 }
                             },
                         ),
-                    enabled = state.title.length in 3..255,
+                    enabled = if (state.isEditingTitle) state.title.length in 3..255 else true,
                 ) {
                     Icon(
                         painter =

@@ -52,7 +52,8 @@ class ChatViewModel(
 
     val chatScreenState: StateFlow<ChatScreenState> = chatStateManager.chatScreenState
     val historyViewState = chatHistoryManager.historyViewState
-    val selectedAgent = chatStateManager.selectedAgent
+    private val _selectedAgent = MutableStateFlow<Agent?>(null)
+    val selectedAgent = _selectedAgent.asStateFlow()
 
     private val _currentUserViewState =
         MutableStateFlow<HistoryScreenStates<ProfileViewState>>(HistoryScreenStates.Idle)
@@ -117,7 +118,7 @@ class ChatViewModel(
                                 is ChatScreenState.Success -> {
                                     val firstAgent = agentsResponse.data.firstOrNull()
                                     if (firstAgent != null) {
-                                        chatStateManager.setAgent(firstAgent)
+                                        viewModelScope.launch { setAgent(firstAgent) }
                                     }
                                     currentState.copy(
                                         agents = agentsResponse.data.toImmutableList(),
@@ -128,7 +129,7 @@ class ChatViewModel(
                                 else -> {
                                     val firstAgent = agentsResponse.data.firstOrNull()
                                     if (firstAgent != null) {
-                                        chatStateManager.setAgent(firstAgent)
+                                        viewModelScope.launch { setAgent(firstAgent) }
                                     }
                                     ChatScreenState.Success(
                                         agents = agentsResponse.data.toImmutableList(),
@@ -283,7 +284,9 @@ class ChatViewModel(
      * @param agent The agent to set
      */
     fun setAgent(agent: Agent) {
-        chatStateManager.setAgent(agent)
+        viewModelScope.launch {
+            _selectedAgent.emit(agent)
+        }
     }
 
     /**

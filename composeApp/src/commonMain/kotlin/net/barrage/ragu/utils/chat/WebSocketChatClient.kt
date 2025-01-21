@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
@@ -42,16 +43,22 @@ import kotlin.time.Duration.Companion.seconds
  *
  * @property receiveMessageCallback Callback for handling received messages and connection status
  * @property scope CoroutineScope for managing asynchronous operations
- * @property selectedAgent Currently selected chat agent
+ * @property selectedAgentFlow Currently selected chat agent flow
  */
 class WebSocketChatClient(
     private val receiveMessageCallback: ReceiveMessageCallback,
     private val scope: CoroutineScope,
-    private val selectedAgent: MutableState<Agent?>,
+    private val selectedAgentFlow: Flow<Agent?>,
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
 ) {
     init {
         scope.launch { reconnect() }
+        scope.launch {
+            selectedAgentFlow.collectLatest { agent ->
+                agent?.let { openNewChat(it) }
+                selectedAgent.value = agent
+            }
+        }
     }
 
     private var wsToken: WebSocketToken? = null
@@ -78,6 +85,9 @@ class WebSocketChatClient(
 
     // Last message sent, used for retrying failed messages
     private var lastMessage: String? = null
+
+    // Selected agent for the chat session
+    private var selectedAgent: MutableState<Agent?> = mutableStateOf(null)
 
     /** Public function to trigger reconnection from outside */
     fun reconnect() {
@@ -147,7 +157,11 @@ class WebSocketChatClient(
                 session = this
                 handleIncomingMessages(this)
                 isChatOpen.value = false
+                selectedAgent.value?.let {
+                    openNewChat(it)
+                }
             }
+
         } catch (e: Exception) {
             debugLogError("Connection failed", e)
             throw e
@@ -199,7 +213,9 @@ class WebSocketChatClient(
                 if (currentChatId.value != null) {
                     openExistingChat(currentChatId.value!!)
                 } else {
-                    openNewChat()
+                    selectedAgent.value?.let {
+                        openNewChat(it)
+                    }
                 }
                 messageHandler.sendFirstMessage = {
                     sendChatMessage(message)
@@ -221,7 +237,7 @@ class WebSocketChatClient(
     }
 
     /** Opens a new chat. */
-    private fun openNewChat() {
+    private fun openNewChat(selectedAgent: Agent) {
         debugLog("Opening new chat")
         val openChatMessage = buildJsonObject {
             put("type", "system")
@@ -231,7 +247,7 @@ class WebSocketChatClient(
                     put("type", "chat_open_new")
                     put(
                         "agentId",
-                        selectedAgent.value?.id ?: "00000000-0000-0000-0000-000000000000",
+                        selectedAgent.id
                     )
                 },
             )
@@ -289,6 +305,7 @@ class WebSocketChatClient(
         debugLog("Set Chat ID: $chatId")
         currentChatId.value = chatId
         isChatOpen.value = false
+        chatId?.let { openExistingChat(it) }
     }
 
     /**
