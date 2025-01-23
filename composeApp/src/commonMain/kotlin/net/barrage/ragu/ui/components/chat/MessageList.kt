@@ -11,7 +11,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
+import net.barrage.ragu.domain.model.Agent
 import net.barrage.ragu.domain.model.ChatMessageItem
+import net.barrage.ragu.ui.screens.history.HistoryScreenStates
+import net.barrage.ragu.ui.screens.profile.viewstate.ProfileViewState
 
 @Composable
 fun MessageList(
@@ -20,6 +23,8 @@ fun MessageList(
     onPositiveEvaluation: (ChatMessageItem) -> Unit,
     onNegativeEvaluation: (ChatMessageItem) -> Unit,
     messages: ImmutableList<ChatMessageItem>,
+    profileViewState: HistoryScreenStates<ProfileViewState>,
+    selectedAgent: Agent?,
     lazyListState: LazyListState,
     modifier: Modifier = Modifier,
 ) {
@@ -36,6 +41,8 @@ fun MessageList(
                 onCopy = onCopy,
                 onPositiveEvaluation = onPositiveEvaluation,
                 onNegativeEvaluation = onNegativeEvaluation,
+                userAvatarBitmap = (profileViewState as? HistoryScreenStates.Success)?.data?.header?.profileImage,
+                agentAvatarBitmap = selectedAgent?.avatarBitmap,
                 modifier = Modifier,
             )
         }

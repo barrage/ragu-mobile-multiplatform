@@ -226,6 +226,8 @@ fun ChatScreen(
                                 additionalEvaluationFeedbackVisible = true
                             },
                             onScrollToTop = { viewModel.loadMoreChatMessages() },
+                            profileViewState = profileViewState,
+                            selectedAgent = viewModel.selectedAgent.collectAsState().value,
                             modifier = Modifier.weight(1f),
                         )
                     }

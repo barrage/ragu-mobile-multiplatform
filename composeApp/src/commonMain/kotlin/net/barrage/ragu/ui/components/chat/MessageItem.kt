@@ -1,10 +1,12 @@
 package net.barrage.ragu.ui.components.chat
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,6 +26,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.highlightedCodeBlock
@@ -46,12 +50,13 @@ import ragumultiplatform.composeapp.generated.resources.ic_thumb
 import ragumultiplatform.composeapp.generated.resources.ic_thumb_filled
 import ragumultiplatform.composeapp.generated.resources.negative_evaluation_button_content_description
 import ragumultiplatform.composeapp.generated.resources.positive_evaluation_button_content_description
-import ragumultiplatform.composeapp.generated.resources.user_icon_content_description
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MessageItem(
     chatMessage: ChatMessageItem,
+    userAvatarBitmap: ImageBitmap?,
+    agentAvatarBitmap: ImageBitmap?,
     onCopy: (ChatMessageItem) -> Unit,
     onPositiveEvaluation: (ChatMessageItem) -> Unit,
     onNegativeEvaluation: (ChatMessageItem) -> Unit,
@@ -77,7 +82,11 @@ fun MessageItem(
             ) {
                 when (chatMessage.senderType) {
                     SenderType.ASSISTANT,
-                    SenderType.ERROR -> SenderIcon(SenderType.ASSISTANT)
+                    SenderType.ERROR -> SenderIcon(
+                        senderType = SenderType.ASSISTANT,
+                        userAvatarBitmap = userAvatarBitmap,
+                        agentAvatarBitmap = agentAvatarBitmap
+                    )
 
                     SenderType.USER -> Unit
                 }
@@ -116,7 +125,12 @@ fun MessageItem(
                 }
 
                 when (chatMessage.senderType) {
-                    SenderType.USER -> SenderIcon(SenderType.USER)
+                    SenderType.USER -> SenderIcon(
+                        senderType = SenderType.USER,
+                        userAvatarBitmap = userAvatarBitmap,
+                        agentAvatarBitmap = agentAvatarBitmap
+                    )
+
                     SenderType.ASSISTANT,
                     SenderType.ERROR -> Unit
                 }
@@ -187,26 +201,50 @@ fun MessageItem(
 }
 
 @Composable
-private fun SenderIcon(senderType: SenderType, modifier: Modifier = Modifier) {
-    Card(shape = CircleShape, modifier = modifier) {
-        Box(modifier = Modifier.padding(4.dp)) {
+private fun SenderIcon(
+    senderType: SenderType,
+    userAvatarBitmap: ImageBitmap?,
+    agentAvatarBitmap: ImageBitmap?,
+    modifier: Modifier = Modifier
+) {
+    Card(shape = CircleShape, modifier = modifier.size(24.dp)) {
+        Box(modifier = Modifier.fillMaxSize()) {
             when (senderType) {
                 SenderType.ASSISTANT,
-                SenderType.ERROR ->
-                    Icon(
-                        painterResource(Res.drawable.ic_ragu),
-                        contentDescription =
-                        stringResource(Res.string.assistant_icon_content_description),
-                        modifier = Modifier.size(18.dp),
-                    )
+                SenderType.ERROR -> {
+                    if (agentAvatarBitmap != null) {
+                        Image(
+                            bitmap = agentAvatarBitmap,
+                            contentDescription = "Agent Avatar",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else {
+                        Icon(
+                            painterResource(Res.drawable.ic_ragu),
+                            contentDescription =
+                            stringResource(Res.string.assistant_icon_content_description),
+                            modifier = Modifier.size(18.dp).align(Alignment.Center),
+                        )
+                    }
+                }
 
                 SenderType.USER ->
-                    Icon(
-                        Icons.Filled.Person,
-                        contentDescription =
-                        stringResource(Res.string.user_icon_content_description),
-                        modifier = Modifier.size(18.dp),
-                    )
+                    if (userAvatarBitmap != null) {
+                        Image(
+                            bitmap = userAvatarBitmap,
+                            contentDescription = "User Avatar",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else {
+                        Icon(
+                            Icons.Filled.Person,
+                            contentDescription =
+                            stringResource(Res.string.assistant_icon_content_description),
+                            modifier = Modifier.size(18.dp).align(Alignment.Center),
+                        )
+                    }
             }
         }
     }

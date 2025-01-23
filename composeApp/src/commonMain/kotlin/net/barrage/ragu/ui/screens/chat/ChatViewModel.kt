@@ -337,6 +337,7 @@ class ChatViewModel(
                     when {
                         chatMessagesResponse is Response.Success && chatResponse is Response.Success -> {
                             isNewChat = false
+                            _selectedAgent.emit(chatResponse.data.agent)
                             isLastChatMessagesPage =
                                 chatMessagesResponse.data.size < chatMessagesPageSize
                             webSocketManager.setChatId(id)
