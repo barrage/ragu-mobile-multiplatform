@@ -37,7 +37,7 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>NSCameraUsageDescription</key><string>Camera permission is required for the app to work.
-    </string>
+	<key>Privacy - Camera Usage Description</key>
+    <string>This app uses camera for capturing photos.</string>
 </dict>
 </plist>

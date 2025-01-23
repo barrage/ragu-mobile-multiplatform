@@ -19,41 +19,22 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.preat.peekaboo.image.picker.SelectionMode
-import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
-import com.preat.peekaboo.image.picker.toImageBitmap
-import kotlinx.coroutines.CoroutineScope
+import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.screens.profile.viewstate.ProfileHeaderViewState
 import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
 
 @Composable
 fun ProfileCardHeader(
     viewState: ProfileHeaderViewState,
-    onImagePicked: (ByteArray) -> Unit,
-    scope: CoroutineScope,
+    onEditProfileImageClick: (CameraSource) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var profileImageBitmap: ImageBitmap? by remember { mutableStateOf(null) }
-    val singleImagePicker = rememberImagePickerLauncher(
-        selectionMode = SelectionMode.Single,
-        scope = scope,
-        onResult = { byteArrays ->
-            byteArrays.firstOrNull()?.let {
-                onImagePicked(it)
-                profileImageBitmap = it.toImageBitmap()
-            }
-        }
-    )
+
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Box(modifier = Modifier.wrapContentSize()) {
             Card(
@@ -87,7 +68,7 @@ fun ProfileCardHeader(
                     .padding(12.dp)
                     .offset(x = 26.dp, y = 26.dp)
                     .zIndex(2f),
-                onClick = { singleImagePicker.launch() },
+                onClick = { onEditProfileImageClick(CameraSource.PROFILE) },
                 border = CardDefaults.outlinedCardBorder(enabled = true)
             ) {
                 Box(modifier = Modifier.padding(4.dp)) {

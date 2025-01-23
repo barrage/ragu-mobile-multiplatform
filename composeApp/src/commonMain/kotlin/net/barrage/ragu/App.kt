@@ -6,9 +6,13 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,6 +26,11 @@ import androidx.compose.ui.unit.dp
 import com.materialkolor.PaletteStyle
 import com.svenjacobs.reveal.RevealCanvas
 import com.svenjacobs.reveal.rememberRevealCanvasState
+import dev.icerock.moko.permissions.DeniedAlwaysException
+import dev.icerock.moko.permissions.DeniedException
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.RequestCanceledException
+import dev.icerock.moko.permissions.compose.BindEffect
 import dev.theolm.rinku.DeepLink
 import dev.theolm.rinku.compose.ext.DeepLinkListener
 import kotlinx.coroutines.CoroutineScope
@@ -32,11 +41,15 @@ import net.barrage.ragu.ui.main.MainContent
 import net.barrage.ragu.ui.main.Overlays
 import net.barrage.ragu.ui.main.navigateToLogin
 import net.barrage.ragu.ui.main.rememberAppState
+import net.barrage.ragu.ui.screens.camera.CameraModal
+import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.theme.RaguTheme
 import net.barrage.ragu.utils.SnackbarHelper
 import net.barrage.ragu.utils.coreComponent
+import net.barrage.ragu.utils.debugLogError
 import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
+import ragumultiplatform.composeapp.generated.resources.camera_permission_denied
 import ragumultiplatform.composeapp.generated.resources.message_evaluated
 
 /**
@@ -47,6 +60,7 @@ import ragumultiplatform.composeapp.generated.resources.message_evaluated
  * @param onThemeChange Callback function to be invoked when the theme changes. It receives a Boolean
  *                      indicating whether dark mode is enabled.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(
     modifier: Modifier = Modifier,
@@ -65,8 +79,17 @@ fun App(
     val inputEnabled = remember { mutableStateOf(true) }
     val snackbarHostState = remember { SnackbarHostState() }
     val snackbarMessages = mapOf(
-        Res.string.message_evaluated to stringResource(Res.string.message_evaluated)
+        Res.string.message_evaluated to stringResource(Res.string.message_evaluated),
+        Res.string.camera_permission_denied to stringResource(Res.string.camera_permission_denied)
     )
+    val cameraModalBottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    var cameraModalBottomSheetVisible by
+    remember { mutableStateOf(cameraModalBottomSheetState.isVisible) }
+    var cameraSource by remember { mutableStateOf<CameraSource?>(null) }
+
+    var navigateToSettings by remember { mutableStateOf(false) }
 
     DeepLinkListener { deepLink = it }
     LaunchedEffect(Unit) {
@@ -83,6 +106,7 @@ fun App(
         )
     }
     LaunchedEffect(isDarkTheme) { onThemeChange?.invoke(isDarkTheme) }
+    BindEffect(appState.permissionController)
     AnimatedVisibility(isThemeLoaded, enter = fadeIn() + expandVertically()) {
         RaguTheme(
             seedColor = selectedTheme,
@@ -143,13 +167,94 @@ fun App(
                                 inputEnabled.value = it
                                 onInputEnabled?.invoke(it)
                             },
+                            openCameraModalBottomSheet = { source ->
+                                appState.coroutineScope.launch {
+                                    if (appState.permissionController.isPermissionGranted(Permission.CAMERA)) {
+                                        cameraSource = source
+                                        cameraModalBottomSheetVisible = true
+                                        cameraModalBottomSheetState.show()
+                                    } else {
+                                        try {
+                                            appState.permissionController.providePermission(
+                                                Permission.CAMERA
+                                            )
+                                        } catch (e: DeniedException) {
+                                            debugLogError("Camera permission denied", e)
+                                            SnackbarHelper.getInstance()
+                                                .showSnackbar(messageRes = Res.string.camera_permission_denied)
+                                            if (!navigateToSettings) {
+                                                navigateToSettings = true
+                                            } else {
+                                                appState.permissionController.openAppSettings()
+                                            }
+                                        } catch (e: DeniedAlwaysException) {
+                                            debugLogError("Camera permission denied always", e)
+                                            SnackbarHelper.getInstance()
+                                                .showSnackbar(messageRes = Res.string.camera_permission_denied)
+                                            if (!navigateToSettings) {
+                                                navigateToSettings = true
+                                            } else {
+                                                appState.permissionController.openAppSettings()
+                                            }
+                                        } catch (e: RequestCanceledException) {
+                                            debugLogError(
+                                                "Camera permission request cancelled", e
+                                            )
+                                            SnackbarHelper.getInstance()
+                                                .showSnackbar(messageRes = Res.string.camera_permission_denied)
+
+                                        }
+                                    }
+                                }
+                            },
                         )
                         Overlays(appState)
+                        if (cameraModalBottomSheetVisible) {
+                            CameraModal(
+                                sheetState = cameraModalBottomSheetState,
+                                onSheetDismiss = {
+                                    cameraModalBottomSheetVisible = false
+                                },
+                                onImagePicked = { imageByteArray, source ->
+                                    appState.coroutineScope.launch {
+                                        when (source) {
+                                            CameraSource.PROFILE -> {
+                                                appState.chatViewModel.updateProfileImage(
+                                                    imageByteArray
+                                                )
+                                                cameraModalBottomSheetState.hide()
+                                                cameraModalBottomSheetVisible = false
+                                            }
+
+                                            else -> {
+                                                // TODO
+                                            }
+                                        }
+                                    }
+                                },
+                                onClose = {
+                                    appState.coroutineScope.launch {
+                                        cameraModalBottomSheetState.hide()
+                                        cameraModalBottomSheetVisible = false
+                                    }
+                                },
+                                cameraSource = cameraSource,
+                            )
+                        }
                         SnackbarHost(
                             hostState = snackbarHostState,
                             modifier = Modifier.align(Alignment.BottomCenter)
                                 .padding(bottom = 20.dp)
-                        )
+                        ) {
+                            LaunchedEffect(Unit) {
+                                if (profileVisible) profileVisible = false
+                            }
+                            Snackbar(
+                                snackbarData = it,
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            )
+                        }
                     }
                 }
             }

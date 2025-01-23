@@ -67,4 +67,5 @@
     <string name="additional_evaluation_feedback_title">Additional feedback</string>
     <string name="additional_evaluation_feedback_label">Please provide additional feedback, what could be improved? (optional)</string>
     <string name="message_evaluated">Thank you for your feedback!</string>
+    <string name="camera_permission_denied">Please grant camera permission to use this feature</string>
 </resources>

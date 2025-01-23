@@ -53,6 +53,12 @@ kotlin {
             implementation(libs.firebase.android.common.ktx)
             implementation(libs.ktor.client.cio)
             implementation(libs.androidx.startup)
+            implementation(libs.androidx.lifecycle.viewmodel.compose)
+            implementation(libs.accompanist.permissions)
+            implementation(libs.camera.camera2)
+            implementation(libs.camera.lifecycle)
+            implementation(libs.camera.view)
+            implementation(libs.kotlinx.coroutines.guava)
         }
 
         /**
@@ -100,7 +106,8 @@ kotlin {
             implementation(libs.reveal.shapes)
             api(libs.gitlive.firebase.kotlin.crashlytics)
             implementation(libs.peekaboo.image.picker)
-            implementation(libs.camerak)
+            // Commented out until Peekaboo is updated to latest Compose
+            // implementation(libs.peekaboo.ui)
             implementation(libs.moko.permissions)
         }
 

@@ -28,7 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
+import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.screens.history.HistoryScreenStates
 import net.barrage.ragu.ui.screens.profile.components.ProfileCardHeader
 import net.barrage.ragu.ui.screens.profile.components.ProfileContent
@@ -44,9 +44,8 @@ fun ProfileContent(
     onCloseClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onUnauthorized: () -> Unit,
-    onImagePicked: (ByteArray) -> Unit,
+    onEditProfileImageClick: (CameraSource) -> Unit,
     viewState: HistoryScreenStates<ProfileViewState>,
-    scope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -87,9 +86,8 @@ fun ProfileContent(
                         ProfileSpacer()
                         ProfileCardHeader(
                             modifier = Modifier.padding(vertical = 16.dp),
+                            onEditProfileImageClick = onEditProfileImageClick,
                             viewState = viewState.data.header,
-                            onImagePicked = onImagePicked,
-                            scope = scope,
                         )
                         ProfileSpacer()
                         ProfileContent(viewState = viewState.data.content)

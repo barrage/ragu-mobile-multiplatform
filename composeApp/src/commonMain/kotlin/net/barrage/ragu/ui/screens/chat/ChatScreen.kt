@@ -47,12 +47,6 @@ import androidx.lifecycle.Lifecycle
 import com.svenjacobs.reveal.Reveal
 import com.svenjacobs.reveal.RevealCanvasState
 import com.svenjacobs.reveal.RevealState
-import dev.icerock.moko.permissions.DeniedAlwaysException
-import dev.icerock.moko.permissions.DeniedException
-import dev.icerock.moko.permissions.Permission
-import dev.icerock.moko.permissions.PermissionsController
-import dev.icerock.moko.permissions.RequestCanceledException
-import dev.icerock.moko.permissions.compose.BindEffect
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -68,9 +62,8 @@ import net.barrage.ragu.ui.components.chat.ErrorContent
 import net.barrage.ragu.ui.components.chat.MessageList
 import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.ui.components.reveal.RevealOverlayContent
+import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.screens.profile.ProfileContent
-import net.barrage.ragu.utils.debugLog
-import net.barrage.ragu.utils.debugLogError
 import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.additional_evaluation_feedback_label
@@ -87,7 +80,9 @@ import ragumultiplatform.composeapp.generated.resources.yes
 @Composable
 fun ChatScreen(
     onLogoutSuccess: () -> Unit,
+    checkAuth: () -> Unit,
     changeProfileVisibility: () -> Unit,
+    openCameraModalBottomSheet: (CameraSource) -> Unit,
     changeInputEnabled: (Boolean) -> Unit,
     viewModel: ChatViewModel,
     scope: CoroutineScope,
@@ -98,8 +93,6 @@ fun ChatScreen(
     profileVisible: Boolean,
     networkAvailable: Boolean,
     inputEnabled: Boolean,
-    checkAuth: () -> Unit,
-    permissionController: PermissionsController,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
@@ -146,9 +139,6 @@ fun ChatScreen(
         viewModel.loadAllData()
         initializeWebSocketClient(viewModel, scope)
     }
-
-    BindEffect(permissionController)
-
     Box(modifier = modifier.fillMaxSize().onGloballyPositioned {
         with(density) { width = it.size.width.toDp() - 80.dp }
     }) {
@@ -312,29 +302,7 @@ fun ChatScreen(
                                     chatInteractionSource = chatInteractionSource,
                                     onCameraClick = {
                                         scope.launch {
-                                            try {
-                                                if (permissionController.isPermissionGranted(
-                                                        Permission.CAMERA
-                                                    )
-                                                ) {
-                                                    // Take picture
-                                                    debugLog("Take picture")
-                                                } else {
-                                                    permissionController.providePermission(
-                                                        Permission.CAMERA
-                                                    )
-                                                    // Take picture
-                                                    debugLog("Take picture")
-                                                }
-                                            } catch (e: DeniedException) {
-                                                debugLogError("Camera permission denied", e)
-                                            } catch (e: DeniedAlwaysException) {
-                                                debugLogError("Camera permission denied always", e)
-                                            } catch (e: RequestCanceledException) {
-                                                debugLogError(
-                                                    "Camera permission request cancelled", e
-                                                )
-                                            }
+
                                         }
                                     }), revealState = revealState, scope = scope
                             )
@@ -397,8 +365,7 @@ fun ChatScreen(
                         showLogoutConfirmation = true
                     },
                     onUnauthorized = onLogoutSuccess,
-                    onImagePicked = { viewModel.updateProfileImage(it) },
-                    scope = scope,
+                    onEditProfileImageClick = openCameraModalBottomSheet,
                 )
             }
         }

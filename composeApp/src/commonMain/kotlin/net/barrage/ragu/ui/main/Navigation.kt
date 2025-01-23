@@ -32,6 +32,7 @@ import net.barrage.ragu.navigation.Error
 import net.barrage.ragu.navigation.Login
 import net.barrage.ragu.navigation.RaguNavigation
 import net.barrage.ragu.ui.components.keyboardAsState
+import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.screens.chat.ChatScreen
 import net.barrage.ragu.ui.screens.error.ErrorScreen
 import net.barrage.ragu.ui.screens.login.LoginScreen
@@ -51,6 +52,7 @@ fun AppNavHost(
     profileVisible: Boolean,
     shouldShowOnboardingTutorial: Boolean,
     inputEnabled: Boolean,
+    openCameraModalBottomSheet: (CameraSource) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val currentUserUseCase: CurrentUserUseCase = koinInject()
@@ -120,7 +122,7 @@ fun AppNavHost(
                             }
                         }
                     },
-                    permissionController = appState.permissionController,
+                    openCameraModalBottomSheet = openCameraModalBottomSheet,
                 )
             }
             composable(Login.route) {

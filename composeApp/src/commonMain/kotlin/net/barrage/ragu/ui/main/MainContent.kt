@@ -25,6 +25,7 @@ import net.barrage.ragu.navigation.Chat
 import net.barrage.ragu.ui.components.TopBar
 import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.ui.components.reveal.RevealOverlayContent
+import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.screens.chat.ChatScreenState
 import net.barrage.ragu.ui.screens.history.ModalDrawer
 import net.barrage.ragu.utils.coreComponent
@@ -46,6 +47,7 @@ fun MainContent(
     inputEnabled: Boolean,
     isDarkMode: Boolean,
     profileVisible: Boolean,
+    openCameraModalBottomSheet: (CameraSource) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val drawerState = appState.drawerState
@@ -184,6 +186,7 @@ fun MainContent(
                     inputEnabled = inputEnabled,
                     changeInputEnabled = changeInputEnabled,
                     shouldShowOnboardingTutorial = shouldShowTutorial.value,
+                    openCameraModalBottomSheet = openCameraModalBottomSheet,
                 )
             }
         }

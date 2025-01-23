@@ -18,9 +18,8 @@ class SnackbarHelper(
         actionLabel: String? = null,
         withDismissAction: Boolean = false,
         duration: SnackbarDuration = SnackbarDuration.Short,
-        onAction: (() -> Unit)? = null
+        onAction: (() -> Unit)? = null,
     ) {
-        debugLog("Showing snackbar: ${getString(messageRes)}")
         coroutineScope.launch {
             val result = snackbarHostState.showSnackbar(
                 message = getString(messageRes),
