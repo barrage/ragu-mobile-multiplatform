@@ -9,10 +9,10 @@ import net.barrage.ragu.domain.remote.ktor.Api
 import net.barrage.ragu.domain.repository.UserRepository
 
 class UserRepositoryImpl(private val api: Api) : UserRepository {
-    override suspend fun getCurrentUser(): Flow<Response<CurrentUser>> = flow {
+    override suspend fun getCurrentUser(withAvatar: Boolean): Flow<Response<CurrentUser>> = flow {
         emit(Response.Loading)
         try {
-            when (val response = api.getCurrentUser()) {
+            when (val response = api.getCurrentUser(withAvatar)) {
                 is Response.Success -> emit(Response.Success(response.data.toDomain()))
                 is Response.Failure -> emit(response)
                 is Response.Unauthorized -> emit(response)

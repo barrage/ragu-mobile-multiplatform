@@ -97,7 +97,7 @@ class LoginViewModel(
      */
     private fun getCurrentUser() {
         viewModelScope.launch {
-            currentUserUseCase().collectLatest { response ->
+            currentUserUseCase(withAvatar = false).collectLatest { response ->
                 _loginState.value =
                     when (response) {
                         is Response.Success -> LoginScreenState.Success

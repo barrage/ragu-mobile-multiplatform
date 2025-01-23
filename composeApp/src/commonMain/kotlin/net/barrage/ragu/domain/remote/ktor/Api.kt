@@ -31,7 +31,7 @@ interface Api {
      * Retrieves the current user's information.
      * @return A Response containing the CurrentUserDTO.
      */
-    suspend fun getCurrentUser(): Response<CurrentUserDTO>
+    suspend fun getCurrentUser(withAvatar: Boolean): Response<CurrentUserDTO>
 
     /**
      * Retrieves the chat history.
@@ -76,7 +76,7 @@ interface Api {
      * Retrieves a list of agents.
      * @return A Response containing the AgentResponse.
      */
-    suspend fun getAgents(): Response<AgentResponse>
+    suspend fun getAgents(withAvatar: Boolean): Response<AgentResponse>
 
     /**
      * Evaluates a message in a chat.

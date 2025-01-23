@@ -59,7 +59,6 @@ fun ProfileCardHeader(
                         )
                     }
                 }
-
             }
             Card(
                 shape = CircleShape,

@@ -9,10 +9,10 @@ import net.barrage.ragu.domain.remote.ktor.Api
 import net.barrage.ragu.domain.repository.AgentRepository
 
 class AgentRepositoryImpl(private val api: Api) : AgentRepository {
-    override suspend fun getAgents(): Flow<Response<List<Agent>>> = flow {
+    override suspend fun getAgents(withAvatar: Boolean): Flow<Response<List<Agent>>> = flow {
         emit(Response.Loading)
         try {
-            when (val response = api.getAgents()) {
+            when (val response = api.getAgents(withAvatar)) {
                 is Response.Success -> emit(Response.Success(response.data.items.map { it.toDomain() }))
                 is Response.Failure -> emit(response)
                 is Response.Unauthorized -> emit(response)

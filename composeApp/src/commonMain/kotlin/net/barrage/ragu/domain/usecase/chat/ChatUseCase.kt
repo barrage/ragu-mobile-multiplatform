@@ -31,5 +31,5 @@ class ChatUseCase(
 
     suspend fun getChatById(id: String) = getChatByIdUseCase(id)
 
-    suspend fun getAgents() = getAgentsUseCase()
+    suspend fun getAgents(withAvatar: Boolean) = getAgentsUseCase(withAvatar)
 }

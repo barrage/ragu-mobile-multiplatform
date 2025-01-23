@@ -2,6 +2,7 @@ package net.barrage.ragu.data.remote.dto.agent
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import net.barrage.ragu.data.remote.dto.Avatar
 
 @Serializable
 data class AgentResponse(val total: Int, val items: List<AgentDTO>)
@@ -15,4 +16,5 @@ data class AgentDTO(
     val language: String? = null,
     val name: String,
     val updatedAt: Instant,
+    val avatar: Avatar? = null,
 )

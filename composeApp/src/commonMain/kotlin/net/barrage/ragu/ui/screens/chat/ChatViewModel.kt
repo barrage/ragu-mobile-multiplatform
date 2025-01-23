@@ -109,7 +109,7 @@ class ChatViewModel(
             launch { chatHistoryManager.updateHistory() }
             launch { updateCurrentUser() }
 
-            chatUseCase.getAgents().collectLatest { agentsResponse ->
+            chatUseCase.getAgents(withAvatar = true).collectLatest { agentsResponse ->
                 when (agentsResponse) {
                     is Response.Loading -> {
                         chatStateManager.updateChatScreenState { ChatScreenState.Loading }
@@ -519,9 +519,10 @@ class ChatViewModel(
      */
     private fun updateCurrentUser() {
         viewModelScope.launch {
-            currentUserUseCase().collect { response ->
+            currentUserUseCase(withAvatar = true).collect { response ->
                 _currentUserViewState.value = when (response) {
                     is Response.Success -> {
+                        debugLog("Current user response: ${response.data}")
                         HistoryScreenStates.Success(response.data.toViewState())
                     }
 
@@ -529,6 +530,7 @@ class ChatViewModel(
                     is Response.Loading -> HistoryScreenStates.Loading
                     is Response.Unauthorized -> HistoryScreenStates.Unauthorized
                 }
+                debugLog("Current user view state: $_currentUserViewState")
             }
         }
     }

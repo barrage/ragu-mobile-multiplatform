@@ -59,9 +59,12 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
      *
      * @return A Response containing the CurrentUserDTO or an error.
      */
-    override suspend fun getCurrentUser(): Response<CurrentUserDTO> {
+    override suspend fun getCurrentUser(withAvatar: Boolean): Response<CurrentUserDTO> {
         return safeApiCall {
-            httpClient.get("users/current") { addCookieHeader() }
+            httpClient.get("users/current") {
+                addCookieHeader()
+                parameter("withAvatar", withAvatar)
+            }
         }
     }
 
@@ -147,9 +150,12 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
      *
      * @return A Response containing the AgentResponse or an error.
      */
-    override suspend fun getAgents(): Response<AgentResponse> {
+    override suspend fun getAgents(withAvatar: Boolean): Response<AgentResponse> {
         return safeApiCall {
-            httpClient.get("agents") { addCookieHeader() }
+            httpClient.get("agents") {
+                addCookieHeader()
+                parameter("withAvatar", withAvatar)
+            }
         }
     }
 

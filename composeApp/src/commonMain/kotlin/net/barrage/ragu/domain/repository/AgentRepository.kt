@@ -5,5 +5,5 @@ import net.barrage.ragu.domain.Response
 import net.barrage.ragu.domain.model.Agent
 
 interface AgentRepository {
-    suspend fun getAgents(): Flow<Response<List<Agent>>>
+    suspend fun getAgents(withAvatar: Boolean): Flow<Response<List<Agent>>>
 }

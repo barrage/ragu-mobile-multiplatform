@@ -62,7 +62,7 @@ fun AppNavHost(
     LaunchedEffect(appState.networkAvailable.value) {
         if (!appState.networkAvailable.value || startDestination != null) return@LaunchedEffect
         appState.coroutineScope.launch {
-            currentUserUseCase().collectLatest {
+            currentUserUseCase(withAvatar = false).collectLatest {
                 startDestination = when (it) {
                     is Response.Success -> {
                         Chat.route
@@ -115,7 +115,7 @@ fun AppNavHost(
                     shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
                     checkAuth = {
                         appState.coroutineScope.launch {
-                            currentUserUseCase().collectLatest {
+                            currentUserUseCase(withAvatar = false).collectLatest {
                                 if (it is Response.Unauthorized) {
                                     onLogoutSuccess()
                                 }

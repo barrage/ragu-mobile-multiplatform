@@ -5,5 +5,5 @@ import net.barrage.ragu.domain.Response
 import net.barrage.ragu.domain.model.CurrentUser
 
 interface UserRepository {
-    suspend fun getCurrentUser(): Flow<Response<CurrentUser>>
+    suspend fun getCurrentUser(withAvatar: Boolean): Flow<Response<CurrentUser>>
 }
