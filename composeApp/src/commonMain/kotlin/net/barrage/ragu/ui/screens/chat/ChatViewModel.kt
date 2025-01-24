@@ -2,7 +2,6 @@ package net.barrage.ragu.ui.screens.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.preat.peekaboo.image.picker.toImageBitmap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +19,8 @@ import net.barrage.ragu.domain.model.ChatMessageItem
 import net.barrage.ragu.domain.usecase.auth.LogoutUseCase
 import net.barrage.ragu.domain.usecase.chat.ChatUseCase
 import net.barrage.ragu.domain.usecase.user.CurrentUserUseCase
+import net.barrage.ragu.domain.usecase.user.DeleteProfileAvatarUseCase
+import net.barrage.ragu.domain.usecase.user.UpdateProfileAvatarUseCase
 import net.barrage.ragu.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.ragu.ui.screens.history.HistoryScreenStates
 import net.barrage.ragu.ui.screens.profile.viewstate.ProfileViewState
@@ -47,6 +48,8 @@ class ChatViewModel(
     private val chatUseCase: ChatUseCase,
     private val currentUserUseCase: CurrentUserUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val updateProfileAvatarUseCase: UpdateProfileAvatarUseCase,
+    private val deleteProfileAvatarUseCase: DeleteProfileAvatarUseCase
 ) : ViewModel() {
 
     val chatStateManager = ChatStateManager()
@@ -583,20 +586,55 @@ class ChatViewModel(
         }
     }
 
-    fun updateProfileImage(imageByteArray: ByteArray) {
+    fun updateAvatar(imageByteArray: ByteArray) {
         val tempCurrentUserViewState = _currentUserViewState.value
-        _currentUserViewState.value = HistoryScreenStates.Loading
 
         viewModelScope.launch {
-            delay(1000)
-            if (tempCurrentUserViewState is HistoryScreenStates.Success<ProfileViewState>) {
-                _currentUserViewState.value = tempCurrentUserViewState.copy(
-                    data = tempCurrentUserViewState.data.copy(
-                        header = tempCurrentUserViewState.data.header.copy(
-                            profileImage = imageByteArray.toImageBitmap()
-                        )
-                    )
-                )
+            updateProfileAvatarUseCase(imageByteArray).collect { response ->
+                when (response) {
+                    is Response.Success -> {
+                        updateCurrentUser()
+                    }
+
+                    is Response.Failure -> {
+                        _currentUserViewState.value = tempCurrentUserViewState
+                    }
+
+                    is Response.Loading -> {
+                        _currentUserViewState.value = HistoryScreenStates.Loading
+                    }
+
+                    is Response.Unauthorized -> {
+                        debugLogError("Unauthorized to update avatar")
+                    }
+                }
+            }
+
+        }
+    }
+
+    fun deleteAvatar() {
+        val tempCurrentUserViewState = _currentUserViewState.value
+
+        viewModelScope.launch {
+            deleteProfileAvatarUseCase().collect { response ->
+                when (response) {
+                    is Response.Success -> {
+                        updateCurrentUser()
+                    }
+
+                    is Response.Failure -> {
+                        _currentUserViewState.value = tempCurrentUserViewState
+                    }
+
+                    is Response.Loading -> {
+                        _currentUserViewState.value = HistoryScreenStates.Loading
+                    }
+
+                    is Response.Unauthorized -> {
+                        debugLogError("Unauthorized to delete avatar")
+                    }
+                }
             }
         }
     }

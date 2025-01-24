@@ -98,4 +98,17 @@ interface Api {
      * @return A Response containing the ChatItemDTO.
      */
     suspend fun getChatById(chatId: String, withAvatar: Boolean): Response<ChatItemDTO>
+
+    /**
+     * Uploads an avatar image.
+     * @param avatar The avatar image as a ByteArray.
+     * @return A Response containing the HttpResponse.
+     */
+    suspend fun updateAvatar(avatar: ByteArray): Response<HttpResponse>
+
+    /**
+     * Deletes the current user's avatar.
+     * @return A Response containing the HttpResponse.
+     */
+    suspend fun deleteAvatar(): Response<HttpResponse>
 }

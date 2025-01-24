@@ -1,5 +1,6 @@
 package net.barrage.ragu.data.repository
 
+import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.barrage.ragu.domain.Response
@@ -23,12 +24,32 @@ class UserRepositoryImpl(private val api: Api) : UserRepository {
         }
     }
 
-    override suspend fun updateAvatar(avatar: ByteArray): Flow<Response<CurrentUser>> {
-        TODO("Not yet implemented")
+    override suspend fun updateAvatar(avatar: ByteArray): Flow<Response<HttpResponse>> = flow {
+        emit(Response.Loading)
+        try {
+            when (val response = api.updateAvatar(avatar)) {
+                is Response.Success -> emit(Response.Success(response.data))
+                is Response.Failure -> emit(response)
+                is Response.Unauthorized -> emit(response)
+                else -> emit(Response.Failure(Exception("Unexpected response type")))
+            }
+        } catch (e: Exception) {
+            emit(Response.Failure(e))
+        }
     }
 
-    override suspend fun deleteAvatar(): Flow<Response<CurrentUser>> {
-        TODO("Not yet implemented")
+    override suspend fun deleteAvatar(): Flow<Response<HttpResponse>> = flow {
+        emit(Response.Loading)
+        try {
+            when (val response = api.deleteAvatar()) {
+                is Response.Success -> emit(Response.Success(response.data))
+                is Response.Failure -> emit(response)
+                is Response.Unauthorized -> emit(response)
+                else -> emit(Response.Failure(Exception("Unexpected response type")))
+            }
+        } catch (e: Exception) {
+            emit(Response.Failure(e))
+        }
     }
 
 }

@@ -44,6 +44,7 @@ fun ProfileContent(
     onCloseClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onUnauthorized: () -> Unit,
+    onDeleteProfileImageClick: () -> Unit,
     onEditProfileImageClick: (CameraSource) -> Unit,
     viewState: HistoryScreenStates<ProfileViewState>,
     modifier: Modifier = Modifier,
@@ -87,6 +88,7 @@ fun ProfileContent(
                         ProfileCardHeader(
                             modifier = Modifier.padding(vertical = 16.dp),
                             onEditProfileImageClick = onEditProfileImageClick,
+                            onDeleteProfileImageClick = onDeleteProfileImageClick,
                             viewState = viewState.data.header,
                         )
                         ProfileSpacer()

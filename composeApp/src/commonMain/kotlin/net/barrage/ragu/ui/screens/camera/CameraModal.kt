@@ -19,7 +19,6 @@ fun CameraModal(
     confirmEnabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-
     ModalBottomSheet(
         onDismissRequest = onSheetDismiss,
         sheetState = sheetState,

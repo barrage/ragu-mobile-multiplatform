@@ -368,6 +368,7 @@ fun ChatScreen(
                     },
                     onUnauthorized = onLogoutSuccess,
                     onEditProfileImageClick = openCameraModalBottomSheet,
+                    onDeleteProfileImageClick = { viewModel.deleteAvatar() },
                 )
             }
         }

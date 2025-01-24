@@ -21,6 +21,7 @@ import net.barrage.ragu.data.remote.dto.user.CurrentUserDTO
 import net.barrage.ragu.domain.Response
 import net.barrage.ragu.domain.remote.ktor.Api
 import net.barrage.ragu.utils.TokenStorage
+import net.barrage.ragu.utils.detectImageMimeType
 import net.barrage.ragu.utils.safeApiCall
 
 /**
@@ -196,6 +197,24 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
             httpClient.get("chats/$chatId") {
                 addCookieHeader()
                 parameter("withAvatar", withAvatar)
+            }
+        }
+    }
+
+    override suspend fun updateAvatar(avatar: ByteArray): Response<HttpResponse> {
+        return safeApiCall {
+            httpClient.post("users/avatars") {
+                addCookieHeader()
+                header("Content-Type", detectImageMimeType(avatar))
+                setBody(avatar)
+            }
+        }
+    }
+
+    override suspend fun deleteAvatar(): Response<HttpResponse> {
+        return safeApiCall {
+            httpClient.delete("users/avatars") {
+                addCookieHeader()
             }
         }
     }

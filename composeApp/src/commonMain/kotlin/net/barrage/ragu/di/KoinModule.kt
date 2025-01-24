@@ -25,6 +25,8 @@ import net.barrage.ragu.domain.usecase.chat.GetChatHistoryUseCase
 import net.barrage.ragu.domain.usecase.chat.GetChatMessagesByIdUseCase
 import net.barrage.ragu.domain.usecase.chat.UpdateChatTitleUseCase
 import net.barrage.ragu.domain.usecase.user.CurrentUserUseCase
+import net.barrage.ragu.domain.usecase.user.DeleteProfileAvatarUseCase
+import net.barrage.ragu.domain.usecase.user.UpdateProfileAvatarUseCase
 import net.barrage.ragu.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.ragu.ui.screens.chat.ChatViewModel
 import net.barrage.ragu.ui.screens.login.LoginViewModel
@@ -52,6 +54,8 @@ val useCaseModule = module {
     single<EvaluateMessageUseCase> { EvaluateMessageUseCase(get()) }
     single<GetChatByIdUseCase> { GetChatByIdUseCase(get()) }
     single<ChatUseCase> { ChatUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single<UpdateProfileAvatarUseCase> { UpdateProfileAvatarUseCase(get()) }
+    single<DeleteProfileAvatarUseCase> { DeleteProfileAvatarUseCase(get()) }
 }
 
 /**
@@ -89,7 +93,7 @@ val appModule = module {
  */
 val viewModelModule = module {
     viewModel { LoginViewModel(get(), get(), get()) }
-    viewModel { ChatViewModel(get(), get(), get(), get()) }
+    viewModel { ChatViewModel(get(), get(), get(), get(), get(), get()) }
 }
 
 /**

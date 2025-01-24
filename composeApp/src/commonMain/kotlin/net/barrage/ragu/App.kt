@@ -219,7 +219,7 @@ fun App(
                                     appState.coroutineScope.launch {
                                         when (source) {
                                             CameraSource.PROFILE -> {
-                                                appState.chatViewModel.updateProfileImage(
+                                                appState.chatViewModel.updateAvatar(
                                                     imageByteArray
                                                 )
                                                 cameraModalBottomSheetState.hide()
