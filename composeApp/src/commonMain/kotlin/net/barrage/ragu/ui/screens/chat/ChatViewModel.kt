@@ -66,6 +66,9 @@ class ChatViewModel(
     val currentUserViewState: StateFlow<HistoryScreenStates<ProfileViewState>> =
         _currentUserViewState.asStateFlow()
 
+    private val _deleteAvatarVisible = MutableStateFlow(false)
+    val deleteAvatarVisible = _deleteAvatarVisible.asStateFlow()
+
     private var currentChatMessagesPage = 1
     private var isLastChatMessagesPage = false
     private var isNewChat = true
@@ -617,6 +620,12 @@ class ChatViewModel(
                     }
                 }
             }
+        }
+    }
+
+    fun setDeleteAvatarVisible(deleteAvatarVisible: Boolean) {
+        viewModelScope.launch {
+            _deleteAvatarVisible.emit(deleteAvatarVisible)
         }
     }
 

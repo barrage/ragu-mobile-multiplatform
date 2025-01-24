@@ -69,6 +69,8 @@ import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.additional_evaluation_feedback_label
 import ragumultiplatform.composeapp.generated.resources.additional_evaluation_feedback_title
 import ragumultiplatform.composeapp.generated.resources.agent_inactive_text
+import ragumultiplatform.composeapp.generated.resources.delete_avatar_description
+import ragumultiplatform.composeapp.generated.resources.delete_avatar_title
 import ragumultiplatform.composeapp.generated.resources.delete_chat_description
 import ragumultiplatform.composeapp.generated.resources.delete_chat_title
 import ragumultiplatform.composeapp.generated.resources.no
@@ -368,7 +370,6 @@ fun ChatScreen(
                     },
                     onUnauthorized = onLogoutSuccess,
                     onEditProfileImageClick = openCameraModalBottomSheet,
-                    onDeleteProfileImageClick = { viewModel.deleteAvatar() },
                 )
             }
         }
@@ -410,6 +411,28 @@ fun ChatScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showLogoutConfirmation = false }) {
+                    Text(stringResource(Res.string.no))
+                }
+            },
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+        )
+    }
+    if (viewModel.deleteAvatarVisible.collectAsState().value) {
+        AlertDialog(
+            onDismissRequest = { viewModel.setDeleteAvatarVisible(false) },
+            title = { Text(stringResource(Res.string.delete_avatar_title)) },
+            text = { Text(stringResource(Res.string.delete_avatar_description)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deleteAvatar()
+                    viewModel.setDeleteAvatarVisible(false)
+                }) {
+                    Text(stringResource(Res.string.yes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.setDeleteAvatarVisible(false) }) {
                     Text(stringResource(Res.string.no))
                 }
             },

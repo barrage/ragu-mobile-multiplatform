@@ -42,6 +42,7 @@ import net.barrage.ragu.ui.main.Overlays
 import net.barrage.ragu.ui.main.navigateToLogin
 import net.barrage.ragu.ui.main.rememberAppState
 import net.barrage.ragu.ui.screens.camera.CameraModal
+import net.barrage.ragu.ui.screens.camera.CameraOptionsModal
 import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.theme.RaguTheme
 import net.barrage.ragu.utils.SnackbarHelper
@@ -85,8 +86,15 @@ fun App(
     val cameraModalBottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
+    val cameraOptionsModalBottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     var cameraModalBottomSheetVisible by
     remember { mutableStateOf(cameraModalBottomSheetState.isVisible) }
+
+    var cameraOptionsModalBottomSheetVisible by
+    remember { mutableStateOf(cameraOptionsModalBottomSheetState.isVisible) }
+
     var cameraSource by remember { mutableStateOf<CameraSource?>(null) }
 
     var navigateToSettings by remember { mutableStateOf(false) }
@@ -171,8 +179,8 @@ fun App(
                                 appState.coroutineScope.launch {
                                     if (appState.permissionController.isPermissionGranted(Permission.CAMERA)) {
                                         cameraSource = source
-                                        cameraModalBottomSheetVisible = true
-                                        cameraModalBottomSheetState.show()
+                                        cameraOptionsModalBottomSheetVisible = true
+                                        cameraOptionsModalBottomSheetState.show()
                                     } else {
                                         try {
                                             appState.permissionController.providePermission(
@@ -239,6 +247,47 @@ fun App(
                                     }
                                 },
                                 cameraSource = cameraSource,
+                            )
+                        }
+                        if (cameraOptionsModalBottomSheetVisible) {
+                            CameraOptionsModal(
+                                sheetState = cameraOptionsModalBottomSheetState,
+                                onSheetDismiss = {
+                                    cameraOptionsModalBottomSheetVisible = false
+                                },
+                                onImagePicked = { imageByteArray, source ->
+                                    appState.coroutineScope.launch {
+                                        when (source) {
+                                            CameraSource.PROFILE -> {
+                                                appState.chatViewModel.updateAvatar(
+                                                    imageByteArray
+                                                )
+                                                cameraOptionsModalBottomSheetState.hide()
+                                                cameraOptionsModalBottomSheetVisible = false
+                                            }
+
+                                            else -> {
+                                                // TODO
+                                            }
+                                        }
+                                    }
+                                },
+                                cameraSource = cameraSource,
+                                onDeleteClick = {
+                                    appState.coroutineScope.launch {
+                                        cameraOptionsModalBottomSheetState.hide()
+                                        cameraOptionsModalBottomSheetVisible = false
+                                        appState.chatViewModel.setDeleteAvatarVisible(true)
+                                    }
+                                },
+                                onCameraClick = {
+                                    appState.coroutineScope.launch {
+                                        cameraOptionsModalBottomSheetState.hide()
+                                        cameraOptionsModalBottomSheetVisible = false
+                                        cameraModalBottomSheetVisible = true
+                                        cameraModalBottomSheetState.show()
+                                    }
+                                },
                             )
                         }
                         SnackbarHost(

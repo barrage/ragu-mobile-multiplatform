@@ -68,4 +68,6 @@
     <string name="additional_evaluation_feedback_label">Molimo navedite dodatne povratne informacije, što bi se moglo poboljšati? (neobavezno)</string>
     <string name="message_evaluated">Hvala na povratnoj informaciji!</string>
     <string name="camera_permission_denied">Molimo omogućite pristup kameri za korištenje ove značajke</string>
+    <string name="delete_avatar_title">Izbriši avatar</string>
+    <string name="delete_avatar_description">Jeste li sigurni da želite izbrisati svoj avatar?</string>
 </resources>
