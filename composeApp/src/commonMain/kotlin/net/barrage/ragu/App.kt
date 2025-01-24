@@ -177,42 +177,9 @@ fun App(
                             },
                             openCameraModalBottomSheet = { source ->
                                 appState.coroutineScope.launch {
-                                    if (appState.permissionController.isPermissionGranted(Permission.CAMERA)) {
-                                        cameraSource = source
-                                        cameraOptionsModalBottomSheetVisible = true
-                                        cameraOptionsModalBottomSheetState.show()
-                                    } else {
-                                        try {
-                                            appState.permissionController.providePermission(
-                                                Permission.CAMERA
-                                            )
-                                        } catch (e: DeniedException) {
-                                            debugLogError("Camera permission denied", e)
-                                            SnackbarHelper.getInstance()
-                                                .showSnackbar(messageRes = Res.string.camera_permission_denied)
-                                            if (!navigateToSettings) {
-                                                navigateToSettings = true
-                                            } else {
-                                                appState.permissionController.openAppSettings()
-                                            }
-                                        } catch (e: DeniedAlwaysException) {
-                                            debugLogError("Camera permission denied always", e)
-                                            SnackbarHelper.getInstance()
-                                                .showSnackbar(messageRes = Res.string.camera_permission_denied)
-                                            if (!navigateToSettings) {
-                                                navigateToSettings = true
-                                            } else {
-                                                appState.permissionController.openAppSettings()
-                                            }
-                                        } catch (e: RequestCanceledException) {
-                                            debugLogError(
-                                                "Camera permission request cancelled", e
-                                            )
-                                            SnackbarHelper.getInstance()
-                                                .showSnackbar(messageRes = Res.string.camera_permission_denied)
-
-                                        }
-                                    }
+                                    cameraSource = source
+                                    cameraOptionsModalBottomSheetVisible = true
+                                    cameraOptionsModalBottomSheetState.show()
                                 }
                             },
                         )
@@ -282,10 +249,50 @@ fun App(
                                 },
                                 onCameraClick = {
                                     appState.coroutineScope.launch {
-                                        cameraOptionsModalBottomSheetState.hide()
-                                        cameraOptionsModalBottomSheetVisible = false
-                                        cameraModalBottomSheetVisible = true
-                                        cameraModalBottomSheetState.show()
+                                        if (appState.permissionController.isPermissionGranted(
+                                                Permission.CAMERA
+                                            )
+                                        ) {
+                                            cameraOptionsModalBottomSheetState.hide()
+                                            cameraOptionsModalBottomSheetVisible = false
+                                            cameraModalBottomSheetVisible = true
+                                            cameraModalBottomSheetState.show()
+                                        } else {
+                                            try {
+                                                appState.permissionController.providePermission(
+                                                    Permission.CAMERA
+                                                )
+                                                cameraOptionsModalBottomSheetState.hide()
+                                                cameraOptionsModalBottomSheetVisible = false
+                                                cameraModalBottomSheetVisible = true
+                                                cameraModalBottomSheetState.show()
+                                            } catch (e: DeniedException) {
+                                                debugLogError("Camera permission denied", e)
+                                                SnackbarHelper.getInstance()
+                                                    .showSnackbar(messageRes = Res.string.camera_permission_denied)
+                                                if (!navigateToSettings) {
+                                                    navigateToSettings = true
+                                                } else {
+                                                    appState.permissionController.openAppSettings()
+                                                }
+                                            } catch (e: DeniedAlwaysException) {
+                                                debugLogError("Camera permission denied always", e)
+                                                SnackbarHelper.getInstance()
+                                                    .showSnackbar(messageRes = Res.string.camera_permission_denied)
+                                                if (!navigateToSettings) {
+                                                    navigateToSettings = true
+                                                } else {
+                                                    appState.permissionController.openAppSettings()
+                                                }
+                                            } catch (e: RequestCanceledException) {
+                                                debugLogError(
+                                                    "Camera permission request cancelled", e
+                                                )
+                                                SnackbarHelper.getInstance()
+                                                    .showSnackbar(messageRes = Res.string.camera_permission_denied)
+
+                                            }
+                                        }
                                     }
                                 },
                             )
