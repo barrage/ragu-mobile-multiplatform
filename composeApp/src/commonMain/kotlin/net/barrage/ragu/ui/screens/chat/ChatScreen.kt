@@ -117,6 +117,7 @@ fun ChatScreen(
     OnEventListener {
         if (it == Lifecycle.Event.ON_RESUME) {
             checkAuth()
+            viewModel.webSocketManager.reconnect()
         }
     }
 

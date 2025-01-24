@@ -168,7 +168,8 @@ class WebSocketChatClient(
 
         } catch (e: Exception) {
             debugLogError("Connection failed", e)
-            throw e
+            receiveMessageCallback.disableSending()
+            reconnect()
         }
     }
 
