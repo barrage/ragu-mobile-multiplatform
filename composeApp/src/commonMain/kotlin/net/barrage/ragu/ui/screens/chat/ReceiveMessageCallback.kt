@@ -16,4 +16,5 @@ interface ReceiveMessageCallback {
     fun setChatTitle(title: String, chatId: String)
 
     fun closeChat()
+    fun agentDeactivated(agentId: String?)
 }

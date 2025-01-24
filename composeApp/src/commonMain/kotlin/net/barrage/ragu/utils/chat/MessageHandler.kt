@@ -56,6 +56,7 @@ class MessageHandler(
                 "chat_title" -> handleChatTitle(jsonMessage)
                 "chat_closed" -> handleChatClosed()
                 "finish_event" -> handleFinishEvent()
+                "agent_deactivated" -> handleAgentDeactivated(jsonMessage)
                 "error", "API" -> handleError(jsonMessage)
                 else -> debugLog("Unhandled message type: ${jsonMessage["type"]}")
             }
@@ -129,5 +130,9 @@ class MessageHandler(
         } else {
             receiveMessageCallback.stopReceivingMessage()
         }
+    }
+
+    private fun handleAgentDeactivated(jsonMessage: JsonObject?) {
+        receiveMessageCallback.agentDeactivated(agentId = jsonMessage?.get("agentId")?.toString())
     }
 }

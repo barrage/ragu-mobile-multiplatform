@@ -470,6 +470,10 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                 override fun closeChat() {
                     viewModel.chatStateManager.clearChat()
                 }
+
+                override fun agentDeactivated(agentId: String?) {
+                    viewModel.agentDeactivated(agentId)
+                }
             },
             scope = scope,
         )

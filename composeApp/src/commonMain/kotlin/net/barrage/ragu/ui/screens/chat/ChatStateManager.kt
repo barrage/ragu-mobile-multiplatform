@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import net.barrage.ragu.data.remote.dto.history.SenderType
+import net.barrage.ragu.domain.model.Agent
 import net.barrage.ragu.domain.model.ChatMessageItem
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.new_chat
@@ -14,7 +15,6 @@ import ragumultiplatform.composeapp.generated.resources.new_chat
  * Manages the state of the chat screen.
  */
 class ChatStateManager {
-
     private val _chatScreenState = MutableStateFlow<ChatScreenState>(ChatScreenState.Idle)
     val chatScreenState: StateFlow<ChatScreenState> = _chatScreenState.asStateFlow()
 
@@ -145,10 +145,11 @@ class ChatStateManager {
     /**
      * Clears the current chat.
      */
-    fun clearChat(tempChatScreenState: ChatScreenState.Success? = null) {
+    fun clearChat(tempChatScreenState: ChatScreenState.Success? = null): ChatScreenState.Success {
         updateChatScreenState { currentState ->
             when (currentState) {
-                is ChatScreenState.Success ->
+                is ChatScreenState.Success -> {
+                    updateAgent(tempChatScreenState?.agents?.firstOrNull())
                     currentState.copy(
                         messages = persistentListOf(),
                         chatTitleRes = Res.string.new_chat,
@@ -158,20 +159,31 @@ class ChatStateManager {
                         inputText = "",
                         currentAgent = currentState.agents.firstOrNull(),
                     )
+                }
 
-                else -> tempChatScreenState?.copy(
-                    messages = persistentListOf(),
-                    chatTitleRes = Res.string.new_chat,
-                    chatTitle = null,
-                    isEditingTitle = false,
-                    isReceivingMessage = false,
-                    inputText = "",
-                    currentAgent = tempChatScreenState.agents.firstOrNull(),
-                ) ?: ChatScreenState.Idle
+                else -> {
+                    updateAgent(tempChatScreenState?.agents?.firstOrNull())
+                    tempChatScreenState?.copy(
+                        messages = persistentListOf(),
+                        chatTitleRes = Res.string.new_chat,
+                        chatTitle = null,
+                        isEditingTitle = false,
+                        isReceivingMessage = false,
+                        inputText = "",
+                        currentAgent = tempChatScreenState.agents.firstOrNull(),
+                    ) ?: ChatScreenState.Idle
+                }
             }
         }
+        return chatScreenState.value as ChatScreenState.Success
     }
 
+    /**
+     * Updates the message evaluation in the chat screen state.
+     *
+     * @param message The message to update
+     * @param evaluation The evaluation result (true for positive, false for negative)
+     */
     fun updateMessageEvaluation(message: ChatMessageItem, evaluation: Boolean?) {
         updateChatScreenState { currentState ->
             when (currentState) {
@@ -186,6 +198,20 @@ class ChatStateManager {
                     currentState.copy(messages = updatedMessages.toImmutableList())
                 }
 
+                else -> currentState
+            }
+        }
+    }
+
+    /**
+     * Updates the current agent in the chat screen state.
+     *
+     * @param agent The new current agent
+     */
+    fun updateAgent(agent: Agent?) {
+        updateChatScreenState { currentState ->
+            when (currentState) {
+                is ChatScreenState.Success -> currentState.copy(currentAgent = agent)
                 else -> currentState
             }
         }

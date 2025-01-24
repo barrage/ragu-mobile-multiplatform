@@ -55,8 +55,12 @@ class WebSocketChatClient(
         scope.launch { reconnect() }
         scope.launch {
             selectedAgentFlow.collectLatest { agent ->
-                agent?.let { openNewChat(it) }
-                selectedAgent.value = agent
+                agent?.let {
+                    if (it.active && agent.id != selectedAgent.value?.id) {
+                        openNewChat(it)
+                        selectedAgent.value = agent
+                    }
+                }
             }
         }
     }
