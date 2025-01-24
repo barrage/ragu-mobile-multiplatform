@@ -2,6 +2,7 @@ package net.barrage.ragu.ui.screens.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.preat.peekaboo.image.picker.toImageBitmap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +23,7 @@ import net.barrage.ragu.domain.usecase.user.CurrentUserUseCase
 import net.barrage.ragu.domain.usecase.user.DeleteProfileAvatarUseCase
 import net.barrage.ragu.domain.usecase.user.UpdateProfileAvatarUseCase
 import net.barrage.ragu.domain.usecase.ws.WebSocketTokenUseCase
+import net.barrage.ragu.encodeToByteArray
 import net.barrage.ragu.ui.screens.history.HistoryScreenStates
 import net.barrage.ragu.ui.screens.profile.viewstate.ProfileViewState
 import net.barrage.ragu.utils.SnackbarHelper
@@ -563,35 +565,64 @@ class ChatViewModel(
     }
 
     /**
-     * Updates the user's avatar.
+     * Updates the user's avatar with compression if needed.
      *
      * @param imageByteArray The byte array representing the avatar image
      */
     fun updateAvatar(imageByteArray: ByteArray) {
         val tempCurrentUserViewState = _currentUserViewState.value
+        val maxSizeBytes = 500 * 1024
 
         viewModelScope.launch {
-            updateProfileAvatarUseCase(imageByteArray).collect { response ->
-                when (response) {
-                    is Response.Success -> {
-                        updateCurrentUser()
-                    }
+            try {
+                _currentUserViewState.value = HistoryScreenStates.Loading
+                val compressedImage = compressImage(imageByteArray, maxSizeBytes)
+                updateProfileAvatarUseCase(compressedImage).collect { response ->
+                    when (response) {
+                        is Response.Success -> {
+                            updateCurrentUser()
+                        }
 
-                    is Response.Failure -> {
-                        _currentUserViewState.value = tempCurrentUserViewState
-                    }
+                        is Response.Failure -> {
+                            _currentUserViewState.value = tempCurrentUserViewState
+                        }
 
-                    is Response.Loading -> {
-                        _currentUserViewState.value = HistoryScreenStates.Loading
-                    }
+                        is Response.Loading -> {
+                            _currentUserViewState.value = HistoryScreenStates.Loading
+                        }
 
-                    is Response.Unauthorized -> {
-                        debugLogError("Unauthorized to update avatar")
+                        is Response.Unauthorized -> {
+                            debugLogError("Unauthorized to update avatar")
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                debugLogError("Failed to compress image", e)
+                _currentUserViewState.value = tempCurrentUserViewState
             }
-
         }
+    }
+
+    /**
+     * Compresses the image until it's below the maximum size.
+     *
+     * @param imageBytes Original image bytes
+     * @param maxSizeBytes Maximum size in bytes
+     * @return Compressed image bytes
+     */
+    private suspend fun compressImage(imageBytes: ByteArray, maxSizeBytes: Int): ByteArray {
+        if (imageBytes.size <= maxSizeBytes) return imageBytes
+
+        var quality = 100
+        var compressedBytes = imageBytes
+        val bitmap = imageBytes.toImageBitmap()
+
+        while (compressedBytes.size > maxSizeBytes && quality > 5) {
+            quality -= 5
+            compressedBytes = bitmap.encodeToByteArray(quality) ?: imageBytes
+        }
+
+        return compressedBytes
     }
 
     /**

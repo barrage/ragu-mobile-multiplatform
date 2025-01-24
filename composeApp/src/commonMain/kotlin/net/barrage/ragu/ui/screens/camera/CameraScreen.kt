@@ -26,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.preat.peekaboo.image.picker.ResizeOptions
 import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import kotlinx.coroutines.launch
@@ -49,13 +50,16 @@ fun CameraScreen(
 ) {
     val scope = rememberCoroutineScope()
     val profileImageByteArray = remember { mutableStateOf<ByteArray?>(null) }
-    val singleImagePicker = rememberImagePickerLauncher(selectionMode = SelectionMode.Single,
+    val singleImagePicker = rememberImagePickerLauncher(
+        selectionMode = SelectionMode.Single,
         scope = scope,
         onResult = { byteArrays ->
             byteArrays.firstOrNull()?.let {
                 onImagePicked(it)
             }
-        })
+        },
+        resizeOptions = ResizeOptions(resizeThresholdBytes = 2 * 500 * 1024L)
+    )
     Box(
         modifier = modifier.fillMaxSize()
     ) {
