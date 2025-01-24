@@ -156,7 +156,7 @@ class ChatStateManager {
                         isEditingTitle = false,
                         isReceivingMessage = false,
                         inputText = "",
-                        isAgentActive = true,
+                        currentAgent = currentState.agents.firstOrNull(),
                     )
 
                 else -> tempChatScreenState?.copy(
@@ -166,7 +166,7 @@ class ChatStateManager {
                     isEditingTitle = false,
                     isReceivingMessage = false,
                     inputText = "",
-                    isAgentActive = true,
+                    currentAgent = tempChatScreenState.agents.firstOrNull(),
                 ) ?: ChatScreenState.Idle
             }
         }

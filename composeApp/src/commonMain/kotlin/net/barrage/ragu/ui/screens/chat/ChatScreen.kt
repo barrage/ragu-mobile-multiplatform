@@ -227,7 +227,7 @@ fun ChatScreen(
                             },
                             onScrollToTop = { viewModel.loadMoreChatMessages() },
                             profileViewState = profileViewState,
-                            selectedAgent = viewModel.selectedAgent.collectAsState().value,
+                            currentAgent = state.currentAgent,
                             modifier = Modifier.weight(1f),
                         )
                     }
@@ -275,7 +275,7 @@ fun ChatScreen(
                             }
                         }
                     }
-                    if (state.isAgentActive) {
+                    if (state.currentAgent?.active == true) {
                         Reveal(
                             onOverlayClick = { key ->
                                 scope.launch {

@@ -125,7 +125,7 @@ class ChatViewModel(
                                     }
                                     currentState.copy(
                                         agents = agentsResponse.data.toImmutableList(),
-                                        isAgentActive = true
+                                        currentAgent = agentsResponse.data.firstOrNull()
                                     )
                                 }
 
@@ -137,7 +137,7 @@ class ChatViewModel(
                                     ChatScreenState.Success(
                                         agents = agentsResponse.data.toImmutableList(),
                                         messages = persistentListOf(),
-                                        isAgentActive = true
+                                        currentAgent = agentsResponse.data.firstOrNull(),
                                     )
                                 }
                             }
@@ -289,6 +289,17 @@ class ChatViewModel(
     fun setAgent(agent: Agent) {
         viewModelScope.launch {
             _selectedAgent.emit(agent)
+            chatStateManager.updateChatScreenState { currentState ->
+                when (currentState) {
+                    is ChatScreenState.Success -> {
+                        currentState.copy(
+                            currentAgent = agent
+                        )
+                    }
+
+                    else -> currentState
+                }
+            }
         }
     }
 
@@ -297,12 +308,18 @@ class ChatViewModel(
      */
     fun newChat() {
         val currentState = chatScreenState.value
+        if (currentState is ChatScreenState.Success) {
+            viewModelScope.launch {
+                _selectedAgent.emit(currentState.currentAgent)
+            }
+        }
         if (currentState is ChatScreenState.Success && currentState.isReceivingMessage) {
             webSocketManager.stopMessageStream()
         }
         chatStateManager.clearChat()
         webSocketManager.setChatId(null)
         isNewChat = true
+
     }
 
     /**
@@ -330,14 +347,18 @@ class ChatViewModel(
                 pageSize = chatMessagesPageSize,
                 page = currentChatMessagesPage
             )
-                .combine(chatUseCase.getChatById(id)) { messagesResponse, chatResponse ->
+                .combine(
+                    chatUseCase.getChatById(
+                        id = id,
+                        withAvatar = true
+                    )
+                ) { messagesResponse, chatResponse ->
                     Pair(messagesResponse, chatResponse)
                 }
                 .collect { (chatMessagesResponse, chatResponse) ->
                     when {
                         chatMessagesResponse is Response.Success && chatResponse is Response.Success -> {
                             isNewChat = false
-                            _selectedAgent.emit(chatResponse.data.agent)
                             isLastChatMessagesPage =
                                 chatMessagesResponse.data.size < chatMessagesPageSize
                             webSocketManager.setChatId(id)
@@ -351,7 +372,7 @@ class ChatViewModel(
                                             isEditingTitle = false,
                                             isReceivingMessage = false,
                                             inputText = "",
-                                            isAgentActive = chatResponse.data.agent.active,
+                                            currentAgent = chatResponse.data.agent,
                                         )
 
                                     else ->
@@ -362,7 +383,7 @@ class ChatViewModel(
                                             isEditingTitle = false,
                                             isReceivingMessage = false,
                                             inputText = "",
-                                            isAgentActive = true,
+                                            currentAgent = chatResponse.data.agent,
                                         )
                                 }
                             }

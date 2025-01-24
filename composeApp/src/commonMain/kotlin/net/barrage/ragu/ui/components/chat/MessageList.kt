@@ -24,7 +24,7 @@ fun MessageList(
     onNegativeEvaluation: (ChatMessageItem) -> Unit,
     messages: ImmutableList<ChatMessageItem>,
     profileViewState: HistoryScreenStates<ProfileViewState>,
-    selectedAgent: Agent?,
+    currentAgent: Agent?,
     lazyListState: LazyListState,
     modifier: Modifier = Modifier,
 ) {
@@ -42,7 +42,7 @@ fun MessageList(
                 onPositiveEvaluation = onPositiveEvaluation,
                 onNegativeEvaluation = onNegativeEvaluation,
                 userAvatarBitmap = (profileViewState as? HistoryScreenStates.Success)?.data?.header?.profileImage,
-                agentAvatarBitmap = selectedAgent?.avatarBitmap,
+                agentAvatarBitmap = currentAgent?.avatarBitmap,
                 modifier = Modifier,
             )
         }

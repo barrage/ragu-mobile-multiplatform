@@ -6,4 +6,6 @@ import net.barrage.ragu.domain.model.CurrentUser
 
 interface UserRepository {
     suspend fun getCurrentUser(withAvatar: Boolean): Flow<Response<CurrentUser>>
+    suspend fun updateAvatar(avatar: ByteArray): Flow<Response<CurrentUser>>
+    suspend fun deleteAvatar(): Flow<Response<CurrentUser>>
 }

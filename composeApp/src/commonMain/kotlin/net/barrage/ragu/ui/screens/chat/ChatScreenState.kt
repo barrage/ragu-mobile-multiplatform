@@ -21,7 +21,7 @@ sealed class ChatScreenState {
         val isEditingTitle: Boolean = false,
         val chatTitleRes: StringResource = Res.string.new_chat,
         val chatTitle: String? = null,
-        val isAgentActive: Boolean,
+        val currentAgent: Agent?,
         val isLoadingMessages: Boolean = false,
     ) : ChatScreenState()
 

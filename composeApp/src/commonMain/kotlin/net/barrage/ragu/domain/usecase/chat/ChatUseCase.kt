@@ -29,7 +29,7 @@ class ChatUseCase(
     ) =
         evaluateMessageUseCase(chatId, messageId, evaluation, feedback)
 
-    suspend fun getChatById(id: String) = getChatByIdUseCase(id)
+    suspend fun getChatById(id: String, withAvatar: Boolean) = getChatByIdUseCase(id, withAvatar)
 
     suspend fun getAgents(withAvatar: Boolean) = getAgentsUseCase(withAvatar)
 }

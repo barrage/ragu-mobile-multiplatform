@@ -191,9 +191,12 @@ class ApiImpl(private val httpClient: HttpClient, private val tokenStorage: Toke
      * @param chatId The ID of the chat to retrieve.
      * @return A Response containing the ChatItemDTO or an error.
      */
-    override suspend fun getChatById(chatId: String): Response<ChatItemDTO> {
+    override suspend fun getChatById(chatId: String, withAvatar: Boolean): Response<ChatItemDTO> {
         return safeApiCall {
-            httpClient.get("chats/$chatId") { addCookieHeader() }
+            httpClient.get("chats/$chatId") {
+                addCookieHeader()
+                parameter("withAvatar", withAvatar)
+            }
         }
     }
 

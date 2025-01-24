@@ -22,4 +22,13 @@ class UserRepositoryImpl(private val api: Api) : UserRepository {
             emit(Response.Failure(e))
         }
     }
+
+    override suspend fun updateAvatar(avatar: ByteArray): Flow<Response<CurrentUser>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteAvatar(): Flow<Response<CurrentUser>> {
+        TODO("Not yet implemented")
+    }
+
 }

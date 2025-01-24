@@ -97,5 +97,5 @@ interface Api {
      * @param chatId The ID of the chat to retrieve.
      * @return A Response containing the ChatItemDTO.
      */
-    suspend fun getChatById(chatId: String): Response<ChatItemDTO>
+    suspend fun getChatById(chatId: String, withAvatar: Boolean): Response<ChatItemDTO>
 }

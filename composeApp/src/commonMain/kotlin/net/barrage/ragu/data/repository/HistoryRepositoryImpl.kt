@@ -50,10 +50,13 @@ class HistoryRepositoryImpl(private val api: Api) : HistoryRepository {
             }
         }
 
-    override suspend fun getChatById(chatId: String): Flow<Response<ChatItem>> = flow {
+    override suspend fun getChatById(
+        chatId: String,
+        withAvatar: Boolean
+    ): Flow<Response<ChatItem>> = flow {
         emit(Response.Loading)
         try {
-            when (val response = api.getChatById(chatId)) {
+            when (val response = api.getChatById(chatId, withAvatar)) {
                 is Response.Success -> emit(Response.Success(response.data.toDomain()))
                 is Response.Failure -> emit(response)
                 is Response.Unauthorized -> emit(response)

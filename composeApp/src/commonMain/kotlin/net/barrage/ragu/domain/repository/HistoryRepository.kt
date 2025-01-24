@@ -17,5 +17,5 @@ interface HistoryRepository {
         pageSize: Int
     ): Flow<Response<List<ChatMessageItem>>>
 
-    suspend fun getChatById(chatId: String): Flow<Response<ChatItem>>
+    suspend fun getChatById(chatId: String, withAvatar: Boolean): Flow<Response<ChatItem>>
 }
