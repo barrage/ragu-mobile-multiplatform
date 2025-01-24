@@ -120,8 +120,9 @@ fun ChatScreen(
         if (it == Lifecycle.Event.ON_RESUME) {
             checkAuth()
             viewModel.webSocketManager.reconnect()
+            val tempChatScreenState = chatScreenState
             scope.launch {
-                viewModel.updateAgents(chatScreenState)
+                viewModel.updateAgents(tempChatScreenState)
             }
         }
     }
