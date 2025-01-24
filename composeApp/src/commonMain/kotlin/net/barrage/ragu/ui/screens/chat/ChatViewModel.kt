@@ -701,7 +701,7 @@ class ChatViewModel(
         }
     }
 
-    private suspend fun updateAgents(tempChatScreenState: ChatScreenState) {
+    suspend fun updateAgents(tempChatScreenState: ChatScreenState) {
         chatUseCase.getAgents(withAvatar = true).collectLatest { agentsResponse ->
             when (agentsResponse) {
                 is Response.Success -> {

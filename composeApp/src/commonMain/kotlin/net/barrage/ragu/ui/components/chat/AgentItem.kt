@@ -66,11 +66,11 @@ fun AgentItem(
         colors =
         CardDefaults.cardColors(
             containerColor =
-            if (state.selectedAgent == state.agent)
+            if (state.selectedAgentId == state.agent.id)
                 MaterialTheme.colorScheme.surfaceContainerHighest
             else MaterialTheme.colorScheme.surfaceContainer
         ),
-        border = CardDefaults.outlinedCardBorder(enabled = state.selectedAgent == state.agent),
+        border = CardDefaults.outlinedCardBorder(enabled = state.selectedAgentId == state.agent.id),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
@@ -108,7 +108,7 @@ fun AgentItem(
                 )
             }
             if (!state.agent.description.isNullOrEmpty()) {
-                AnimatedVisibility(state.selectedAgent == state.agent) {
+                AnimatedVisibility(state.selectedAgentId == state.agent.id) {
                     Column {
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(

@@ -114,6 +114,8 @@ fun ChatScreen(
     var width by remember { mutableStateOf(0.dp) }
     val clipboardManager = LocalClipboardManager.current
 
+    var agentsRefreshing by remember { mutableStateOf(false) }
+
     OnEventListener {
         if (it == Lifecycle.Event.ON_RESUME) {
             checkAuth()
@@ -191,6 +193,14 @@ fun ChatScreen(
                             scope = scope,
                             changeInputEnabled = changeInputEnabled,
                             shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
+                            isRefreshing = agentsRefreshing,
+                            onRefresh = {
+                                scope.launch {
+                                    agentsRefreshing = true
+                                    viewModel.updateAgents(state)
+                                    agentsRefreshing = false
+                                }
+                            },
                             modifier = Modifier.weight(1f),
                         )
                     } else {

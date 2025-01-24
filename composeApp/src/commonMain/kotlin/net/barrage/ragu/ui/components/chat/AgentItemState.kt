@@ -4,6 +4,6 @@ import net.barrage.ragu.domain.model.Agent
 
 data class AgentItemState(
     val agent: Agent,
-    val selectedAgent: Agent?,
+    val selectedAgentId: String?,
     val onAgentClick: (Agent) -> Unit,
 )

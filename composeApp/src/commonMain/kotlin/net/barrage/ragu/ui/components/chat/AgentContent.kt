@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,6 +16,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import net.barrage.ragu.domain.model.Agent
 import net.barrage.ragu.ui.components.AppIconCard
+import net.barrage.ragu.utils.debugLog
 import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
@@ -29,8 +31,13 @@ fun AgentContent(
     scope: CoroutineScope,
     shouldShowOnboardingTutorial: Boolean,
     changeInputEnabled: (Boolean) -> Unit,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(Unit) {
+        debugLog("selectedAgent ${selectedAgent?.name}")
+    }
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.height(20.dp))
         AppIconCard()
@@ -56,7 +63,7 @@ fun AgentContent(
                     AgentItemState(
                         agent = agent,
                         onAgentClick = { onAgentClick(agent) },
-                        selectedAgent = selectedAgent,
+                        selectedAgentId = selectedAgent?.id,
                     )
                 }
                 .toImmutableList(),
@@ -64,6 +71,8 @@ fun AgentContent(
             scope = scope,
             changeInputEnabled = changeInputEnabled,
             shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
+            onRefresh = onRefresh,
+            isRefreshing = isRefreshing,
             modifier = Modifier.weight(1f),
         )
     }
