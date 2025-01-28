@@ -109,7 +109,7 @@ fun ChatInput(
                 disabledTextColor = TextFieldDefaults.colors().disabledTextColor.copy(alpha = 0.2f),
             ),
             prefix = {
-                CompositionLocalProvider(
+              /*  CompositionLocalProvider(
                     LocalMinimumInteractiveComponentEnforcement provides false
                 ) {
                     IconButton(
@@ -126,7 +126,7 @@ fun ChatInput(
                             contentDescription = null,
                         )
                     }
-                }
+                }*/
             },
             suffix = {
                 CompositionLocalProvider(
