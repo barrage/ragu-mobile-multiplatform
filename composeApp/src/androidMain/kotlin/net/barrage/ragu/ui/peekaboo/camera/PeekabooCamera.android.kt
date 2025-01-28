@@ -153,7 +153,7 @@ private fun CameraWithGrantedPermission(
 
                 analyzer.apply {
                     setAnalyzer(backgroundExecutor) { imageProxy ->
-                        val imageBytes = imageProxy.toByteArray()
+                        val imageBytes = imageProxy.toByteArray(state.cameraMode)
                         onFrame(imageBytes)
                     }
                 }
@@ -202,7 +202,7 @@ private fun CameraWithGrantedPermission(
         val triggerCapture = {
             imageCapture.takePicture(
                 executor,
-                ImageCaptureCallback(state::onCapture, state::stopCapturing),
+                ImageCaptureCallback(state::onCapture, state::stopCapturing, state.cameraMode),
             )
         }
         state.triggerCaptureAnchor = triggerCapture
@@ -222,28 +222,44 @@ private fun CameraWithGrantedPermission(
 class ImageCaptureCallback(
     private val onCapture: (byteArray: ByteArray?) -> Unit,
     private val stopCapturing: () -> Unit,
+    private val cameraMode: CameraMode,
 ) : OnImageCapturedCallback() {
     override fun onCaptureSuccess(image: ImageProxy) {
-        val imageBytes = image.toByteArray()
+        val imageBytes = image.toByteArray(cameraMode)
         onCapture(imageBytes)
         stopCapturing()
     }
 }
 
-private fun ImageProxy.toByteArray(): ByteArray {
+private fun ImageProxy.toByteArray(cameraMode: CameraMode): ByteArray {
     val rotationDegrees = imageInfo.rotationDegrees
     val bitmap = toBitmap()
 
-    // Rotate the image if necessary
-    val rotatedData =
-        if (rotationDegrees != 0) {
-            bitmap.rotate(rotationDegrees)
-        } else {
-            bitmap.toByteArray()
+    val matrix = Matrix().apply {
+        // Apply rotation
+        postRotate(rotationDegrees.toFloat())
+
+        // Apply horizontal flip for front camera
+        if (cameraMode == CameraMode.Front) {
+            postScale(-1f, 1f)
         }
+    }
+
+    val transformedBitmap = Bitmap.createBitmap(
+        bitmap,
+        0,
+        0,
+        bitmap.width,
+        bitmap.height,
+        matrix,
+        true
+    )
+
+    val stream = ByteArrayOutputStream()
+    transformedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
     close()
 
-    return rotatedData
+    return stream.toByteArray()
 }
 
 private fun Bitmap.toByteArray(): ByteArray {
