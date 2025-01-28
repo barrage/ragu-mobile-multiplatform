@@ -134,6 +134,14 @@ fun AppNavHost(
                             }
                         }
                     },
+                    onAaiLogin = { codeVerifier ->
+                        appState.coroutineScope.launch {
+                            codeVerifier.let {
+                                val aaiUrl = Constants.Auth.getAaiAuthUrl(it)
+                                uriHandler.openUri(aaiUrl)
+                            }
+                        }
+                    },
                     deepLink = deepLink,
                     navigateToChat = {
                         appState.navController.navigateToChat()

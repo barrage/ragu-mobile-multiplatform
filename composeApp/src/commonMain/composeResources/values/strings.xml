@@ -32,6 +32,7 @@
     <string name="login">Login</string>
     <string name="choose_a_login_method">Choose a login method</string>
     <string name="continue_with_google">Continue with Google</string>
+    <string name="continue_with_aai">Continue with AAI</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="last_7_days">Last 7 days</string>

@@ -31,7 +31,8 @@
     <string name="login_failed">Prijava nije uspjela</string>
     <string name="login">Prijava</string>
     <string name="choose_a_login_method">Odaberite način prijave</string>
-    <string name="continue_with_google">Nastavite s Googleom</string>
+    <string name="continue_with_google">Nastavite s Google prijavom</string>
+    <string name="continue_with_aai">Nastavite s AAI prijavom</string>
     <string name="today">Danas</string>
     <string name="yesterday">Jučer</string>
     <string name="last_7_days">Zadnjih 7 dana</string>

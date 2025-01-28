@@ -42,7 +42,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.choose_a_login_method
+import ragumultiplatform.composeapp.generated.resources.continue_with_aai
 import ragumultiplatform.composeapp.generated.resources.continue_with_google
+import ragumultiplatform.composeapp.generated.resources.ic_aai
 import ragumultiplatform.composeapp.generated.resources.ic_google
 import ragumultiplatform.composeapp.generated.resources.login
 import ragumultiplatform.composeapp.generated.resources.login_error_retry_button_text
@@ -53,6 +55,7 @@ import ragumultiplatform.composeapp.generated.resources.login_failed
 fun LoginScreen(
     navigateToChat: () -> Unit,
     onGoogleLogin: (String) -> Unit,
+    onAaiLogin: (String) -> Unit,
     viewModel: LoginViewModel = koinViewModel(),
     deepLink: DeepLink?,
     scope: CoroutineScope,
@@ -61,6 +64,7 @@ fun LoginScreen(
     val loginState by viewModel.loginState.collectAsState()
 
     val rememberedOnGoogleLogin by rememberUpdatedState(onGoogleLogin)
+    val rememberedOnAaiLogin by rememberUpdatedState(onAaiLogin)
     val rememberedNavigateToChat by rememberUpdatedState(navigateToChat)
 
     DisposableEffect(deepLink) {
@@ -90,7 +94,13 @@ fun LoginScreen(
                             val codeVerifier = viewModel.generateCodeVerifier()
                             rememberedOnGoogleLogin(codeVerifier)
                         }
-                    }
+                    },
+                    onAaiLogin = {
+                        scope.launch {
+                            val codeVerifier = viewModel.generateCodeVerifier()
+                            rememberedOnAaiLogin(codeVerifier)
+                        }
+                    },
                 )
             }
 
@@ -143,7 +153,7 @@ fun LoginScreen(
 }
 
 @Composable
-fun LoginContent(onGoogleLogin: () -> Unit, modifier: Modifier = Modifier) {
+fun LoginContent(onGoogleLogin: () -> Unit, onAaiLogin: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         colors =
         CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
@@ -183,6 +193,28 @@ fun LoginContent(onGoogleLogin: () -> Unit, modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         stringResource(Res.string.continue_with_google),
+                        style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = onAaiLogin,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.ic_aai),
+                        contentDescription = null,
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        stringResource(Res.string.continue_with_aai),
                         style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
                     )
                 }
