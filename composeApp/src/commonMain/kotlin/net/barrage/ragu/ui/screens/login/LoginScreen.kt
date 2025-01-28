@@ -189,6 +189,7 @@ fun LoginContent(onGoogleLogin: () -> Unit, onAaiLogin: () -> Unit, modifier: Mo
                     Image(
                         painter = painterResource(Res.drawable.ic_google),
                         contentDescription = null,
+                        modifier = Modifier.height(24.dp),
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
@@ -211,6 +212,7 @@ fun LoginContent(onGoogleLogin: () -> Unit, onAaiLogin: () -> Unit, modifier: Mo
                     Image(
                         painter = painterResource(Res.drawable.ic_aai),
                         contentDescription = null,
+                        modifier = Modifier.height(24.dp),
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
