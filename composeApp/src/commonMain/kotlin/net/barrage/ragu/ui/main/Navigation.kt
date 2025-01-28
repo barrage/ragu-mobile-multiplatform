@@ -114,11 +114,9 @@ fun AppNavHost(
                     revealState = revealState,
                     shouldShowOnboardingTutorial = shouldShowOnboardingTutorial,
                     checkAuth = {
-                        appState.coroutineScope.launch {
-                            currentUserUseCase(withAvatar = false).collectLatest {
-                                if (it is Response.Unauthorized) {
-                                    onLogoutSuccess()
-                                }
+                        currentUserUseCase(withAvatar = false).collectLatest {
+                            if (it is Response.Unauthorized) {
+                                onLogoutSuccess()
                             }
                         }
                     },

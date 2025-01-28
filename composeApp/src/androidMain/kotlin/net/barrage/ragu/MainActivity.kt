@@ -21,7 +21,6 @@ import net.barrage.ragu.utils.debugLog
  * It also implements a double-press back button functionality to exit the app.
  */
 class MainActivity : ComponentActivity() {
-
     private var backPressedTime: Long = 0
     private val backPressedInterval: Long = 2000 // 2 seconds
     private val inputEnabled = mutableStateOf(true)

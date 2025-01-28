@@ -71,9 +71,9 @@ actual val restClient: HttpClient
             }
 
             if (isDebug) {
-                install(Logging) {
+                /*install(Logging) {
                     level = LogLevel.ALL
                     logger = Logger.SIMPLE
-                }
+                }*/
             }
         }

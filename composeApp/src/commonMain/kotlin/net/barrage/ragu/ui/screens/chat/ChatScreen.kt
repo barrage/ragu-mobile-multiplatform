@@ -64,6 +64,7 @@ import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.ui.components.reveal.RevealOverlayContent
 import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.screens.profile.ProfileContent
+import net.barrage.ragu.utils.debugLog
 import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.additional_evaluation_feedback_label
@@ -82,7 +83,7 @@ import ragumultiplatform.composeapp.generated.resources.yes
 @Composable
 fun ChatScreen(
     onLogoutSuccess: () -> Unit,
-    checkAuth: () -> Unit,
+    checkAuth: suspend () -> Unit,
     changeProfileVisibility: () -> Unit,
     openCameraModalBottomSheet: (CameraSource) -> Unit,
     changeInputEnabled: (Boolean) -> Unit,
@@ -118,11 +119,20 @@ fun ChatScreen(
 
     OnEventListener {
         if (it == Lifecycle.Event.ON_RESUME) {
-            checkAuth()
-            viewModel.webSocketManager.reconnect()
-            val tempChatScreenState = chatScreenState
             scope.launch {
-                viewModel.updateAgents(tempChatScreenState)
+                debugLog("ChatScreen resumed")
+                checkAuth()
+                viewModel.loadAllData()
+                viewModel.webSocketManager.reconnect()
+            }
+        } else if (it == Lifecycle.Event.ON_PAUSE) {
+            scope.launch {
+                debugLog("ChatScreen paused")
+                debugLog("current chat screen state: $chatScreenState")
+                if ((chatScreenState as ChatScreenState.Success).messages.isEmpty()) {
+                    viewModel.webSocketManager.setChatId(null)
+                }
+                viewModel.webSocketManager.disconnect()
             }
         }
     }
@@ -201,7 +211,7 @@ fun ChatScreen(
                             onRefresh = {
                                 scope.launch {
                                     agentsRefreshing = true
-                                    viewModel.updateAgents(state)
+                                    viewModel.updateAgents()
                                     agentsRefreshing = false
                                 }
                             },
@@ -353,7 +363,11 @@ fun ChatScreen(
 
                 is ChatScreenState.Error -> ErrorContent(
                     errorMessage = stringResource(state.message),
-                    onRetry = { viewModel.loadAllData() },
+                    onRetry = {
+                        scope.launch {
+                            viewModel.loadAllData()
+                        }
+                    },
                 )
 
                 is ChatScreenState.Idle -> {

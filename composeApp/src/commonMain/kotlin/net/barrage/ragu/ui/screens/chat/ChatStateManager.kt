@@ -17,6 +17,7 @@ import ragumultiplatform.composeapp.generated.resources.new_chat
 class ChatStateManager {
     private val _chatScreenState = MutableStateFlow<ChatScreenState>(ChatScreenState.Idle)
     val chatScreenState: StateFlow<ChatScreenState> = _chatScreenState.asStateFlow()
+    var lastSuccessScreenState: ChatScreenState.Success? = null
 
     private var tempChatTitle: String = ""
 
@@ -27,6 +28,9 @@ class ChatStateManager {
      */
     fun updateChatScreenState(update: (ChatScreenState) -> ChatScreenState) {
         _chatScreenState.value = update(chatScreenState.value)
+        if (_chatScreenState.value is ChatScreenState.Success) {
+            lastSuccessScreenState = chatScreenState.value as ChatScreenState.Success
+        }
     }
 
     /**
@@ -145,11 +149,13 @@ class ChatStateManager {
     /**
      * Clears the current chat.
      */
-    fun clearChat(tempChatScreenState: ChatScreenState.Success? = null): ChatScreenState.Success {
+    fun clearChat(): ChatScreenState.Success {
+        val tempChatScreenState =
+            (lastSuccessScreenState ?: chatScreenState.value) as ChatScreenState.Success
         updateChatScreenState { currentState ->
             when (currentState) {
                 is ChatScreenState.Success -> {
-                    updateAgent(tempChatScreenState?.agents?.firstOrNull())
+                    updateAgent(tempChatScreenState.agents.firstOrNull())
                     currentState.copy(
                         messages = persistentListOf(),
                         chatTitleRes = Res.string.new_chat,
@@ -162,8 +168,8 @@ class ChatStateManager {
                 }
 
                 else -> {
-                    updateAgent(tempChatScreenState?.agents?.firstOrNull())
-                    tempChatScreenState?.copy(
+                    updateAgent(tempChatScreenState.agents.firstOrNull())
+                    tempChatScreenState.copy(
                         messages = persistentListOf(),
                         chatTitleRes = Res.string.new_chat,
                         chatTitle = null,
@@ -171,7 +177,7 @@ class ChatStateManager {
                         isReceivingMessage = false,
                         inputText = "",
                         currentAgent = tempChatScreenState.agents.firstOrNull(),
-                    ) ?: ChatScreenState.Idle
+                    )
                 }
             }
         }

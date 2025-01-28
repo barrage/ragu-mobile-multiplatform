@@ -26,6 +26,7 @@ import net.barrage.ragu.navigation.NavDestination
 import net.barrage.ragu.navigation.RaguNavigation
 import net.barrage.ragu.ui.screens.chat.ChatViewModel
 import net.barrage.ragu.ui.screens.login.LoginViewModel
+import net.barrage.ragu.utils.debugLog
 import org.koin.compose.viewmodel.koinViewModel
 
 data class AppState(
@@ -80,7 +81,10 @@ fun rememberAppState(): AppState {
 
     DisposableEffect(coroutineScope) {
         onDispose {
-            chatViewModel.webSocketManager.disconnect()
+            coroutineScope.launch {
+                debugLog("AppState disposed")
+                chatViewModel.webSocketManager.disconnect()
+            }
         }
     }
 

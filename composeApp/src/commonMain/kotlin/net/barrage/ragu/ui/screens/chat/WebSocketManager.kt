@@ -2,8 +2,7 @@ package net.barrage.ragu.ui.screens.chat
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import net.barrage.ragu.domain.Response
+import kotlinx.coroutines.launch
 import net.barrage.ragu.domain.model.Agent
 import net.barrage.ragu.domain.usecase.ws.WebSocketTokenUseCase
 import net.barrage.ragu.utils.chat.WebSocketChatClient
@@ -14,7 +13,6 @@ import net.barrage.ragu.utils.chat.WebSocketChatClient
  * @property webSocketTokenUseCase Use case for obtaining WebSocket tokens
  */
 class WebSocketManager(private val webSocketTokenUseCase: WebSocketTokenUseCase) {
-
     var webSocketChatClient: WebSocketChatClient? = null
         private set
 
@@ -28,20 +26,16 @@ class WebSocketManager(private val webSocketTokenUseCase: WebSocketTokenUseCase)
      * @param scope The coroutine scope to use for the WebSocket client
      * @param selectedAgent The currently selected agent
      */
-    suspend fun initializeWebSocketClient(
-        callback: ReceiveMessageCallback, scope: CoroutineScope, selectedAgent: Flow<Agent?>
+    fun initializeWebSocketClient(
+        callback: ReceiveMessageCallback, scope: CoroutineScope, selectedAgent: Flow<Agent?>,
+        handleChatId: (String?) -> Unit,
     ) {
         this.callback = callback
         this.scope = scope
 
-        webSocketTokenUseCase().collectLatest { token ->
-            if (token is Response.Success) {
-                if (webSocketChatClient == null) {
-                    webSocketChatClient =
-                        WebSocketChatClient(callback, scope, selectedAgent, webSocketTokenUseCase)
-                }
-            }
-        }
+        webSocketChatClient =
+            WebSocketChatClient(callback, scope, selectedAgent, webSocketTokenUseCase, handleChatId)
+        this.scope.launch { webSocketChatClient?.reconnect() }
     }
 
     /**
@@ -65,8 +59,8 @@ class WebSocketManager(private val webSocketTokenUseCase: WebSocketTokenUseCase)
      *
      * @param chatId The chat ID to set
      */
-    fun setChatId(chatId: String?) {
-        webSocketChatClient?.setChatId(chatId)
+    fun setChatId(chatId: String?, isNewChat: Boolean = false) {
+        webSocketChatClient?.setChatId(chatId, isNewChat)
     }
 
     fun getChatId() = webSocketChatClient?.currentChatId?.value
@@ -74,14 +68,14 @@ class WebSocketManager(private val webSocketTokenUseCase: WebSocketTokenUseCase)
     /**
      * Disconnects the WebSocket client.
      */
-    fun disconnect() {
+    suspend fun disconnect() {
         webSocketChatClient?.disconnect()
     }
 
     /**
      * Reconnects the WebSocket client.
      */
-    fun reconnect() {
+    suspend fun reconnect() {
         webSocketChatClient?.reconnect()
     }
 

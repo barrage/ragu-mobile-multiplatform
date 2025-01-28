@@ -12,9 +12,11 @@ import io.ktor.websocket.readReason
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -50,21 +52,8 @@ class WebSocketChatClient(
     private val scope: CoroutineScope,
     private val selectedAgentFlow: Flow<Agent?>,
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
+    handleChatId: (String?) -> Unit,
 ) {
-    init {
-        scope.launch { reconnect() }
-        scope.launch {
-            selectedAgentFlow.collectLatest { agent ->
-                agent?.let {
-                    if (it.active && agent.id != selectedAgent.value?.id) {
-                        openNewChat(it)
-                        selectedAgent.value = agent
-                    }
-                }
-            }
-        }
-    }
-
     private var wsToken: WebSocketToken? = null
 
     // Current WebSocket session
@@ -79,25 +68,49 @@ class WebSocketChatClient(
     // Flag indicating whether a chat is currently open
     private var isChatOpen = mutableStateOf(false)
 
-    // Handler for processing incoming messages
-    private val messageHandler =
-        MessageHandler(
-            receiveMessageCallback,
-            handleChatId = { currentChatId.value = it },
-            handleChatOpen = { isChatOpen.value = it },
-        )
+    // Agent flow collector job
+    private var agentFlowJob: Job? = null
+
+    // Flag indicating whether a chat is currently being opened
+    private var isOpeningChat = false
+
+
+    // Modify MessageHandler to handle chat open state
+    private val messageHandler = MessageHandler(
+        receiveMessageCallback,
+        handleChatId = { chatId ->
+            handleChatId(chatId)
+            if (chatId != null) {
+                isOpeningChat = false
+            }
+        },
+        handleChatOpen = { isOpen ->
+            isChatOpen.value = isOpen
+            if (isOpen) {
+                isOpeningChat = false
+            }
+        },
+    )
 
     // Last message sent, used for retrying failed messages
     private var lastMessage: String? = null
 
     // Selected agent for the chat session
-    private var selectedAgent: MutableState<Agent?> = mutableStateOf(null)
+    var selectedAgent: MutableState<Agent?> = mutableStateOf(null)
 
     /** Public function to trigger reconnection from outside */
-    fun reconnect() {
-        scope.launch {
-            connectionJob?.cancel()
-            connectionJob = launch { connectWithRetry() }
+    suspend fun reconnect() {
+        connectionJob = coroutineScope {
+            launch {
+                try {
+                    connectWithRetry()
+                } catch (e: CancellationException) {
+                    debugLog("Reconnection cancelled: ${e.message}")
+                } catch (e: Exception) {
+                    debugLogError("Reconnection failed", e)
+                    reconnect()
+                }
+            }
         }
     }
 
@@ -105,9 +118,10 @@ class WebSocketChatClient(
      * Attempts to connect to the WebSocket server with a retry mechanism. Implements an exponential
      * backoff strategy for retries.
      */
-    private suspend fun connectWithRetry() {
+    private suspend fun connectWithRetry() = coroutineScope {
         var retryDelay = 1.seconds
-        while (true) {
+        disconnect()
+        while (this.isActive) {
             try {
                 if (getWsToken()) {
                     connect()
@@ -159,17 +173,33 @@ class WebSocketChatClient(
             wsClient.webSocket(serverUri) {
                 receiveMessageCallback.enableSending()
                 session = this
-                handleIncomingMessages(this)
                 isChatOpen.value = false
-                selectedAgent.value?.let {
-                    openNewChat(it)
+                isOpeningChat = false
+                agentFlowJob?.cancel()
+                agentFlowJob = launch {
+                    selectedAgentFlow.collectLatest { agent ->
+                        debugLog("Selected agent changed: $agent")
+                        debugLog("Current chat ID: ${currentChatId.value}")
+                        debugLog("Is chat open: ${isChatOpen.value}")
+                        debugLog("Current agent: ${selectedAgent.value}")
+                        agent?.let {
+                            if (it.active && !isOpeningChat) {
+                                if (selectedAgent.value?.id != agent.id && currentChatId.value == null) {
+                                    selectedAgent.value = agent
+                                    openNewChat(it)
+                                } else if (currentChatId.value != null) {
+                                    openExistingChat(currentChatId.value!!)
+                                }
+                            }
+                        }
+                    }
                 }
+                handleIncomingMessages(this)
             }
-
         } catch (e: Exception) {
             debugLogError("Connection failed", e)
             receiveMessageCallback.disableSending()
-            reconnect()
+            isOpeningChat = false
         }
     }
 
@@ -193,14 +223,12 @@ class WebSocketChatClient(
         } catch (e: ClosedReceiveChannelException) {
             debugLog("WebSocket Closed: ${e.message}")
             receiveMessageCallback.disableSending()
-            reconnect()
         } catch (e: CancellationException) {
             debugLog("WebSocket cancelled: ${e.message}")
             receiveMessageCallback.disableSending()
         } catch (e: Exception) {
             debugLogError("Error handling incoming messages", e)
             receiveMessageCallback.disableSending()
-            reconnect()
         }
     }
 
@@ -215,6 +243,7 @@ class WebSocketChatClient(
         lastMessage = message
         scope.launch {
             if (!isChatOpen.value) {
+                debugLog("Chat is not open, opening a new chat")
                 if (currentChatId.value != null) {
                     openExistingChat(currentChatId.value!!)
                 } else {
@@ -243,17 +272,19 @@ class WebSocketChatClient(
 
     /** Opens a new chat. */
     private fun openNewChat(selectedAgent: Agent) {
+        if (isOpeningChat) {
+            debugLog("Chat opening already in progress, skipping openNewChat")
+            return
+        }
         debugLog("Opening new chat")
+        isOpeningChat = true
         val openChatMessage = buildJsonObject {
             put("type", "system")
             put(
                 "payload",
                 buildJsonObject {
                     put("type", "chat_open_new")
-                    put(
-                        "agentId",
-                        selectedAgent.id
-                    )
+                    put("agentId", selectedAgent.id)
                 },
             )
         }
@@ -262,7 +293,12 @@ class WebSocketChatClient(
 
     /** Opens an existing chat. */
     private fun openExistingChat(chatId: String) {
+        if (isOpeningChat) {
+            debugLog("Chat opening already in progress, skipping openExistingChat")
+            return
+        }
         debugLog("Opening existing chat: $chatId")
+        isOpeningChat = true
         val openChatMessage = buildJsonObject {
             put("type", "system")
             put(
@@ -284,14 +320,22 @@ class WebSocketChatClient(
     }
 
     /** Disconnects the WebSocket client and closes the current chat. */
-    fun disconnect() {
-        scope.launch {
+    suspend fun disconnect() {
+        if (wsClient.isActive && session?.isActive == true) {
             connectionJob?.cancel()
+            connectionJob = null
+
+            agentFlowJob?.cancel()
+            agentFlowJob = null
+
             session?.close()
             session = null
+
+            wsClient.close()
+
             isChatOpen.value = false
+            isOpeningChat = false
             receiveMessageCallback.stopReceivingMessage()
-            currentChatId.value = null
             debugLog("WebSocket Disconnected")
         }
     }
@@ -305,12 +349,23 @@ class WebSocketChatClient(
         sendJsonMessage(stopStreamMessage)
     }
 
-    /** Sets the current chat ID. */
-    fun setChatId(chatId: String?) {
-        debugLog("Set Chat ID: $chatId")
+    /** Sets the current chat ID and agent. */
+    fun setChatId(chatId: String?, isNewChat: Boolean) {
+        if (chatId == currentChatId.value && isChatOpen.value) {
+            return
+        }
+        if (isOpeningChat) {
+            debugLog("Chat opening already in progress, skipping setChatId")
+            return
+        }
         currentChatId.value = chatId
         isChatOpen.value = false
-        chatId?.let { openExistingChat(it) }
+
+        if (isNewChat || chatId == null) {
+            selectedAgent.value?.let { openNewChat(it) }
+        } else {
+            openExistingChat(chatId)
+        }
     }
 
     /**
