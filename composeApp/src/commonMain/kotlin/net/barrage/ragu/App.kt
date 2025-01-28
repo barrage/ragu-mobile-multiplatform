@@ -44,10 +44,13 @@ import net.barrage.ragu.ui.main.rememberAppState
 import net.barrage.ragu.ui.screens.camera.CameraModal
 import net.barrage.ragu.ui.screens.camera.CameraOptionsModal
 import net.barrage.ragu.ui.screens.camera.CameraSource
+import net.barrage.ragu.ui.screens.camera.crop.CropScreen
 import net.barrage.ragu.ui.theme.RaguTheme
 import net.barrage.ragu.utils.SnackbarHelper
 import net.barrage.ragu.utils.coreComponent
 import net.barrage.ragu.utils.debugLogError
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.camera_permission_denied
@@ -61,7 +64,7 @@ import ragumultiplatform.composeapp.generated.resources.message_evaluated
  * @param onThemeChange Callback function to be invoked when the theme changes. It receives a Boolean
  *                      indicating whether dark mode is enabled.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
 fun App(
     modifier: Modifier = Modifier,
@@ -94,6 +97,9 @@ fun App(
 
     var cameraOptionsModalBottomSheetVisible by
     remember { mutableStateOf(cameraOptionsModalBottomSheetState.isVisible) }
+
+    var tempProfileImageByteArray by remember { mutableStateOf<ByteArray?>(null) }
+    var cropScreenVisible by remember { mutableStateOf(false) }
 
     var cameraSource by remember { mutableStateOf<CameraSource?>(null) }
 
@@ -194,9 +200,8 @@ fun App(
                                     appState.coroutineScope.launch {
                                         when (source) {
                                             CameraSource.PROFILE -> {
-                                                appState.chatViewModel.updateAvatar(
-                                                    imageByteArray
-                                                )
+                                                tempProfileImageByteArray = imageByteArray
+                                                cropScreenVisible = true
                                                 cameraModalBottomSheetState.hide()
                                                 cameraModalBottomSheetVisible = false
                                             }
@@ -226,9 +231,8 @@ fun App(
                                     appState.coroutineScope.launch {
                                         when (source) {
                                             CameraSource.PROFILE -> {
-                                                appState.chatViewModel.updateAvatar(
-                                                    imageByteArray
-                                                )
+                                                tempProfileImageByteArray = imageByteArray
+                                                cropScreenVisible = true
                                                 cameraOptionsModalBottomSheetState.hide()
                                                 cameraOptionsModalBottomSheetVisible = false
                                             }
@@ -290,13 +294,13 @@ fun App(
                                                 )
                                                 SnackbarHelper.getInstance()
                                                     .showSnackbar(messageRes = Res.string.camera_permission_denied)
-
                                             }
                                         }
                                     }
                                 },
                             )
                         }
+
                         SnackbarHost(
                             hostState = snackbarHostState,
                             modifier = Modifier.align(Alignment.BottomCenter)
@@ -312,8 +316,21 @@ fun App(
                             )
                         }
                     }
+
                 }
+
             }
+
         }
+
+    }
+    if (cropScreenVisible && tempProfileImageByteArray != null) {
+        CropScreen(
+            onImagePicked = {
+                appState.chatViewModel.updateAvatar(it)
+                cropScreenVisible = false
+            },
+            inputImage = tempProfileImageByteArray?.decodeToImageBitmap(),
+        )
     }
 }

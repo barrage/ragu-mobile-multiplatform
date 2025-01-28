@@ -109,6 +109,7 @@ kotlin {
             // Commented out until Peekaboo is updated to latest Compose
             // implementation(libs.peekaboo.ui)
             implementation(libs.moko.permissions)
+            implementation(libs.krop.core)
         }
 
         /*desktopMain.dependencies {
