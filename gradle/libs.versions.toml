@@ -7,13 +7,13 @@ androidx-activityCompose = "1.10.0"
 compose-plugin = "1.7.3"
 datastorePreferencesCore = "1.1.2"
 konnection = "1.4.3"
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 koin = "4.0.2"
 kotlinxCollectionsImmutable = "0.3.8"
 kotlinxDatetime = "0.6.1"
 #compottie = "2.0.0-rc02"
 landscapistCoil = "2.4.6"
-materialKolor = "2.0.0"
+materialKolor = "2.0.1"
 markdownRenderer = "0.29.0"
 napier = "2.7.1"
 navigationCompose = "2.8.0-alpha12"
@@ -38,7 +38,6 @@ accompanist = "0.37.0"
 androidxCamera = "1.4.1"
 androidxLifecycle = "2.8.7"
 kotlinxCoroutinesGuava = "1.10.1"
-paging = "3.3.0-alpha05"
 krop = "0.1.6"
 
 [libraries]
@@ -101,8 +100,6 @@ camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "and
 camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "androidxCamera" }
 camera-view = { module = "androidx.camera:camera-view", version.ref = "androidxCamera" }
 kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "kotlinxCoroutinesGuava" }
-paging-common = { module = "app.cash.paging:paging-common", version.ref = "paging" }
-paging-compose-common = { module = "app.cash.paging:paging-compose-common", version.ref = "paging" }
 
 #Krop
 krop-core = { module = "com.attafitamim.krop:core", version.ref = "krop" }

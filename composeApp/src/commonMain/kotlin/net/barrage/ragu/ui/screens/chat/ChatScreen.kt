@@ -64,7 +64,6 @@ import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.ui.components.reveal.RevealOverlayContent
 import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.screens.profile.ProfileContent
-import net.barrage.ragu.utils.debugLog
 import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.additional_evaluation_feedback_label
@@ -120,15 +119,12 @@ fun ChatScreen(
     OnEventListener {
         if (it == Lifecycle.Event.ON_RESUME) {
             scope.launch {
-                debugLog("ChatScreen resumed")
                 checkAuth()
-                viewModel.loadAllData()
                 viewModel.webSocketManager.reconnect()
+                viewModel.loadAllData()
             }
         } else if (it == Lifecycle.Event.ON_PAUSE) {
             scope.launch {
-                debugLog("ChatScreen paused")
-                debugLog("current chat screen state: $chatScreenState")
                 if ((chatScreenState as ChatScreenState.Success).messages.isEmpty()) {
                     viewModel.webSocketManager.setChatId(null)
                 }

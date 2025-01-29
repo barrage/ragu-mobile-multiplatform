@@ -176,12 +176,9 @@ class WebSocketChatClient(
                 isChatOpen.value = false
                 isOpeningChat = false
                 agentFlowJob?.cancel()
+                connectionJob?.cancel()
                 agentFlowJob = launch {
                     selectedAgentFlow.collectLatest { agent ->
-                        debugLog("Selected agent changed: $agent")
-                        debugLog("Current chat ID: ${currentChatId.value}")
-                        debugLog("Is chat open: ${isChatOpen.value}")
-                        debugLog("Current agent: ${selectedAgent.value}")
                         agent?.let {
                             if (it.active && !isOpeningChat) {
                                 if (selectedAgent.value?.id != agent.id && currentChatId.value == null) {
