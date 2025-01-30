@@ -39,6 +39,14 @@ interface TokenStorage {
      * Clears the saved PKCE code verifier.
      */
     suspend fun clearCodeVerifier()
+
+    suspend fun saveDeepLink(deepLink: String)
+    suspend fun getDeepLink(): String?
+    suspend fun clearDeepLink()
+
+    suspend fun saveProvider(provider: String)
+    suspend fun getProvider(): String?
+    suspend fun clearProvider()
 }
 
 /**
@@ -48,6 +56,8 @@ interface TokenStorage {
 class InMemoryTokenStorage : TokenStorage {
     private var cookie: String? = null
     private var codeVerifier: String? = null
+    private var deepLink: String? = null
+    private var provider: String? = null
 
     override suspend fun saveCookie(cookie: String) {
         this.cookie = cookie
@@ -67,6 +77,24 @@ class InMemoryTokenStorage : TokenStorage {
 
     override suspend fun clearCodeVerifier() {
         codeVerifier = null
+    }
+
+    override suspend fun saveDeepLink(deepLink: String) {
+        this.deepLink = deepLink
+    }
+
+    override suspend fun getDeepLink(): String? = deepLink
+    override suspend fun clearDeepLink() {
+        deepLink = null
+    }
+
+    override suspend fun saveProvider(provider: String) {
+        this.provider = provider
+    }
+
+    override suspend fun getProvider(): String? = provider
+    override suspend fun clearProvider() {
+        provider = null
     }
 }
 
@@ -100,4 +128,29 @@ class DataStoreTokenStorage(private val appPreferences: AppPreferences) : TokenS
     override suspend fun clearCodeVerifier() {
         appPreferences.clearCodeVerifier()
     }
+
+    override suspend fun saveDeepLink(deepLink: String) {
+        appPreferences.saveDeepLink(deepLink)
+    }
+
+    override suspend fun getDeepLink(): String? {
+        return appPreferences.getDeepLink()
+    }
+
+    override suspend fun clearDeepLink() {
+        appPreferences.clearDeepLink()
+    }
+
+    override suspend fun saveProvider(provider: String) {
+        appPreferences.saveProvider(provider)
+    }
+
+    override suspend fun getProvider(): String? {
+        return appPreferences.getProvider()
+    }
+
+    override suspend fun clearProvider() {
+        appPreferences.clearProvider()
+    }
+
 }

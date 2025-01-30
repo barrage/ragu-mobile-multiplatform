@@ -37,6 +37,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.barrage.ragu.ui.main.MainContent
 import net.barrage.ragu.ui.main.Overlays
 import net.barrage.ragu.ui.main.navigateToLogin
@@ -105,7 +106,11 @@ fun App(
 
     var navigateToSettings by remember { mutableStateOf(false) }
 
-    DeepLinkListener { deepLink = it }
+    DeepLinkListener {
+        runBlocking {
+            appState.loginViewModel.saveDeepLink(it.data)
+        }
+    }
     LaunchedEffect(Unit) {
         isDarkTheme = coreComponent.appPreferences.getDarkModeEnabled()
         selectedTheme = coreComponent.appPreferences.getThemeColor()

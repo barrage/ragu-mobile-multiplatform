@@ -10,25 +10,24 @@ import net.barrage.ragu.domain.remote.ktor.Api
 import net.barrage.ragu.domain.repository.AuthRepository
 
 class AuthRepositoryImpl(private val api: Api) : AuthRepository {
-    override suspend fun login(parameters: Parameters): Flow<Response<AuthToken>> = flow {
-        emit(Response.Loading)
+    override suspend fun login(parameters: Parameters): Response<AuthToken> {
         try {
-            when (val response = api.login(parameters)) {
+            return when (val response = api.login(parameters)) {
                 is Response.Success -> {
                     val cookie = extractCookie(response.data)
                     if (cookie != null) {
-                        emit(Response.Success(AuthToken(cookie)))
+                        (Response.Success(AuthToken(cookie)))
                     } else {
-                        emit(Response.Failure(Exception("Auth cookie not found in response")))
+                        (Response.Failure(Exception("Auth cookie not found in response")))
                     }
                 }
 
-                is Response.Failure -> emit(response)
-                is Response.Unauthorized -> emit(response)
-                else -> emit(Response.Failure(Exception("Unexpected response type")))
+                is Response.Failure -> (response)
+                is Response.Unauthorized -> (response)
+                else -> (Response.Failure(Exception("Unexpected response type")))
             }
         } catch (e: Exception) {
-            emit(Response.Failure(e))
+            return (Response.Failure(e))
         }
     }
 

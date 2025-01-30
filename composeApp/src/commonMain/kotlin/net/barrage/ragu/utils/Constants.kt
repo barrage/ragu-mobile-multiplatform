@@ -28,7 +28,7 @@ object Constants {
          * The client ID for the application, used in Google OAuth.
          */
         private const val GOOGLE_CLIENT_ID =
-            "983914104581-ndgb7tsdc9eio8rfu1ohsrdprihk7mqi.apps.googleusercontent.com"
+            "321294381659-u64pkim8tmo58f1gjvr8ocht4aehbdst.apps.googleusercontent.com"
 
         /**
          * The client ID for the application, used in AAI OAuth.

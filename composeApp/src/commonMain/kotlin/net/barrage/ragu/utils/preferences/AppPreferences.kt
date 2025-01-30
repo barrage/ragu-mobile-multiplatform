@@ -116,6 +116,14 @@ interface AuthPreferences {
      * @return The updated Preferences.
      */
     suspend fun clearCodeVerifier(): Preferences
+
+    suspend fun saveDeepLink(deepLink: String): Preferences
+    suspend fun getDeepLink(): String?
+    suspend fun clearDeepLink(): Preferences
+
+    suspend fun saveProvider(provider: String): Preferences
+    suspend fun getProvider(): String?
+    suspend fun clearProvider(): Preferences
 }
 
 /**
@@ -218,10 +226,14 @@ private class AuthPreferencesImpl(private val dataStore: DataStore<Preferences>)
         private const val PREFS_TAG_KEY = "AppPreferences"
         private const val COOKIE = "cookie"
         private const val CODE_VERIFIER = "codeVerifier"
+        private const val DEEP_LINK = "deepLink"
+        private const val PROVIDER = "provider"
     }
 
     private val cookieKey = stringPreferencesKey("$PREFS_TAG_KEY$COOKIE")
     private val codeVerifierKey = stringPreferencesKey("$PREFS_TAG_KEY$CODE_VERIFIER")
+    private val deepLinkKey = stringPreferencesKey("$PREFS_TAG_KEY$DEEP_LINK")
+    private val providerKey = stringPreferencesKey("$PREFS_TAG_KEY$PROVIDER")
 
     override suspend fun saveCookie(cookie: String) =
         dataStore.edit { preferences -> preferences[cookieKey] = cookie }
@@ -240,6 +252,24 @@ private class AuthPreferencesImpl(private val dataStore: DataStore<Preferences>)
 
     override suspend fun clearCodeVerifier() =
         dataStore.edit { preferences -> preferences.remove(codeVerifierKey) }
+
+    override suspend fun saveDeepLink(deepLink: String): Preferences =
+        dataStore.edit { preferences -> preferences[deepLinkKey] = deepLink }
+
+    override suspend fun getDeepLink(): String? =
+        dataStore.data.map { preferences -> preferences[deepLinkKey] }.first()
+
+    override suspend fun clearDeepLink(): Preferences =
+        dataStore.edit { preferences -> preferences.remove(deepLinkKey) }
+
+    override suspend fun saveProvider(provider: String): Preferences =
+        dataStore.edit { preferences -> preferences[providerKey] = provider }
+
+    override suspend fun getProvider(): String? =
+        dataStore.data.map { preferences -> preferences[providerKey] }.first()
+
+    override suspend fun clearProvider(): Preferences =
+        dataStore.edit { preferences -> preferences.remove(providerKey) }
 }
 
 /**

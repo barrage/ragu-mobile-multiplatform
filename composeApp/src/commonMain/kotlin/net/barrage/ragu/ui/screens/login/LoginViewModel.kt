@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import net.barrage.ragu.domain.Response
 import net.barrage.ragu.domain.usecase.auth.LoginUseCase
 import net.barrage.ragu.domain.usecase.user.CurrentUserUseCase
+import net.barrage.ragu.utils.DeepLinkParser
 import net.barrage.ragu.utils.PKCEUtil
 import net.barrage.ragu.utils.TokenStorage
 import net.barrage.ragu.utils.debugLogError
@@ -31,6 +32,15 @@ class LoginViewModel(
 ) : ViewModel() {
     private val _loginState = MutableStateFlow<LoginScreenState>(LoginScreenState.Idle)
 
+    init {
+        viewModelScope.launch {
+            val deepLink = tokenStorage.getDeepLink()
+            if (deepLink != null) {
+                login(deepLink)
+            }
+        }
+    }
+
     /**
      * Represents the current state of the login process.
      */
@@ -47,37 +57,82 @@ class LoginViewModel(
         return codeVerifier
     }
 
+    suspend fun saveDeepLink(deepLink: String) {
+        tokenStorage.saveDeepLink(deepLink)
+    }
+
+    fun tryLogin() {
+        viewModelScope.launch {
+            _loginState.value = LoginScreenState.Loading
+            val deepLink = tokenStorage.getDeepLink()
+            if (deepLink != null) {
+                login(deepLink)
+            } else {
+                _loginState.value = LoginScreenState.Idle
+            }
+        }
+    }
+
+    suspend fun saveProvider(provider: String) {
+        tokenStorage.saveProvider(provider)
+    }
+
+    private suspend fun getProvider(): String? {
+        return tokenStorage.getProvider()
+    }
+
     /**
      * Initiates the login process with the provided authorization code.
      *
-     * @param code The authorization code received from the authentication server
+     * @param deepLink The authorization code received from the authentication server
      */
 
-    suspend fun login(code: String) {
-        _loginState.value = LoginScreenState.Loading
-        val codeVerifier = tokenStorage.getCodeVerifier()
+    fun login(deepLink: String) {
+        viewModelScope.launch {
+            val code = DeepLinkParser.extractCodeFromDeepLink(deepLink)
 
-        if (codeVerifier == null) {
-            _loginState.value =
-                LoginScreenState.Error(messageRes = Res.string.code_verifier_null)
-            debugLogError("Login failed: Code verifier is null")
-            return
-        }
+            _loginState.value = LoginScreenState.Loading
 
-        loginUseCase(code, codeVerifier).collectLatest { result ->
-            _loginState.value = when (result) {
+            val codeVerifier = try {
+                tokenStorage.getCodeVerifier()
+            } catch (e: Exception) {
+                debugLogError("Failed to get code verifier", e)
+                null
+            }
+            val currentProvider = getProvider()
+
+            if (codeVerifier == null) {
+                _loginState.value =
+                    LoginScreenState.Error(messageRes = Res.string.code_verifier_null)
+                debugLogError("Login failed: Code verifier is null")
+                return@launch
+            }
+            if (currentProvider == null) {
+                _loginState.value = LoginScreenState.Error(messageRes = Res.string.unexpected_error)
+                debugLogError("Login failed: Provider is null")
+                return@launch
+            }
+            val loginResult =
+                loginUseCase(
+                    code = code ?: "", codeVerifier = codeVerifier,
+                    grantType = "authorization_code",
+                    provider = currentProvider,
+                    source = "android",
+                )
+
+            _loginState.value = when (loginResult) {
                 is Response.Success -> {
                     clearCodeVerifier()
-                    tokenStorage.saveCookie(result.data.value)
+                    tokenStorage.saveCookie(loginResult.data.value)
                     getCurrentUser()
                     LoginScreenState.Loading
                 }
 
                 is Response.Failure -> {
-                    debugLogError("Login failed", result.e)
+                    debugLogError("Login failed", loginResult.e)
                     clearCodeVerifier()
                     LoginScreenState.Error(
-                        message = result.e?.message,
+                        message = loginResult.e?.message,
                         messageRes = Res.string.unexpected_error,
                     )
                 }
@@ -89,6 +144,9 @@ class LoginViewModel(
                     LoginScreenState.Error(messageRes = Res.string.unexpected_error)
                 }
             }
+            tokenStorage.clearDeepLink()
+            tokenStorage.clearProvider()
+            tokenStorage.clearCodeVerifier()
         }
     }
 

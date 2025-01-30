@@ -7,7 +7,7 @@ import net.barrage.ragu.domain.Response
 import net.barrage.ragu.domain.model.AuthToken
 
 interface AuthRepository {
-    suspend fun login(parameters: Parameters): Flow<Response<AuthToken>>
+    suspend fun login(parameters: Parameters): Response<AuthToken>
 
     suspend fun logout(): Flow<Response<HttpResponse>>
 }

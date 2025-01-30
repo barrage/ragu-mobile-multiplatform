@@ -19,27 +19,23 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.theolm.rinku.DeepLink
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.barrage.ragu.ui.components.AppIconCard
 import net.barrage.ragu.ui.components.ErrorDialog
 import net.barrage.ragu.ui.components.ErrorDialogState
-import net.barrage.ragu.utils.DeepLinkParser
+import net.barrage.ragu.utils.debugLog
 import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
 import net.barrage.ragu.utils.isDebug
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.choose_a_login_method
 import ragumultiplatform.composeapp.generated.resources.continue_with_aai
@@ -56,33 +52,14 @@ fun LoginScreen(
     navigateToChat: () -> Unit,
     onGoogleLogin: (String) -> Unit,
     onAaiLogin: (String) -> Unit,
-    viewModel: LoginViewModel = koinViewModel(),
-    deepLink: DeepLink?,
+    viewModel: LoginViewModel,
     scope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
     val loginState by viewModel.loginState.collectAsState()
 
-    val rememberedOnGoogleLogin by rememberUpdatedState(onGoogleLogin)
-    val rememberedOnAaiLogin by rememberUpdatedState(onAaiLogin)
-    val rememberedNavigateToChat by rememberUpdatedState(navigateToChat)
-
-    DisposableEffect(deepLink) {
-        val job = scope.launch {
-            snapshotFlow { deepLink }
-                .collect { currentDeepLink ->
-                    if (currentDeepLink != null && loginState is LoginScreenState.Idle) {
-                        val code = DeepLinkParser.extractCodeFromDeepLink(currentDeepLink.data)
-                        if (code != null) {
-                            viewModel.login(code)
-                        }
-                    }
-                }
-        }
-
-        onDispose {
-            job.cancel()
-        }
+    LaunchedEffect(Unit) {
+        viewModel.tryLogin()
     }
 
     Box(modifier = modifier.fillMaxSize().padding(20.dp), contentAlignment = Alignment.Center) {
@@ -91,14 +68,16 @@ fun LoginScreen(
                 LoginContent(
                     onGoogleLogin = {
                         scope.launch {
+                            viewModel.saveProvider("google")
                             val codeVerifier = viewModel.generateCodeVerifier()
-                            rememberedOnGoogleLogin(codeVerifier)
+                            onGoogleLogin(codeVerifier)
                         }
                     },
                     onAaiLogin = {
                         scope.launch {
+                            viewModel.saveProvider("carnet")
                             val codeVerifier = viewModel.generateCodeVerifier()
-                            rememberedOnAaiLogin(codeVerifier)
+                            onAaiLogin(codeVerifier)
                         }
                     },
                 )
@@ -109,7 +88,10 @@ fun LoginScreen(
             }
 
             is LoginScreenState.Success -> {
-                LaunchedEffect(Unit) { rememberedNavigateToChat() }
+                LaunchedEffect(Unit) {
+                    debugLog("Navigating to chat")
+                    navigateToChat()
+                }
             }
 
             is LoginScreenState.Error -> {
@@ -132,9 +114,8 @@ fun LoginScreen(
                             confirmButton = {
                                 Button(
                                     onClick = {
-                                        scope.launch {
-                                            val codeVerifier = viewModel.generateCodeVerifier()
-                                            rememberedOnGoogleLogin(codeVerifier)
+                                        viewModel.viewModelScope.launch {
+                                            viewModel.clearViewModel()
                                         }
                                     }
                                 ) {

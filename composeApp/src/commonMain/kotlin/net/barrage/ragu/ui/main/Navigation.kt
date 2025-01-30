@@ -57,7 +57,6 @@ fun AppNavHost(
 ) {
     val currentUserUseCase: CurrentUserUseCase = koinInject()
     var startDestination by remember { mutableStateOf<String?>(null) }
-    val loginViewModel = appState.loginViewModel
 
     LaunchedEffect(appState.networkAvailable.value) {
         if (!appState.networkAvailable.value || startDestination != null) return@LaunchedEffect
@@ -142,12 +141,11 @@ fun AppNavHost(
                             }
                         }
                     },
-                    deepLink = deepLink,
                     navigateToChat = {
                         appState.navController.navigateToChat()
                     },
+                    viewModel = appState.loginViewModel,
                     scope = appState.coroutineScope,
-                    viewModel = loginViewModel,
                     modifier = Modifier.fillMaxSize(),
                 )
             }
