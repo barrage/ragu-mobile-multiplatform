@@ -50,6 +50,7 @@ import net.barrage.ragu.ui.theme.RaguTheme
 import net.barrage.ragu.utils.SnackbarHelper
 import net.barrage.ragu.utils.coreComponent
 import net.barrage.ragu.utils.debugLogError
+import net.barrage.ragu.utils.getAndroidVersion
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.stringResource
@@ -109,6 +110,9 @@ fun App(
     DeepLinkListener {
         runBlocking {
             appState.loginViewModel.saveDeepLink(it.data)
+            if (getAndroidVersion() == -1) {
+                appState.loginViewModel.tryLogin()
+            }
         }
     }
     LaunchedEffect(Unit) {
