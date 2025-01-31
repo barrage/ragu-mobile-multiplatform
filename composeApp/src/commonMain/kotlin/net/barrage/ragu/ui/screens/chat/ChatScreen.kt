@@ -126,7 +126,7 @@ fun ChatScreen(
         } else if (it == Lifecycle.Event.ON_PAUSE) {
             scope.launch {
                 if ((chatScreenState as ChatScreenState.Success).messages.isEmpty()) {
-                    viewModel.webSocketManager.setChatId(null)
+                    viewModel.webSocketManager.setChatId(null, null)
                 }
                 viewModel.webSocketManager.disconnect()
             }

@@ -30,7 +30,7 @@ class LoginViewModel(
     private val currentUserUseCase: CurrentUserUseCase,
     private val tokenStorage: TokenStorage,
 ) : ViewModel() {
-    private val _loginState = MutableStateFlow<LoginScreenState>(LoginScreenState.Idle)
+    private val _loginState = MutableStateFlow<LoginScreenState>(LoginScreenState.Loading)
 
     init {
         viewModelScope.launch {
@@ -63,9 +63,9 @@ class LoginViewModel(
 
     fun tryLogin() {
         viewModelScope.launch {
-            _loginState.value = LoginScreenState.Loading
             val deepLink = tokenStorage.getDeepLink()
             if (deepLink != null) {
+                _loginState.value = LoginScreenState.Loading
                 login(deepLink)
             } else {
                 _loginState.value = LoginScreenState.Idle

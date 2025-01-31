@@ -117,7 +117,7 @@ class ChatViewModel(
     suspend fun loadAllData() = coroutineScope {
         val tempChatScreenState = chatStateManager.lastSuccessScreenState ?: chatScreenState.value
         chatStateManager.updateChatScreenState { ChatScreenState.Loading }
-        launch { chatHistoryManager.updateHistory() }
+        launch { chatHistoryManager.updateHistory(currentChatId = webSocketManager.webSocketChatClient?.currentChatId?.value) }
         launch { updateCurrentUser() }
 
         chatUseCase.getAgents(withAvatar = true).collectLatest { agentsResponse ->
@@ -223,7 +223,7 @@ class ChatViewModel(
                     val tempChatScreenState =
                         chatStateManager.lastSuccessScreenState ?: chatScreenState.value
                     if (tempChatScreenState is ChatScreenState.Success && tempChatScreenState.messages.isNotEmpty()) {
-                        webSocketManager.setChatId(it)
+                        webSocketManager.setChatId(it, selectedAgent.value)
                     }
                 })
         }
@@ -291,7 +291,7 @@ class ChatViewModel(
                     chatUseCase.deleteChat(webSocketManager.webSocketChatClient?.currentChatId?.value!!)
                 if (response is Response.Success) {
                     chatStateManager.clearChat()
-                    webSocketManager.setChatId(null)
+                    webSocketManager.setChatId(null, null)
                     isNewChat = true
                 } else {
                     chatStateManager.updateChatScreenState { tempChatScreenState }
@@ -316,7 +316,7 @@ class ChatViewModel(
      * Starts a new chat session.
      */
     fun newChat() {
-        webSocketManager.setChatId(null)
+        webSocketManager.setChatId(null, null)
         val currentState = chatScreenState.value
         if (currentState is ChatScreenState.Success && currentState.isReceivingMessage) {
             webSocketManager.stopMessageStream()
@@ -361,8 +361,10 @@ class ChatViewModel(
                             chatMessagesResponse.data.size < chatMessagesPageSize
                         webSocketManager.setChatId(
                             id,
+                            chatResponse.data.agent,
                             chatMessagesResponse.data.isEmpty()
                         )
+                        setAgent(chatResponse.data.agent)
                         chatHistoryManager.updateHistory(currentChatId = id)
                         chatStateManager.updateChatScreenState {
                             when (tempChatScreenState) {

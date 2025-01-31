@@ -59,8 +59,8 @@ class WebSocketManager(private val webSocketTokenUseCase: WebSocketTokenUseCase)
      *
      * @param chatId The chat ID to set
      */
-    fun setChatId(chatId: String?, isNewChat: Boolean = false) {
-        webSocketChatClient?.setChatId(chatId, isNewChat)
+    fun setChatId(chatId: String?, selectedAgent: Agent?, isNewChat: Boolean = false) {
+        webSocketChatClient?.setChatId(chatId, selectedAgent, isNewChat)
     }
 
     fun getChatId() = webSocketChatClient?.currentChatId?.value

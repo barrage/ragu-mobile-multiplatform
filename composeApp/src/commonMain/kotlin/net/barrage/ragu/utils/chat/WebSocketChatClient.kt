@@ -54,8 +54,6 @@ class WebSocketChatClient(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
     handleChatId: (String?) -> Unit,
 ) {
-    private var wsToken: WebSocketToken? = null
-
     // Current WebSocket session
     private var session: WebSocketSession? = null
 
@@ -88,6 +86,7 @@ class WebSocketChatClient(
             isChatOpen.value = isOpen
             if (isOpen) {
                 isOpeningChat = false
+                receiveMessageCallback.enableSending()
             }
         },
     )
@@ -123,8 +122,9 @@ class WebSocketChatClient(
         disconnect()
         while (this.isActive) {
             try {
-                if (getWsToken()) {
-                    connect()
+                val wsTokenResponse = webSocketTokenUseCase()
+                if (wsTokenResponse is Response.Success) {
+                    connect(wsTokenResponse.data)
                     retryDelay = 1.seconds
                     break
                 } else {
@@ -138,38 +138,10 @@ class WebSocketChatClient(
         }
     }
 
-    /** Fetches a new WebSocket token */
-    private suspend fun getWsToken(): Boolean {
-        var result = false
-        webSocketTokenUseCase().collectLatest { response ->
-            result = when (response) {
-                is Response.Success -> {
-                    wsToken = response.data
-                    true
-                }
+    private suspend fun connect(wsToken: WebSocketToken) {
+        val serverUri = "wss://${Constants.BASE_URL}/?token=${wsToken.value}"
 
-                is Response.Loading -> {
-                    // Optionally handle loading state
-                    false
-                }
-
-                else -> {
-                    // Handle failure cases
-                    debugLogError(
-                        "Failed to obtain WebSocket token",
-                        (response as? Response.Failure)?.e
-                    )
-                    false
-                }
-            }
-        }
-        return result
-    }
-
-    /** Establishes a WebSocket connection to the server. */
-    private suspend fun connect() {
         try {
-            val serverUri = "wss://${Constants.BASE_URL}/?token=${wsToken?.value}"
             wsClient.webSocket(serverUri) {
                 receiveMessageCallback.enableSending()
                 session = this
@@ -180,9 +152,9 @@ class WebSocketChatClient(
                 agentFlowJob = launch {
                     selectedAgentFlow.collectLatest { agent ->
                         agent?.let {
-                            if (it.active && !isOpeningChat) {
-                                if (selectedAgent.value?.id != agent.id && currentChatId.value == null) {
-                                    selectedAgent.value = agent
+                            selectedAgent.value = agent
+                            if (it.active) {
+                                if (currentChatId.value == null) {
                                     openNewChat(it)
                                 } else if (currentChatId.value != null) {
                                     openExistingChat(currentChatId.value!!)
@@ -273,6 +245,10 @@ class WebSocketChatClient(
             debugLog("Chat opening already in progress, skipping openNewChat")
             return
         }
+        if (!selectedAgent.active) {
+            debugLog("Selected agent is not active, skipping openExistingChat")
+            return
+        }
         debugLog("Opening new chat")
         isOpeningChat = true
         val openChatMessage = buildJsonObject {
@@ -294,6 +270,11 @@ class WebSocketChatClient(
             debugLog("Chat opening already in progress, skipping openExistingChat")
             return
         }
+        if (selectedAgent.value?.active != true) {
+            debugLog("Selected agent is not active, skipping openExistingChat")
+            return
+        }
+        debugLog("selectedAgent: ${selectedAgent.value}")
         debugLog("Opening existing chat: $chatId")
         isOpeningChat = true
         val openChatMessage = buildJsonObject {
@@ -318,7 +299,7 @@ class WebSocketChatClient(
 
     /** Disconnects the WebSocket client and closes the current chat. */
     suspend fun disconnect() {
-        if (wsClient.isActive && session?.isActive == true) {
+        if (session != null) {
             connectionJob?.cancel()
             connectionJob = null
 
@@ -347,7 +328,7 @@ class WebSocketChatClient(
     }
 
     /** Sets the current chat ID and agent. */
-    fun setChatId(chatId: String?, isNewChat: Boolean) {
+    fun setChatId(chatId: String?, selectedAgent: Agent?, isNewChat: Boolean) {
         if (chatId == currentChatId.value && isChatOpen.value) {
             return
         }
@@ -356,10 +337,14 @@ class WebSocketChatClient(
             return
         }
         currentChatId.value = chatId
+        if ((selectedAgent?.active == false)) {
+            debugLog("Selected agent is not active, skipping setChatId")
+            return
+        }
         isChatOpen.value = false
 
         if (isNewChat || chatId == null) {
-            selectedAgent.value?.let { openNewChat(it) }
+            selectedAgent?.let { openNewChat(selectedAgent) }
         } else {
             openExistingChat(chatId)
         }
