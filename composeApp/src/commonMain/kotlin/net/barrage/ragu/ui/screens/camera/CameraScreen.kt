@@ -116,10 +116,7 @@ fun CameraScreen(
             PeekabooCamera(
                 state = state,
                 modifier = Modifier.fillMaxSize(),
-                permissionDeniedContent = {
-                    scope.launch {
-                    }
-                },
+                permissionDeniedContent = {},
             )
             Box(
                 modifier = Modifier.fillMaxSize()

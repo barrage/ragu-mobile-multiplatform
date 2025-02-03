@@ -45,7 +45,7 @@ import net.barrage.ragu.ui.main.rememberAppState
 import net.barrage.ragu.ui.screens.camera.CameraModal
 import net.barrage.ragu.ui.screens.camera.CameraOptionsModal
 import net.barrage.ragu.ui.screens.camera.CameraSource
-import net.barrage.ragu.ui.screens.camera.crop.CropScreen
+import net.barrage.ragu.ui.screens.camera.crop.CropModal
 import net.barrage.ragu.ui.theme.RaguTheme
 import net.barrage.ragu.utils.SnackbarHelper
 import net.barrage.ragu.utils.coreComponent
@@ -94,14 +94,18 @@ fun App(
     val cameraOptionsModalBottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
+    val cropModalBottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     var cameraModalBottomSheetVisible by
     remember { mutableStateOf(cameraModalBottomSheetState.isVisible) }
 
     var cameraOptionsModalBottomSheetVisible by
     remember { mutableStateOf(cameraOptionsModalBottomSheetState.isVisible) }
+    var cropModalBottomSheetVisible by
+    remember { mutableStateOf(cropModalBottomSheetState.isVisible) }
 
     var tempProfileImageByteArray by remember { mutableStateOf<ByteArray?>(null) }
-    var cropScreenVisible by remember { mutableStateOf(false) }
 
     var cameraSource by remember { mutableStateOf<CameraSource?>(null) }
 
@@ -203,16 +207,20 @@ fun App(
                             CameraModal(
                                 sheetState = cameraModalBottomSheetState,
                                 onSheetDismiss = {
-                                    cameraModalBottomSheetVisible = false
+                                    appState.coroutineScope.launch {
+                                        cameraModalBottomSheetState.hide()
+                                        cameraModalBottomSheetVisible = false
+                                    }
                                 },
                                 onImagePicked = { imageByteArray, source ->
                                     appState.coroutineScope.launch {
                                         when (source) {
                                             CameraSource.PROFILE -> {
                                                 tempProfileImageByteArray = imageByteArray
-                                                cropScreenVisible = true
                                                 cameraModalBottomSheetState.hide()
                                                 cameraModalBottomSheetVisible = false
+                                                cropModalBottomSheetVisible = true
+                                                cropModalBottomSheetState.show()
                                             }
 
                                             else -> {
@@ -234,16 +242,22 @@ fun App(
                             CameraOptionsModal(
                                 sheetState = cameraOptionsModalBottomSheetState,
                                 onSheetDismiss = {
-                                    cameraOptionsModalBottomSheetVisible = false
+                                    appState.coroutineScope.launch {
+                                        cameraOptionsModalBottomSheetState.hide()
+                                        cameraOptionsModalBottomSheetVisible = false
+                                    }
                                 },
                                 onImagePicked = { imageByteArray, source ->
                                     appState.coroutineScope.launch {
                                         when (source) {
                                             CameraSource.PROFILE -> {
-                                                tempProfileImageByteArray = imageByteArray
-                                                cropScreenVisible = true
+                                                cameraModalBottomSheetState.hide()
+                                                cameraModalBottomSheetVisible = false
                                                 cameraOptionsModalBottomSheetState.hide()
                                                 cameraOptionsModalBottomSheetVisible = false
+                                                tempProfileImageByteArray = imageByteArray
+                                                cropModalBottomSheetVisible = true
+                                                cropModalBottomSheetState.show()
                                             }
 
                                             else -> {
@@ -310,6 +324,30 @@ fun App(
                             )
                         }
 
+                        if (cropModalBottomSheetVisible && tempProfileImageByteArray != null) {
+                            val decodedBitmap = remember(tempProfileImageByteArray) {
+                                tempProfileImageByteArray?.decodeToImageBitmap()
+                            }
+                            CropModal(
+                                onImagePicked = {
+                                    appState.coroutineScope.launch {
+                                        cropModalBottomSheetState.hide()
+                                        cropModalBottomSheetVisible = false
+                                        appState.chatViewModel.updateAvatar(it)
+                                    }
+                                },
+                                onSheetDismiss = {
+                                    appState.coroutineScope.launch {
+                                        cropModalBottomSheetState.hide()
+                                        cropModalBottomSheetVisible = false
+                                        tempProfileImageByteArray = null
+                                    }
+                                },
+                                inputImage = decodedBitmap,
+                                sheetState = cropModalBottomSheetState,
+                            )
+                        }
+
                         SnackbarHost(
                             hostState = snackbarHostState,
                             modifier = Modifier.align(Alignment.BottomCenter)
@@ -325,21 +363,8 @@ fun App(
                             )
                         }
                     }
-
                 }
-
             }
-
         }
-
-    }
-    if (cropScreenVisible && tempProfileImageByteArray != null) {
-        CropScreen(
-            onImagePicked = {
-                appState.chatViewModel.updateAvatar(it)
-                cropScreenVisible = false
-            },
-            inputImage = tempProfileImageByteArray?.decodeToImageBitmap(),
-        )
     }
 }
