@@ -37,7 +37,7 @@ import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
-import ragumultiplatform.composeapp.generated.resources.ic_ragu
+import ragumultiplatform.composeapp.generated.resources.ic_pevex
 import ragumultiplatform.composeapp.generated.resources.new_chat
 
 @Composable
@@ -60,7 +60,11 @@ fun ModalDrawer(
     modifier: Modifier = Modifier,
 ) {
     val historyViewState by viewModel.historyViewState.collectAsState()
-    ModalDrawerSheet(modifier = modifier) {
+    ModalDrawerSheet(
+        modifier = modifier,
+        drawerContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+        drawerContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+    ) {
         Column {
             ModalDrawerContentTopBar(
                 viewState = historyViewState,
@@ -106,7 +110,7 @@ fun ModalDrawer(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
-                        painter = painterResource(Res.drawable.ic_ragu),
+                        painter = painterResource(Res.drawable.ic_pevex),
                         null,
                         modifier = Modifier.width(32.dp)
                     )
@@ -161,5 +165,5 @@ fun ModalDrawer(
 
 @Composable
 fun HistoryDivider(modifier: Modifier = Modifier) {
-    HorizontalDivider(modifier.height(1.dp))
+    HorizontalDivider(modifier.height(1.dp), color = MaterialTheme.colorScheme.onSecondaryContainer)
 }

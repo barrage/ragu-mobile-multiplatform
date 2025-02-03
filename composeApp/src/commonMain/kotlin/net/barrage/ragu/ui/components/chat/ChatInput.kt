@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -33,9 +34,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.ui.theme.customTypography
-import org.jetbrains.compose.resources.painterResource
-import ragumultiplatform.composeapp.generated.resources.Res
-import ragumultiplatform.composeapp.generated.resources.ic_camera_add
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -81,52 +79,65 @@ fun ChatInput(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
+                focusedContainerColor = if (state.inputText.isEmpty()) MaterialTheme.colorScheme.primaryContainer.copy(
+                    alpha = 0.6f
+                ) else MaterialTheme.colorScheme.primaryContainer,
                 unfocusedContainerColor =
-                if (state.inputText.isEmpty()) TextFieldDefaults.colors().focusedContainerColor.copy(
+                if (state.inputText.isEmpty()) MaterialTheme.colorScheme.secondaryContainer.copy(
                     alpha = 0.4f
-                ) else TextFieldDefaults.colors().focusedContainerColor,
+                ) else MaterialTheme.colorScheme.secondaryContainer,
                 disabledContainerColor =
-                TextFieldDefaults.colors().focusedContainerColor.copy(alpha = 0.2f),
+                MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.2f),
+                focusedPlaceholderColor = if (state.inputText.isEmpty()) MaterialTheme.colorScheme.onPrimaryContainer.copy(
+                    alpha = 0.6f
+                ) else MaterialTheme.colorScheme.onPrimaryContainer,
                 unfocusedPlaceholderColor =
-                if (state.inputText.isEmpty()) TextFieldDefaults.colors().unfocusedPlaceholderColor.copy(
+                if (state.inputText.isEmpty()) MaterialTheme.colorScheme.onSecondaryContainer.copy(
                     alpha = 0.6f
-                ) else TextFieldDefaults.colors().unfocusedPlaceholderColor,
+                ) else MaterialTheme.colorScheme.onSecondaryContainer,
                 disabledPlaceholderColor =
-                TextFieldDefaults.colors().disabledPlaceholderColor.copy(alpha = 0.2f),
+                MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.2f),
+                focusedSuffixColor = if (state.inputText.isEmpty()) MaterialTheme.colorScheme.onPrimaryContainer.copy(
+                    alpha = 0.6f
+                ) else MaterialTheme.colorScheme.onPrimaryContainer,
                 unfocusedSuffixColor =
-                if (state.inputText.isEmpty()) TextFieldDefaults.colors().unfocusedSuffixColor.copy(
+                if (state.inputText.isEmpty()) MaterialTheme.colorScheme.onSecondaryContainer.copy(
                     alpha = 0.6f
-                ) else TextFieldDefaults.colors().unfocusedSuffixColor,
+                ) else MaterialTheme.colorScheme.onSecondaryContainer,
                 disabledSuffixColor =
-                TextFieldDefaults.colors().disabledSuffixColor.copy(alpha = 0.2f),
-                unfocusedPrefixColor = if (state.inputText.isEmpty()) TextFieldDefaults.colors().unfocusedPrefixColor.copy(
+                MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.2f),
+                focusedPrefixColor = if (state.inputText.isEmpty()) MaterialTheme.colorScheme.onPrimaryContainer.copy(
                     alpha = 0.6f
-                ) else TextFieldDefaults.colors().unfocusedPrefixColor,
-                disabledPrefixColor = TextFieldDefaults.colors().disabledPrefixColor.copy(alpha = 0.2f),
-                unfocusedTextColor = if (state.inputText.isEmpty()) TextFieldDefaults.colors().unfocusedTextColor.copy(
+                ) else MaterialTheme.colorScheme.onPrimaryContainer,
+                unfocusedPrefixColor = if (state.inputText.isEmpty()) MaterialTheme.colorScheme.onSecondaryContainer.copy(
                     alpha = 0.6f
-                ) else TextFieldDefaults.colors().unfocusedTextColor,
-                disabledTextColor = TextFieldDefaults.colors().disabledTextColor.copy(alpha = 0.2f),
+                ) else MaterialTheme.colorScheme.onSecondaryContainer,
+                disabledPrefixColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.2f),
+                focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                unfocusedTextColor = if (state.inputText.isEmpty()) MaterialTheme.colorScheme.onSecondaryContainer.copy(
+                    alpha = 0.6f
+                ) else MaterialTheme.colorScheme.onSecondaryContainer,
+                disabledTextColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.2f),
             ),
             prefix = {
-              /*  CompositionLocalProvider(
-                    LocalMinimumInteractiveComponentEnforcement provides false
-                ) {
-                    IconButton(
-                        onClick = {
-                            state.onCameraClick()
-                            state.focusManager.clearFocus()
-                        },
-                        enabled = state.isEnabled && state.isReceivingMessage.not(),
-                        modifier = Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
-                            .padding(end = 4.dp),
-                    ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_camera_add),
-                            contentDescription = null,
-                        )
-                    }
-                }*/
+                /*  CompositionLocalProvider(
+                      LocalMinimumInteractiveComponentEnforcement provides false
+                  ) {
+                      IconButton(
+                          onClick = {
+                              state.onCameraClick()
+                              state.focusManager.clearFocus()
+                          },
+                          enabled = state.isEnabled && state.isReceivingMessage.not(),
+                          modifier = Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
+                              .padding(end = 4.dp),
+                      ) {
+                          Icon(
+                              painter = painterResource(Res.drawable.ic_camera_add),
+                              contentDescription = null,
+                          )
+                      }
+                  }*/
             },
             suffix = {
                 CompositionLocalProvider(

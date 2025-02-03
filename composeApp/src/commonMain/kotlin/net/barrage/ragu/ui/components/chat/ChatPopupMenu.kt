@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +51,10 @@ fun ChatPopupMenu(state: ChatPopupMenuState, modifier: Modifier = Modifier) {
             Card(
                 shape = RoundedCornerShape(12.dp),
                 modifier = modifier.widthIn(min = 0.dp, max = 200.dp).padding(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
             ) {
                 Column(
                     modifier = Modifier.width(IntrinsicSize.Max).padding(12.dp),

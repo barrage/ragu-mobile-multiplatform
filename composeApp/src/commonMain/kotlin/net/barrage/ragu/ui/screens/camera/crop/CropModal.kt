@@ -2,6 +2,7 @@ package net.barrage.ragu.ui.screens.camera.crop
 
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
@@ -59,7 +60,9 @@ fun CropModal(
             sheetState = sheetState,
             dragHandle = { },
             shape = RectangleShape,
-            modifier = modifier.wrapContentHeight()
+            modifier = modifier.wrapContentHeight(),
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
         ) {
             val cropState = imageCropper.cropState
             if (cropState != null && sheetState.isVisible) {

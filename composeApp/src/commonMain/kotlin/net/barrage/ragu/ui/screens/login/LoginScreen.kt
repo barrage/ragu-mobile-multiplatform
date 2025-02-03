@@ -137,7 +137,10 @@ fun LoginScreen(
 fun LoginContent(onGoogleLogin: () -> Unit, onAaiLogin: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         colors =
-        CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        ),
         elevation = CardDefaults.cardElevation(16.dp),
         modifier = modifier.fillMaxWidth(),
     ) {

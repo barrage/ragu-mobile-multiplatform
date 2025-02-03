@@ -41,7 +41,10 @@ fun ProfileCardHeader(
                 shape = CircleShape,
                 modifier = Modifier
                     .size(74.dp)
-                    .zIndex(1f)
+                    .zIndex(1f), colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                )
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     if (viewState.profileImage != null) {
@@ -68,7 +71,11 @@ fun ProfileCardHeader(
                     .offset(x = 28.dp, y = 19.dp)
                     .zIndex(2f),
                 onClick = { onEditProfileImageClick(CameraSource.PROFILE) },
-                border = CardDefaults.outlinedCardBorder(enabled = true)
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                border = CardDefaults.outlinedCardBorder(true)
             ) {
                 Box(modifier = Modifier.padding(6.dp)) {
                     Icon(

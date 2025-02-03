@@ -1,7 +1,6 @@
 package net.barrage.ragu.ui.screens.history.components.topbar
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -22,11 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.graphics.Color.Companion.LightGray
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.vectorResource
@@ -45,15 +39,14 @@ fun DarkLightThemeSwitcher(
     val rotation: Float by animateFloatAsState(if (isDarkTheme) 180f else 0f, label = "rotation")
     val distance: Dp by
     animateDpAsState(if (isDarkTheme) movingDistance else 0.dp, label = "distance")
-    val color: Color by animateColorAsState(if (isDarkTheme) LightGray else Gray, label = "color")
 
     Box(
         modifier =
         modifier
             .width(movingDistance + iconSize + 8.dp)
             .clip(RoundedCornerShape(90.dp))
-            .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
-            .background(if (isDarkTheme) Black else White)
+            .border(1.dp, MaterialTheme.colorScheme.onSecondaryContainer, CircleShape)
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .clickable { onClick() }
     ) {
         Crossfade(
@@ -73,7 +66,7 @@ fun DarkLightThemeSwitcher(
                 Modifier.size(iconSize)
                     .then(if (isChecked) Modifier.rotate(180F) else Modifier),
                 contentDescription = "dark light theme switch",
-                tint = color,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
             )
         }
     }

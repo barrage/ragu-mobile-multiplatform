@@ -18,6 +18,7 @@ import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -90,7 +91,10 @@ fun MessageItem(
 
                     SenderType.USER -> Unit
                 }
-                Card(shape = RoundedCornerShape(12.dp)) {
+                Card(
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = if (chatMessage.senderType == SenderType.USER) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer),
+                ) {
                     Markdown(
                         chatMessage.content,
                         modifier = Modifier.padding(12.dp).widthIn(max = maxWidth),
@@ -207,7 +211,12 @@ private fun SenderIcon(
     agentAvatarBitmap: ImageBitmap?,
     modifier: Modifier = Modifier
 ) {
-    Card(shape = CircleShape, modifier = modifier.size(24.dp)) {
+    Card(
+        shape = CircleShape, modifier = modifier.size(24.dp), colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary
+        )
+    ) {
         Box(modifier = Modifier.fillMaxSize()) {
             when (senderType) {
                 SenderType.ASSISTANT,

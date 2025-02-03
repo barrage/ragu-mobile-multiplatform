@@ -39,14 +39,14 @@ fun ProfileContent(
                 Text(
                     text = stringResource(it.key) + ":",
                     style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     textAlign = TextAlign.Center,
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
                     text = it.value.value,
                     style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
             }
         }

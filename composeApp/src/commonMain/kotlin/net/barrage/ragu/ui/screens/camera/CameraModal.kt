@@ -2,6 +2,7 @@ package net.barrage.ragu.ui.screens.camera
 
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
@@ -24,7 +25,9 @@ fun CameraModal(
         sheetState = sheetState,
         dragHandle = { },
         shape = RectangleShape,
-        modifier = modifier.wrapContentHeight()
+        modifier = modifier.wrapContentHeight(),
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
     ) {
         CameraScreen(
             onImagePicked = { byteArray ->
