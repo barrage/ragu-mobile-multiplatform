@@ -70,28 +70,50 @@ The project follows a typical Kotlin Multiplatform structure:
 - `gradle/`: Gradle configuration files
 - `build.gradle.kts`: Main Gradle build script
 
-#### Configuration Constants
+## Configuration Setup
 
-The application uses a set of configuration constants defined in
-`composeApp/src/commonMain/kotlin/net/barrage/ragu/utils/Constants.kt`. These constants include:
+The application uses a `config.properties` file for managing API endpoints and authentication
+settings.
 
-##### API Configuration
+### Setting Up Configuration
 
-- `BASE_URL`: The base URL for the API
-    - Current value: `"llmao-kotlin-api-development.barrage.dev"`
+1. Open the `config.example.properties` file and rename it to `config.properties`.
+2. Update the values in `config.properties` with your actual configuration.
 
-##### Authentication Constants
+#### Example Configuration (`config.example.properties`)
 
-- `REDIRECT_PATH`: The path for OAuth redirection
-    - Current value: `"/oauthredirect"`
-- `REDIRECT_URI`: The full redirect URI for the OAuth flow
-    - Current value: `"https://llmao-kotlin-api-development.barrage.dev/oauthredirect"`
+```properties
+# API Configuration
+BASE_URL=api.example.com
+# OAuth Configuration
+GOOGLE_AUTH_URL=https://accounts.google.com/o/oauth2/v2/auth
+AAI_AUTH_URL=https://auth.example.com/oauth/authorize
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+AAI_CLIENT_ID=your-aai-client-id
+REDIRECT_HOST=api.example.com
+REDIRECT_PATH=/oauthredirect
+```
 
-The `Constants.kt` file also includes private constants for Google OAuth configuration, such as the
-authorization URL, client ID, response type, and requested scopes.
+### Constants and Build Configuration
 
-**Note:** Ensure that the BASE_URL and REDIRECT_URI are correctly set for your environment. Update
-these values in the `Constants.kt` file when deploying to your environment.
+The application relies on values from `config.properties` to define constants in `Constants.kt`.
+These constants are built using `BuildConfig`, which extracts values from `config.properties` at
+build time.If `config.properties` is missing or incorrectly set up, the project **will not build**
+since required values will be undefined.
+
+### Important Notes
+
+- **Do not commit `config.properties` to version control.**
+
+- Ensure that `config.properties` is correctly configured and placed in the appropriate directory
+  before running the application.
+
+### Important Notes
+
+- **Do not commit `config.properties` to version control.**
+
+- Ensure that `config.properties` is placed in the correct directory before running the
+  application (only rename the existing example file).
 
 ### Architecture
 

@@ -1,5 +1,7 @@
 package net.barrage.ragu.utils
 
+import RaguMultiplatform.composeApp.BuildConfig
+
 /**
  * Object containing constant values used throughout the application.
  */
@@ -7,62 +9,27 @@ object Constants {
     /**
      * The base URL for the API.
      */
-    const val BASE_URL = "llmao-kotlin-api-development.barrage.dev"
+    const val BASE_URL = BuildConfig.BASE_URL
 
     /**
      * Object containing authentication-related constants and utilities.
      */
     object Auth {
-        /**
-         * The URL for Google's OAuth 2.0 authorization endpoint.
-         */
-        private const val GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
-
-        /**
-         * The URL for AAI's OAuth 2.0 authorization endpoint.
-         */
-        private const val AAI_AUTH_URL =
-            "https://fed-lab.aaiedu.hr/sso/module.php/oidc/authorize.php"
-
-        /**
-         * The client ID for the application, used in Google OAuth.
-         */
-        private const val GOOGLE_CLIENT_ID =
-            "321294381659-u64pkim8tmo58f1gjvr8ocht4aehbdst.apps.googleusercontent.com"
-
-        /**
-         * The client ID for the application, used in AAI OAuth.
-         */
-        private const val AAI_CLIENT_ID = "2cc90ca6-d400-4414-95a8-efb3cbb9f37c"
-
-        /**
-         * The redirect URI for the OAuth flow.
-         */
-        const val REDIRECT_HOST = "llmao-kotlin-api-development.barrage.dev"
-        const val REDIRECT_PATH = "/oauthredirect"
+        private const val GOOGLE_AUTH_URL = BuildConfig.GOOGLE_AUTH_URL
+        private const val AAI_AUTH_URL = BuildConfig.AAI_AUTH_URL
+        private const val GOOGLE_CLIENT_ID = BuildConfig.GOOGLE_CLIENT_ID
+        private const val AAI_CLIENT_ID = BuildConfig.AAI_CLIENT_ID
+        const val REDIRECT_HOST = BuildConfig.REDIRECT_HOST
+        const val REDIRECT_PATH = BuildConfig.REDIRECT_PATH
         const val REDIRECT_URI = "https://$REDIRECT_HOST$REDIRECT_PATH"
 
-        /**
-         * The response type for the OAuth flow. Set to "code" for authorization code flow.
-         */
         private const val RESPONSE_TYPE = "code"
-
-        /**
-         * The scopes requested for the Google OAuth flow.
-         */
         private const val GOOGLE_SCOPE =
             "https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email%20openid"
-
-        /**
-         * The scopes requested for the AAI OAuth flow.
-         */
         private const val AAI_SCOPE = "openid%20email"
 
         /**
          * Generates the full Google OAuth URL with all necessary parameters.
-         *
-         * @param codeVerifier The PKCE code verifier to be used in the OAuth flow.
-         * @return A complete Google OAuth URL as a String.
          */
         suspend fun getGoogleAuthUrl(codeVerifier: String): String {
             return buildString {
@@ -78,9 +45,6 @@ object Constants {
 
         /**
          * Generates the full AAI OAuth URL with all necessary parameters.
-         *
-         * @param codeVerifier The PKCE code verifier to be used in the OAuth flow.
-         * @return A complete AAI OAuth URL as a String.
          */
         suspend fun getAaiAuthUrl(codeVerifier: String): String {
             return buildString {

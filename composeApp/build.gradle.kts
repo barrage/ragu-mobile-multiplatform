@@ -16,6 +16,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.gradle.buildconfig.plugin)
 }
 
 kotlin {
@@ -189,6 +190,57 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+}
+buildConfig {
+    val configFile = File(rootDir, "config.properties")
+    if (!configFile.exists()) {
+        throw GradleException(
+            """
+            Configuration file not found!
+            Please rename 'config.example.properties' to 'config.properties' and update the values.
+        """.trimIndent()
+        )
+    }
+
+    val prop = Properties().apply {
+        load(FileInputStream(configFile))
+    }
+
+    // List of required properties
+    val requiredProperties = listOf(
+        "BASE_URL",
+        "GOOGLE_AUTH_URL",
+        "AAI_AUTH_URL",
+        "GOOGLE_CLIENT_ID",
+        "AAI_CLIENT_ID",
+        "REDIRECT_HOST",
+        "REDIRECT_PATH"
+    )
+
+    // Check for missing properties
+    val missingProperties = requiredProperties.filter { prop.getProperty(it).isNullOrBlank() }
+    if (missingProperties.isNotEmpty()) {
+        throw GradleException(
+            """
+Missing required properties in config.properties:
+${missingProperties.joinToString("\n") { "- $it" }}       
+Please check config.example.properties for the required format.
+        """.trimIndent()
+        )
+    }
+
+    // Build config fields
+    buildConfigField("String", "BASE_URL", "\"${prop.getProperty("BASE_URL")}\"")
+    buildConfigField("String", "GOOGLE_AUTH_URL", "\"${prop.getProperty("GOOGLE_AUTH_URL")}\"")
+    buildConfigField("String", "AAI_AUTH_URL", "\"${prop.getProperty("AAI_AUTH_URL")}\"")
+    buildConfigField(
+        "String",
+        "GOOGLE_CLIENT_ID",
+        "\"${prop.getProperty("GOOGLE_CLIENT_ID")}\""
+    )
+    buildConfigField("String", "AAI_CLIENT_ID", "\"${prop.getProperty("AAI_CLIENT_ID")}\"")
+    buildConfigField("String", "REDIRECT_HOST", "\"${prop.getProperty("REDIRECT_HOST")}\"")
+    buildConfigField("String", "REDIRECT_PATH", "\"${prop.getProperty("REDIRECT_PATH")}\"")
 }
 
 /*compose.desktop {

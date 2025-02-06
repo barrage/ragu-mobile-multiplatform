@@ -40,6 +40,7 @@ androidxLifecycle = "2.8.7"
 kotlinxCoroutinesGuava = "1.10.1"
 krop = "0.1.6"
 essenty = "2.4.0"
+buildConfig = "5.5.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -117,3 +118,5 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "gradlePlugins-crashlytics" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+gradle-buildconfig-plugin = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }
+
