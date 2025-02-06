@@ -39,6 +39,7 @@ androidxCamera = "1.4.1"
 androidxLifecycle = "2.8.7"
 kotlinxCoroutinesGuava = "1.10.1"
 krop = "0.1.6"
+essenty = "2.4.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -103,6 +104,9 @@ kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-
 
 #Krop
 krop-core = { module = "com.attafitamim.krop:core", version.ref = "krop" }
+
+#Essenty
+essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenty" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

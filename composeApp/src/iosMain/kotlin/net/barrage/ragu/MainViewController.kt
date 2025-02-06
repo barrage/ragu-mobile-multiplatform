@@ -1,6 +1,7 @@
 package net.barrage.ragu
 
 import androidx.compose.ui.window.ComposeUIViewController
+import com.arkivanov.essenty.lifecycle.ApplicationLifecycle
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.crashlytics.crashlytics
 import dev.gitlive.firebase.initialize
@@ -17,7 +18,7 @@ import net.barrage.ragu.utils.AppContext
  *
  * @return A UIViewController that contains the main App composable.
  */
-fun MainViewController() = ComposeUIViewController { App() }
+fun MainViewController() = ComposeUIViewController { App(lifecycle = ApplicationLifecycle()) }
 
 /**
  * Initializes various components and libraries used in the app.

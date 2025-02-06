@@ -7,7 +7,7 @@ interface ReceiveMessageCallback {
 
     fun disableSending()
 
-    fun stopReceivingMessage()
+    fun stopReceivingMessage(messageId: String?)
 
     fun onError(error: String, retry: Boolean = false)
 

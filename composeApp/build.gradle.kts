@@ -110,6 +110,7 @@ kotlin {
             // implementation(libs.peekaboo.ui)
             implementation(libs.moko.permissions)
             implementation(libs.krop.core)
+            implementation(libs.essenty.lifecycle)
         }
 
         /*desktopMain.dependencies {

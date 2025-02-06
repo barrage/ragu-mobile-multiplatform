@@ -115,11 +115,12 @@ class ChatViewModel(
      * Loads all initial data for the chat screen, including agents and user information.
      */
     suspend fun loadAllData() = coroutineScope {
-        val tempChatScreenState = chatStateManager.lastSuccessScreenState ?: chatScreenState.value
         chatStateManager.updateChatScreenState { ChatScreenState.Loading }
+        val tempChatScreenState = chatStateManager.lastSuccessScreenState ?: chatScreenState.value
         launch { chatHistoryManager.updateHistory(currentChatId = webSocketManager.webSocketChatClient?.currentChatId?.value) }
         launch { updateCurrentUser() }
 
+        chatStateManager.updateChatScreenState { ChatScreenState.Loading }
         chatUseCase.getAgents(withAvatar = true).collectLatest { agentsResponse ->
             when (agentsResponse) {
                 is Response.Loading -> {
@@ -132,7 +133,11 @@ class ChatViewModel(
                             is ChatScreenState.Success -> {
                                 val firstAgent = agentsResponse.data.firstOrNull()
                                 val agent =
-                                    if (tempChatScreenState.messages.isNotEmpty()) tempChatScreenState.currentAgent else firstAgent
+                                    if (tempChatScreenState.messages.isNotEmpty()) agentsResponse.data.find { it.id == tempChatScreenState.currentAgent?.id }
+                                        ?: tempChatScreenState.currentAgent?.copy(active = false) else firstAgent
+                                if (webSocketManager.webSocketChatClient?.selectedAgent?.value != agent && agent != null) {
+                                    setAgent(agent)
+                                }
                                 tempChatScreenState.copy(
                                     agents = agentsResponse.data.toImmutableList(),
                                     currentAgent = agent,
@@ -141,8 +146,10 @@ class ChatViewModel(
 
                             else -> {
                                 val agent =
-                                    webSocketManager.webSocketChatClient?.selectedAgent?.value
-                                        ?: agentsResponse.data.firstOrNull()
+                                    agentsResponse.data.find { it.id == webSocketManager.webSocketChatClient?.selectedAgent?.value?.id }
+                                        ?: webSocketManager.webSocketChatClient?.selectedAgent?.value?.copy(
+                                            active = false
+                                        ) ?: agentsResponse.data.firstOrNull()
                                 if (agent != null) {
                                     setAgent(agent)
                                 }
@@ -237,6 +244,7 @@ class ChatViewModel(
      */
     fun setChatTitle(title: String, chatId: String? = null) {
         chatStateManager.setChatTitle(title, chatId)
+        webSocketManager.webSocketChatClient?.currentChatId?.value = chatId
     }
 
     /**
@@ -337,6 +345,7 @@ class ChatViewModel(
             if (webSocketManager.webSocketChatClient?.currentChatId?.value == id) {
                 return@launch
             }
+            chatStateManager.updateChatScreenState { ChatScreenState.Loading }
             currentChatMessagesPage = 1
             isLastChatMessagesPage = false
             val tempChatScreenState =
@@ -567,9 +576,14 @@ class ChatViewModel(
      */
     fun evaluateMessage(message: ChatMessageItem, evaluation: Boolean?, feedback: String? = null) {
         viewModelScope.launch {
-            if (!message.chatId.isNullOrEmpty() && !message.id.isNullOrEmpty()) {
+            if (!webSocketManager.webSocketChatClient?.currentChatId?.value.isNullOrEmpty() && !message.id.isNullOrEmpty()) {
                 val result =
-                    chatUseCase.evaluateMessage(message.chatId, message.id, evaluation, feedback)
+                    chatUseCase.evaluateMessage(
+                        webSocketManager.webSocketChatClient?.currentChatId?.value!!,
+                        message.id,
+                        evaluation,
+                        feedback
+                    )
                 debugLog("Evaluation result: $result")
                 if (result is Response.Success) {
                     chatStateManager.updateMessageEvaluation(message, evaluation)
@@ -685,14 +699,20 @@ class ChatViewModel(
      */
     fun agentDeactivated(agentId: String?) {
         viewModelScope.launch {
-            updateAgents()
             val tempChatScreenState =
                 chatStateManager.lastSuccessScreenState ?: chatScreenState.value
-            if (webSocketManager.webSocketChatClient?.currentChatId?.value != null && tempChatScreenState is ChatScreenState.Success && tempChatScreenState.messages.isNotEmpty()) {
+            if (webSocketManager.webSocketChatClient?.tempChatId?.value != null && tempChatScreenState is ChatScreenState.Success && tempChatScreenState.messages.isNotEmpty()) {
+                if (tempChatScreenState.isReceivingMessage) {
+                    while (chatStateManager.lastSuccessScreenState?.isReceivingMessage == true) {
+                        delay(200)
+                    }
+                }
+                updateAgents()
                 updateAgentForChatId(
-                    webSocketManager.webSocketChatClient?.currentChatId?.value!!,
+                    webSocketManager.webSocketChatClient?.tempChatId?.value!!,
                 )
             } else {
+                updateAgents()
                 newChat()
             }
         }
@@ -746,4 +766,28 @@ class ChatViewModel(
         }
     }
 
+    fun updateLastMessageId(messageId: String?) {
+        val tempChatScreenState = chatStateManager.lastSuccessScreenState ?: chatScreenState.value
+        viewModelScope.launch {
+            if (!messageId.isNullOrEmpty()) {
+                chatStateManager.updateChatScreenState {
+                    when (tempChatScreenState) {
+                        is ChatScreenState.Success -> {
+                            val tempMessages = tempChatScreenState.messages.toMutableList()
+                            val lastIndex = tempMessages.lastIndex
+                            if (lastIndex >= 0) {
+                                tempMessages[lastIndex] =
+                                    tempMessages[lastIndex].copy(id = messageId)
+                            }
+                            tempChatScreenState.copy(
+                                messages = tempMessages.toImmutableList()
+                            )
+                        }
+
+                        else -> tempChatScreenState
+                    }
+                }
+            }
+        }
+    }
 }

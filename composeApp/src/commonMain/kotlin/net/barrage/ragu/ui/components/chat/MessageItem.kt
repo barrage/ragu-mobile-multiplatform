@@ -34,11 +34,8 @@ import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.highlightedCodeBlock
 import com.mikepenz.markdown.compose.elements.highlightedCodeFence
 import com.mikepenz.markdown.m3.Markdown
-import com.mikepenz.markdown.m3.markdownTypography
 import net.barrage.ragu.data.remote.dto.history.SenderType
 import net.barrage.ragu.domain.model.ChatMessageItem
-import net.barrage.ragu.ui.theme.customTypography
-import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
 import net.barrage.ragu.utils.getScreenWidth
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -98,27 +95,6 @@ fun MessageItem(
                     Markdown(
                         chatMessage.content,
                         modifier = Modifier.padding(12.dp).widthIn(max = maxWidth),
-                        typography =
-                        markdownTypography(
-                            text = customTypography().textBase.fixCenterTextOnAllPlatforms(),
-                            h1 = markdownTypography().h1.fixCenterTextOnAllPlatforms(),
-                            h2 = markdownTypography().h2.fixCenterTextOnAllPlatforms(),
-                            h3 = markdownTypography().h3.fixCenterTextOnAllPlatforms(),
-                            h4 = markdownTypography().h4.fixCenterTextOnAllPlatforms(),
-                            h5 = markdownTypography().h5.fixCenterTextOnAllPlatforms(),
-                            h6 = markdownTypography().h6.fixCenterTextOnAllPlatforms(),
-                            code = markdownTypography().code.fixCenterTextOnAllPlatforms(),
-                            inlineCode =
-                            markdownTypography().inlineCode.fixCenterTextOnAllPlatforms(),
-                            quote = markdownTypography().quote.fixCenterTextOnAllPlatforms(),
-                            paragraph =
-                            markdownTypography().paragraph.fixCenterTextOnAllPlatforms(),
-                            ordered =
-                            markdownTypography().ordered.fixCenterTextOnAllPlatforms(),
-                            bullet = markdownTypography().bullet.fixCenterTextOnAllPlatforms(),
-                            list = markdownTypography().list.fixCenterTextOnAllPlatforms(),
-                            link = markdownTypography().link.fixCenterTextOnAllPlatforms(),
-                        ),
                         components =
                         markdownComponents(
                             codeBlock = highlightedCodeBlock,
@@ -139,7 +115,7 @@ fun MessageItem(
                     SenderType.ERROR -> Unit
                 }
             }
-            if (chatMessage.senderType == SenderType.ASSISTANT) {
+            if (chatMessage.senderType == SenderType.ASSISTANT && !chatMessage.id.isNullOrEmpty()) {
                 Row(
                     modifier = Modifier.padding(start = 30.dp, top = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),

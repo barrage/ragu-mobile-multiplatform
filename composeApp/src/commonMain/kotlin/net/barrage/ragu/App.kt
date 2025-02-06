@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.materialkolor.PaletteStyle
 import com.svenjacobs.reveal.RevealCanvas
 import com.svenjacobs.reveal.rememberRevealCanvasState
@@ -70,6 +71,7 @@ import ragumultiplatform.composeapp.generated.resources.message_evaluated
 @Composable
 fun App(
     modifier: Modifier = Modifier,
+    lifecycle: Lifecycle,
     onThemeChange: ((Boolean) -> Unit)? = null,
     onInputEnabled: ((Boolean) -> Unit)? = null
 ) {
@@ -148,7 +150,7 @@ fun App(
                     Box(modifier = Modifier.fillMaxSize()) {
                         MainContent(
                             appState = appState,
-                            deepLink = deepLink,
+                            lifecycle = lifecycle,
                             currentTheme = selectedTheme,
                             currentVariant = selectedVariant,
                             isDarkMode = isDarkTheme,

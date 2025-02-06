@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.arkivanov.essenty.lifecycle.essentyLifecycle
 import dev.theolm.rinku.compose.ext.Rinku
 import net.barrage.ragu.utils.debugLog
 
@@ -48,7 +49,9 @@ class MainActivity : ComponentActivity() {
                 }
                 App(onThemeChange = { darkTheme -> isDarkTheme = darkTheme }, onInputEnabled = {
                     inputEnabled.value = it
-                })
+                },
+                    lifecycle = essentyLifecycle()
+                )
             }
         }
     }

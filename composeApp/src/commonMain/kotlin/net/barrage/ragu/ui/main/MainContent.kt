@@ -14,11 +14,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.materialkolor.PaletteStyle
 import com.svenjacobs.reveal.Reveal
 import com.svenjacobs.reveal.RevealCanvasState
 import com.svenjacobs.reveal.rememberRevealState
-import dev.theolm.rinku.DeepLink
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.barrage.ragu.navigation.Chat
@@ -41,7 +41,7 @@ fun MainContent(
     appState: AppState,
     currentTheme: Color,
     currentVariant: PaletteStyle,
-    deepLink: DeepLink?,
+    lifecycle: Lifecycle,
     revealCanvasState: RevealCanvasState,
     shouldShowOnboardingTutorial: Boolean,
     inputEnabled: Boolean,
@@ -176,7 +176,7 @@ fun MainContent(
                 }
                 AppNavHost(
                     appState = appState,
-                    deepLink = deepLink,
+                    lifecycle = lifecycle,
                     profileVisible = profileVisible,
                     modifier = Modifier.weight(1f).padding(bottom = 20.dp).navigationBarsPadding(),
                     changeProfileVisibility = onProfileVisibilityChange,

@@ -43,7 +43,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.Lifecycle
+import com.arkivanov.essenty.lifecycle.Lifecycle
+import com.arkivanov.essenty.lifecycle.subscribe
 import com.svenjacobs.reveal.Reveal
 import com.svenjacobs.reveal.RevealCanvasState
 import com.svenjacobs.reveal.RevealState
@@ -64,6 +65,7 @@ import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.ui.components.reveal.RevealOverlayContent
 import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.screens.profile.ProfileContent
+import net.barrage.ragu.utils.debugLog
 import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
 import ragumultiplatform.composeapp.generated.resources.additional_evaluation_feedback_label
@@ -95,6 +97,7 @@ fun ChatScreen(
     profileVisible: Boolean,
     networkAvailable: Boolean,
     inputEnabled: Boolean,
+    lifecycle: Lifecycle,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
@@ -116,21 +119,32 @@ fun ChatScreen(
 
     var agentsRefreshing by remember { mutableStateOf(false) }
 
-    OnEventListener {
-        if (it == Lifecycle.Event.ON_RESUME) {
-            scope.launch {
-                checkAuth()
-                viewModel.webSocketManager.reconnect()
-                viewModel.loadAllData()
-            }
-        } else if (it == Lifecycle.Event.ON_PAUSE) {
-            scope.launch {
-                if ((chatScreenState as ChatScreenState.Success).messages.isEmpty()) {
-                    viewModel.webSocketManager.setChatId(null, null)
+    LaunchedEffect(Unit) {
+        lifecycle.subscribe(
+            onCreate = {
+                scope.launch {
+                    initializeWebSocketClient(viewModel, scope)
                 }
-                viewModel.webSocketManager.disconnect()
+            },
+            onResume = {
+                scope.launch {
+                    viewModel.chatStateManager.updateChatScreenState {
+                        ChatScreenState.Loading
+                    }
+                    checkAuth()
+                    viewModel.loadAllData()
+                    viewModel.webSocketManager.reconnect()
+                }
+            },
+            onPause = {
+                scope.launch {
+                    if ((chatScreenState as ChatScreenState.Success).messages.isEmpty()) {
+                        viewModel.webSocketManager.setChatId(null, null)
+                    }
+                    viewModel.webSocketManager.disconnect()
+                }
             }
-        }
+        )
     }
 
     if (chatScreenState is ChatScreenState.Success && (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()) {
@@ -150,10 +164,6 @@ fun ChatScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadAllData()
-        initializeWebSocketClient(viewModel, scope)
-    }
     Box(modifier = modifier.fillMaxSize().onGloballyPositioned {
         with(density) { width = it.size.width.toDp() - 80.dp }
     }) {
@@ -513,9 +523,10 @@ private fun initializeWebSocketClient(viewModel: ChatViewModel, scope: Coroutine
                     viewModel.setSendEnabled(false)
                 }
 
-                override fun stopReceivingMessage() {
+                override fun stopReceivingMessage(messageId: String?) {
                     addNewMessage = true
                     viewModel.setReceivingMessage(false)
+                    viewModel.updateLastMessageId(messageId)
                 }
 
                 override fun setTtsLanguage(language: String) {

@@ -38,8 +38,9 @@ object Constants {
         /**
          * The redirect URI for the OAuth flow.
          */
+        const val REDIRECT_HOST = "llmao-kotlin-api-development.barrage.dev"
         const val REDIRECT_PATH = "/oauthredirect"
-        const val REDIRECT_URI = "https://llmao-kotlin-api-development.barrage.dev$REDIRECT_PATH"
+        const val REDIRECT_URI = "https://$REDIRECT_HOST$REDIRECT_PATH"
 
         /**
          * The response type for the OAuth flow. Set to "code" for authorization code flow.

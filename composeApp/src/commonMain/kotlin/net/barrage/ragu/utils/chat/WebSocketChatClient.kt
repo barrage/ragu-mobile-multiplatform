@@ -20,9 +20,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
+import net.barrage.ragu.data.remote.dto.websocket.CancelStreamPayload
+import net.barrage.ragu.data.remote.dto.websocket.ChatMessage
+import net.barrage.ragu.data.remote.dto.websocket.ExistingWorkflowPayload
+import net.barrage.ragu.data.remote.dto.websocket.NewWorkflowPayload
+import net.barrage.ragu.data.remote.dto.websocket.OutgoingMessage
+import net.barrage.ragu.data.remote.dto.websocket.SystemMessage
 import net.barrage.ragu.domain.Response
 import net.barrage.ragu.domain.model.Agent
 import net.barrage.ragu.domain.model.WebSocketToken
@@ -63,6 +66,9 @@ class WebSocketChatClient(
     // Current chat ID, null if no chat is active
     var currentChatId = mutableStateOf<String?>(null)
 
+    // Temporary chat ID, null if no chat is active
+    var tempChatId = mutableStateOf<String?>(null)
+
     // Flag indicating whether a chat is currently open
     private var isChatOpen = mutableStateOf(false)
 
@@ -77,6 +83,7 @@ class WebSocketChatClient(
     private val messageHandler = MessageHandler(
         receiveMessageCallback,
         handleChatId = { chatId ->
+            tempChatId.value = chatId
             handleChatId(chatId)
             if (chatId != null) {
                 isOpeningChat = false
@@ -143,7 +150,6 @@ class WebSocketChatClient(
 
         try {
             wsClient.webSocket(serverUri) {
-                receiveMessageCallback.enableSending()
                 session = this
                 isChatOpen.value = false
                 isOpeningChat = false
@@ -163,12 +169,14 @@ class WebSocketChatClient(
                         }
                     }
                 }
+                receiveMessageCallback.enableSending()
                 handleIncomingMessages(this)
             }
         } catch (e: Exception) {
             debugLogError("Connection failed", e)
             receiveMessageCallback.disableSending()
             isOpeningChat = false
+            isChatOpen.value = false
         }
     }
 
@@ -192,12 +200,18 @@ class WebSocketChatClient(
         } catch (e: ClosedReceiveChannelException) {
             debugLog("WebSocket Closed: ${e.message}")
             receiveMessageCallback.disableSending()
+            isOpeningChat = false
+            isChatOpen.value = false
         } catch (e: CancellationException) {
             debugLog("WebSocket cancelled: ${e.message}")
             receiveMessageCallback.disableSending()
+            isOpeningChat = false
+            isChatOpen.value = false
         } catch (e: Exception) {
             debugLogError("Error handling incoming messages", e)
             receiveMessageCallback.disableSending()
+            isOpeningChat = false
+            isChatOpen.value = false
         }
     }
 
@@ -232,11 +246,8 @@ class WebSocketChatClient(
 
     /** Sends a chat message to the server. */
     private fun sendChatMessage(message: String) {
-        val chatMessage = buildJsonObject {
-            put("type", "chat")
-            put("text", message)
-        }
-        sendJsonMessage(chatMessage)
+        val chatMessage = ChatMessage(text = message)
+        sendSerializableMessage(chatMessage)
     }
 
     /** Opens a new chat. */
@@ -251,17 +262,12 @@ class WebSocketChatClient(
         }
         debugLog("Opening new chat")
         isOpeningChat = true
-        val openChatMessage = buildJsonObject {
-            put("type", "system")
-            put(
-                "payload",
-                buildJsonObject {
-                    put("type", "chat_open_new")
-                    put("agentId", selectedAgent.id)
-                },
-            )
-        }
-        sendJsonMessage(openChatMessage)
+
+        // To create a new workflow message:
+        val newWorkflow = SystemMessage(
+            payload = NewWorkflowPayload(agentId = selectedAgent.id)
+        )
+        sendSerializableMessage(newWorkflow)
     }
 
     /** Opens an existing chat. */
@@ -277,24 +283,23 @@ class WebSocketChatClient(
         debugLog("selectedAgent: ${selectedAgent.value}")
         debugLog("Opening existing chat: $chatId")
         isOpeningChat = true
-        val openChatMessage = buildJsonObject {
-            put("type", "system")
-            put(
-                "payload",
-                buildJsonObject {
-                    put("type", "chat_open_existing")
-                    put("chatId", chatId)
-                },
-            )
-        }
-        sendJsonMessage(openChatMessage)
+
+        val existingWorkflow = SystemMessage(
+            payload = ExistingWorkflowPayload(workflowId = chatId)
+        )
+        sendSerializableMessage(existingWorkflow)
     }
 
-    /** Sends a JSON message to the server. */
-    private fun sendJsonMessage(jsonObject: JsonObject) {
-        val messageString = Json.encodeToString(jsonObject)
-        debugLog("WebSocket Outgoing: $messageString")
-        scope.launch { session?.send(Frame.Text(messageString)) }
+    /** Sends a serializable message to the server. */
+    private fun sendSerializableMessage(message: OutgoingMessage) {
+        try {
+            val encodedMessage = Json.encodeToString(message)
+            debugLog("WebSocket Outgoing: $encodedMessage")
+            scope.launch { session?.send(Frame.Text(encodedMessage)) }
+        } catch (e: Exception) {
+            debugLogError("Failed to send message", e)
+        }
+
     }
 
     /** Disconnects the WebSocket client and closes the current chat. */
@@ -313,18 +318,17 @@ class WebSocketChatClient(
 
             isChatOpen.value = false
             isOpeningChat = false
-            receiveMessageCallback.stopReceivingMessage()
+            receiveMessageCallback.stopReceivingMessage(null)
             debugLog("WebSocket Disconnected")
         }
     }
 
     /** Sends a message to stop the current message stream. */
     fun stopMessageStream() {
-        val stopStreamMessage = buildJsonObject {
-            put("type", "system")
-            put("payload", buildJsonObject { put("type", "chat_stop_stream") })
-        }
-        sendJsonMessage(stopStreamMessage)
+        val cancelStream = SystemMessage(
+            payload = CancelStreamPayload()
+        )
+        sendSerializableMessage(cancelStream)
     }
 
     /** Sets the current chat ID and agent. */

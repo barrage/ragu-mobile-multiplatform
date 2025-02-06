@@ -19,9 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.svenjacobs.reveal.RevealCanvasState
 import com.svenjacobs.reveal.RevealState
-import dev.theolm.rinku.DeepLink
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import net.barrage.ragu.domain.Response
@@ -46,7 +46,7 @@ fun AppNavHost(
     changeProfileVisibility: () -> Unit,
     changeInputEnabled: (Boolean) -> Unit,
     appState: AppState,
-    deepLink: DeepLink?,
+    lifecycle: Lifecycle,
     revealCanvasState: RevealCanvasState,
     revealState: RevealState,
     profileVisible: Boolean,
@@ -120,6 +120,7 @@ fun AppNavHost(
                         }
                     },
                     openCameraModalBottomSheet = openCameraModalBottomSheet,
+                    lifecycle = lifecycle,
                 )
             }
             composable(Login.route) {
