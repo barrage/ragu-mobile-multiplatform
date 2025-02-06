@@ -197,7 +197,9 @@ buildConfig {
         throw GradleException(
             """
             Configuration file not found!
-            Please rename 'config.example.properties' to 'config.properties' and update the values.
+            Please copy 'config.example.properties' to 'config.properties' and update the values.
+            
+            cp config.example.properties config.properties
         """.trimIndent()
         )
     }

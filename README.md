@@ -77,22 +77,9 @@ settings.
 
 ### Setting Up Configuration
 
-1. Open the `config.example.properties` file and rename it to `config.properties`.
-2. Update the values in `config.properties` with your actual configuration.
-
-#### Example Configuration (`config.example.properties`)
-
-```properties
-# API Configuration
-BASE_URL=api.example.com
-# OAuth Configuration
-GOOGLE_AUTH_URL=https://accounts.google.com/o/oauth2/v2/auth
-AAI_AUTH_URL=https://auth.example.com/oauth/authorize
-GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
-AAI_CLIENT_ID=your-aai-client-id
-REDIRECT_HOST=api.example.com
-REDIRECT_PATH=/oauthredirect
-```
+1. Locate the `config.example.properties` file in the project root.
+2. Make a copy of it and rename it to `config.properties`.
+3. Update the values in `config.properties` with your actual configuration.
 
 ### Constants and Build Configuration
 
