@@ -38,7 +38,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import net.barrage.ragu.ui.main.MainContent
 import net.barrage.ragu.ui.main.Overlays
 import net.barrage.ragu.ui.main.navigateToLogin
@@ -51,7 +50,6 @@ import net.barrage.ragu.ui.theme.RaguTheme
 import net.barrage.ragu.utils.SnackbarHelper
 import net.barrage.ragu.utils.coreComponent
 import net.barrage.ragu.utils.debugLogError
-import net.barrage.ragu.utils.getAndroidVersion
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.stringResource
@@ -114,11 +112,8 @@ fun App(
     var navigateToSettings by remember { mutableStateOf(false) }
 
     DeepLinkListener {
-        runBlocking {
+        appState.coroutineScope.launch {
             appState.loginViewModel.saveDeepLink(it.data)
-            if (getAndroidVersion() == -1) {
-                appState.loginViewModel.tryLogin()
-            }
         }
     }
     LaunchedEffect(Unit) {

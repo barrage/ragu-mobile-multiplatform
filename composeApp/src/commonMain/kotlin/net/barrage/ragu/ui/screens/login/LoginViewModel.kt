@@ -32,15 +32,6 @@ class LoginViewModel(
 ) : ViewModel() {
     private val _loginState = MutableStateFlow<LoginScreenState>(LoginScreenState.Loading)
 
-    init {
-        viewModelScope.launch {
-            val deepLink = tokenStorage.getDeepLink()
-            if (deepLink != null) {
-                login(deepLink)
-            }
-        }
-    }
-
     /**
      * Represents the current state of the login process.
      */
@@ -61,15 +52,13 @@ class LoginViewModel(
         tokenStorage.saveDeepLink(deepLink)
     }
 
-    fun tryLogin() {
-        viewModelScope.launch {
-            val deepLink = tokenStorage.getDeepLink()
-            if (deepLink != null) {
-                _loginState.value = LoginScreenState.Loading
-                login(deepLink)
-            } else {
-                _loginState.value = LoginScreenState.Idle
-            }
+    suspend fun tryLogin() {
+        val deepLink = tokenStorage.getDeepLink()
+        if (!deepLink.isNullOrEmpty()) {
+            _loginState.value = LoginScreenState.Loading
+            login(deepLink)
+        } else {
+            _loginState.value = LoginScreenState.Idle
         }
     }
 
@@ -87,10 +76,8 @@ class LoginViewModel(
      * @param deepLink The authorization code received from the authentication server
      */
 
-    fun login(deepLink: String) {
-        viewModelScope.launch {
+    suspend fun login(deepLink: String) {
             val code = DeepLinkParser.extractCodeFromDeepLink(deepLink)
-
             _loginState.value = LoginScreenState.Loading
 
             val codeVerifier = try {
@@ -105,12 +92,12 @@ class LoginViewModel(
                 _loginState.value =
                     LoginScreenState.Error(messageRes = Res.string.code_verifier_null)
                 debugLogError("Login failed: Code verifier is null")
-                return@launch
+                return
             }
             if (currentProvider == null) {
                 _loginState.value = LoginScreenState.Error(messageRes = Res.string.unexpected_error)
                 debugLogError("Login failed: Provider is null")
-                return@launch
+                return
             }
             val loginResult =
                 loginUseCase(
@@ -147,7 +134,6 @@ class LoginViewModel(
             tokenStorage.clearDeepLink()
             tokenStorage.clearProvider()
             tokenStorage.clearCodeVerifier()
-        }
     }
 
     /**
