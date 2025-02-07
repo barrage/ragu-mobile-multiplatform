@@ -75,7 +75,6 @@ fun ProfileContent(
                             Icon(
                                 Icons.Rounded.Close,
                                 contentDescription = "close",
-                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.clip(CircleShape).clickable { onCloseClick() },
                             )
                         }

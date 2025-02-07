@@ -353,7 +353,6 @@ class ChatViewModel(
             if (tempChatScreenState is ChatScreenState.Success && tempChatScreenState.isReceivingMessage) {
                 webSocketManager.stopMessageStream()
             }
-
             chatUseCase.getChatMessagesById(
                 id, pageSize = chatMessagesPageSize, page = currentChatMessagesPage
             ).combine(
@@ -368,12 +367,6 @@ class ChatViewModel(
                         isNewChat = false
                         isLastChatMessagesPage =
                             chatMessagesResponse.data.size < chatMessagesPageSize
-                        webSocketManager.setChatId(
-                            id,
-                            chatResponse.data.agent,
-                            chatMessagesResponse.data.isEmpty()
-                        )
-                        setAgent(chatResponse.data.agent)
                         chatHistoryManager.updateHistory(currentChatId = id)
                         chatStateManager.updateChatScreenState {
                             when (tempChatScreenState) {
@@ -397,6 +390,12 @@ class ChatViewModel(
                                 )
                             }
                         }
+                        webSocketManager.setChatId(
+                            id,
+                            chatResponse.data.agent,
+                            chatMessagesResponse.data.isEmpty()
+                        )
+                        setAgent(chatResponse.data.agent)
                     }
 
                     chatMessagesResponse is Response.Failure || chatResponse is Response.Failure -> {

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
@@ -39,7 +38,6 @@ import net.barrage.ragu.ui.screens.history.components.topbar.ThemeSelectorButton
 import net.barrage.ragu.utils.coreComponent
 import kotlin.math.ceil
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ModalDrawerContentTopBar(
     onDarkLightModeClick: () -> Unit,

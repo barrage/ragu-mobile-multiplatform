@@ -17,7 +17,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -133,7 +132,6 @@ fun MessageItem(
                             painterResource(Res.drawable.ic_copy),
                             contentDescription =
                             stringResource(Res.string.copy_button_content_description),
-                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(16.dp),
                         )
                     }
@@ -151,7 +149,6 @@ fun MessageItem(
                             stringResource(
                                 Res.string.positive_evaluation_button_content_description
                             ),
-                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(16.dp),
                         )
                     }
@@ -169,7 +166,6 @@ fun MessageItem(
                             stringResource(
                                 Res.string.negative_evaluation_button_content_description
                             ),
-                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(16.dp).rotate(180F),
                         )
                     }

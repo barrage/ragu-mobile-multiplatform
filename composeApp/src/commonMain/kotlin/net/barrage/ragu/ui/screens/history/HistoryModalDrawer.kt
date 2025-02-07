@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
@@ -92,7 +91,7 @@ fun ModalDrawer(
                     },
                 )
             ) {
-                HistoryDivider()
+                HorizontalDivider()
                 Row(
                     modifier =
                     Modifier.fillMaxWidth()
@@ -116,7 +115,7 @@ fun ModalDrawer(
                         style = MaterialTheme.typography.titleMedium.fixCenterTextOnAllPlatforms(),
                     )
                 }
-                HistoryDivider()
+                HorizontalDivider()
             }
             ModalDrawerHistoryContent(
                 modifier = Modifier.weight(1f).fillMaxWidth().revealable(
@@ -141,7 +140,7 @@ fun ModalDrawer(
                 onScrollToBottom = { viewModel.loadMoreHistory() },
                 onUnauthorized = onUnauthorized,
             )
-            HistoryDivider()
+            HorizontalDivider()
             val currentUserViewState by viewModel.currentUserViewState.collectAsState()
             CurrentUserCard(
                 modifier = Modifier.fillMaxWidth(),
@@ -157,9 +156,4 @@ fun ModalDrawer(
             )
         }
     }
-}
-
-@Composable
-fun HistoryDivider(modifier: Modifier = Modifier) {
-    HorizontalDivider(modifier.height(1.dp))
 }

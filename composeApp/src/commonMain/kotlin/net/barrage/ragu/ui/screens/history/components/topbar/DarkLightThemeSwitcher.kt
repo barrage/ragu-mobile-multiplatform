@@ -52,7 +52,7 @@ fun DarkLightThemeSwitcher(
         modifier
             .width(movingDistance + iconSize + 8.dp)
             .clip(RoundedCornerShape(90.dp))
-            .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
             .background(if (isDarkTheme) Black else White)
             .clickable { onClick() }
     ) {

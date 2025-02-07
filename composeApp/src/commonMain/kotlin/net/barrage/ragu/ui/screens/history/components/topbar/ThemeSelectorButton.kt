@@ -25,14 +25,14 @@ fun ThemeSelectorButton(selectedTheme: Color, modifier: Modifier = Modifier, onC
             DarkLightElement(
                 modifier =
                 Modifier.matchParentSize()
-                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
             )
         } else {
             Box(
                 modifier =
                 Modifier.matchParentSize()
                     .background(selectedTheme)
-                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
             )
         }
     }

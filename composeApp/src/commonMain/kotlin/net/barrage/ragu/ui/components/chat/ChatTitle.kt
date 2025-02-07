@@ -109,27 +109,28 @@ fun ChatTitle(
                     modifier = Modifier.padding(4.dp),
                 )
             }
-        }
-        ChatPopupMenu(
-            state =
-            ChatPopupMenuState(
-                visible = state.isMenuVisible,
-                onDismiss = state.onDismiss,
-                menuItems =
-                listOf(
-                    PopupMenuItemState(
-                        Icons.Filled.Edit,
-                        stringResource(Res.string.popup_menu_edit_title),
-                        state.onEditTitleClick,
+
+            ChatPopupMenu(
+                state =
+                ChatPopupMenuState(
+                    visible = state.isMenuVisible,
+                    onDismiss = state.onDismiss,
+                    menuItems =
+                    listOf(
+                        PopupMenuItemState(
+                            Icons.Filled.Edit,
+                            stringResource(Res.string.popup_menu_edit_title),
+                            state.onEditTitleClick,
+                        ),
+                        PopupMenuItemState(
+                            Icons.Filled.Delete,
+                            stringResource(Res.string.popup_menu_delete_chat),
+                            state.onDeleteChatClick,
+                        ),
                     ),
-                    PopupMenuItemState(
-                        Icons.Filled.Delete,
-                        stringResource(Res.string.popup_menu_delete_chat),
-                        state.onDeleteChatClick,
-                    ),
-                ),
+                )
             )
-        )
+        }
     }
     if (state.isEditingTitle) {
         CustomIconButton(
