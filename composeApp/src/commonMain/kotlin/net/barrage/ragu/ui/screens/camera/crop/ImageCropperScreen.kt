@@ -16,9 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -50,10 +48,6 @@ fun ImageCropperScreen(
     CompositionLocalProvider(LocalCropperStyle provides style) {
         Card(
             modifier = modifier.fillMaxHeight(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-            )
         ) {
             Column {
                 Box(
@@ -87,40 +81,21 @@ fun CropBottomBar(state: CropState, modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxWidth().padding(vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Card(
-            onClick = { state.done(accept = false) },
-            shape = CircleShape,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
-        ) {
+        Card(onClick = { state.done(accept = false) }, shape = CircleShape) {
             Icon(
                 Icons.AutoMirrored.Filled.ArrowBack,
                 null,
                 modifier = Modifier.size(72.dp).padding(12.dp)
             )
         }
-        Card(
-            onClick = { state.done(accept = true) },
-            shape = CircleShape,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
-        ) {
+        Card(onClick = { state.done(accept = true) }, shape = CircleShape) {
             Icon(
                 Icons.Default.Done,
                 null,
                 modifier = Modifier.size(72.dp).padding(12.dp)
             )
         }
-        Card(
-            onClick = { state.reset() }, shape = CircleShape, colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
-        ) {
+        Card(onClick = { state.reset() }, shape = CircleShape) {
             Icon(
                 painterResource(Res.drawable.restore),
                 null,

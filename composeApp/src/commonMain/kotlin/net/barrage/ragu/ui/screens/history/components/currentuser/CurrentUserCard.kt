@@ -1,8 +1,8 @@
 package net.barrage.ragu.ui.screens.history.components.currentuser
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -69,12 +68,7 @@ fun CurrentUserCard(
                         revealState.reveal(RevealKeys.MenuClose)
                     }
                 },
-            ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondaryContainer)
+            )
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             when (viewState) {
@@ -94,6 +88,7 @@ fun CurrentUserCard(
                         modifier = Modifier.align(Alignment.Center).padding(vertical = 8.dp)
                             .then(Modifier.size(28.dp))
                     )
+
                 }
 
                 is HistoryScreenStates.Success<ProfileViewState> -> {
@@ -101,6 +96,7 @@ fun CurrentUserCard(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier =
                         Modifier.clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.surfaceDim)
                             .clickable(onClick = onUserClick)
                             .padding(8.dp),
                     ) {
@@ -108,10 +104,7 @@ fun CurrentUserCard(
                             shape = CircleShape,
                             modifier = Modifier
                                 .size(28.dp)
-                                .zIndex(1f), colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.secondary,
-                                contentColor = MaterialTheme.colorScheme.onSecondary
-                            )
+                                .zIndex(1f)
                         ) {
                             Box(modifier = Modifier.fillMaxSize()) {
                                 if (viewState.data.header.profileImage != null) {

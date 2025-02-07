@@ -28,9 +28,9 @@ fun ThemeColorBox(
         modifier =
         modifier
             .padding(1.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(6.dp))
             .background(
-                if (isSelected) MaterialTheme.colorScheme.primaryContainer else Transparent
+                if (isSelected) MaterialTheme.colorScheme.inverseOnSurface else Transparent
             )
             .clickable(onClick = onClick)
             .padding(8.dp)

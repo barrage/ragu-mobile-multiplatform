@@ -25,7 +25,7 @@ fun ModalDrawerHistoryElement(
         modifier
             .then(
                 if (viewState.isSelected) {
-                    Modifier.background(MaterialTheme.colorScheme.primaryContainer)
+                    Modifier.background(MaterialTheme.colorScheme.surfaceDim)
                 } else {
                     Modifier
                 }
@@ -42,11 +42,6 @@ fun ModalDrawerHistoryElement(
             text = viewState.title,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            color = if (viewState.isSelected) {
-                MaterialTheme.colorScheme.onPrimaryContainer
-            } else {
-                MaterialTheme.colorScheme.onSecondaryContainer
-            }
         )
     }
 }

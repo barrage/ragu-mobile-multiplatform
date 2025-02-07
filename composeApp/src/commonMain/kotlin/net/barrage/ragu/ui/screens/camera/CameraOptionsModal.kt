@@ -62,8 +62,6 @@ fun CameraOptionsModal(
         onDismissRequest = onSheetDismiss,
         sheetState = sheetState,
         shape = RoundedCornerShape(12.dp),
-        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
         modifier = modifier.wrapContentHeight()
     ) {
         Column(
@@ -77,11 +75,7 @@ fun CameraOptionsModal(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Card(
-                    shape = CircleShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                    shape = CircleShape
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_camera),
@@ -103,11 +97,7 @@ fun CameraOptionsModal(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Card(
-                    shape = CircleShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                    shape = CircleShape
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_gallery),

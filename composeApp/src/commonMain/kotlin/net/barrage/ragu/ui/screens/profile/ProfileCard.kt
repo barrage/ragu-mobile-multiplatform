@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -49,10 +50,7 @@ fun ProfileContent(
 ) {
     Card(
         shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-        ),
+        colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
         modifier = modifier
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
@@ -81,7 +79,7 @@ fun ProfileContent(
                             Icon(
                                 Icons.Rounded.Close,
                                 contentDescription = "close",
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.clip(CircleShape).clickable { onCloseClick() },
                             )
                         }
@@ -121,9 +119,6 @@ fun ProfileContent(
 @Composable
 fun ProfileSpacer(modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
-        Spacer(
-            Modifier.background(MaterialTheme.colorScheme.onSecondaryContainer).height(1.dp)
-                .fillMaxWidth()
-        )
+        Spacer(Modifier.background(MaterialTheme.colorScheme.outline).height(1.dp).fillMaxWidth())
     }
 }

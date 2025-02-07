@@ -1,7 +1,6 @@
 package net.barrage.ragu.ui.components.chat
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -69,14 +67,10 @@ fun AgentItem(
         CardDefaults.cardColors(
             containerColor =
             if (state.selectedAgentId == state.agent.id)
-                MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.secondaryContainer
+                MaterialTheme.colorScheme.surfaceContainerHighest
+            else MaterialTheme.colorScheme.surfaceContainer
         ),
-        border = BorderStroke(
-            1.dp,
-            if (state.selectedAgentId == state.agent.id) MaterialTheme.colorScheme.inversePrimary
-            else Color.Transparent
-        ),
+        border = CardDefaults.outlinedCardBorder(enabled = state.selectedAgentId == state.agent.id),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
@@ -88,11 +82,7 @@ fun AgentItem(
                     shape = CircleShape,
                     modifier = Modifier
                         .size(28.dp)
-                        .zIndex(1f),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary
-                    )
+                        .zIndex(1f)
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         if (state.agent.avatarBitmap != null) {

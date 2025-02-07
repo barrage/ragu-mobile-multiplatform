@@ -271,13 +271,7 @@ fun ChatScreen(
                             },
                             properties = DialogProperties(usePlatformDefaultWidth = false),
                         ) {
-                            Card(
-                                modifier = Modifier.fillMaxWidth().padding(20.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                )
-                            ) {
+                            Card(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
                                 Column(
                                     modifier = Modifier.padding(20.dp),
                                 ) {
@@ -344,8 +338,7 @@ fun ChatScreen(
                                         scope.launch {
 
                                         }
-                                    }),
-                                revealState = revealState, scope = scope,
+                                    }), revealState = revealState, scope = scope
                             )
                         }
                     } else {
@@ -400,8 +393,7 @@ fun ChatScreen(
             Dialog(
                 onDismissRequest = changeProfileVisibility,
                 properties = DialogProperties(usePlatformDefaultWidth = false),
-
-                ) {
+            ) {
                 ProfileContent(
                     viewState = profileViewState,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
@@ -436,10 +428,6 @@ fun ChatScreen(
             },
             properties = DialogProperties(usePlatformDefaultWidth = false),
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            textContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
         )
     }
     if (showLogoutConfirmation) {
@@ -461,10 +449,6 @@ fun ChatScreen(
                 }
             },
             properties = DialogProperties(usePlatformDefaultWidth = false),
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            textContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
         )
     }
@@ -487,10 +471,6 @@ fun ChatScreen(
                 }
             },
             properties = DialogProperties(usePlatformDefaultWidth = false),
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            textContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
         )
     }

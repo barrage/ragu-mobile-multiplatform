@@ -60,11 +60,7 @@ fun ModalDrawer(
     modifier: Modifier = Modifier,
 ) {
     val historyViewState by viewModel.historyViewState.collectAsState()
-    ModalDrawerSheet(
-        modifier = modifier,
-        drawerContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-        drawerContentColor = MaterialTheme.colorScheme.onSecondaryContainer
-    ) {
+    ModalDrawerSheet(modifier = modifier) {
         Column {
             ModalDrawerContentTopBar(
                 viewState = historyViewState,
@@ -165,5 +161,5 @@ fun ModalDrawer(
 
 @Composable
 fun HistoryDivider(modifier: Modifier = Modifier) {
-    HorizontalDivider(modifier.height(1.dp), color = MaterialTheme.colorScheme.onSecondaryContainer)
+    HorizontalDivider(modifier.height(1.dp))
 }

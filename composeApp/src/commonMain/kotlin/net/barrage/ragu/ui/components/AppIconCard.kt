@@ -18,8 +18,7 @@ fun AppIconCard(modifier: Modifier = Modifier) {
     Card(
         colors =
         CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
         ),
         modifier = modifier,
     ) {
@@ -27,7 +26,7 @@ fun AppIconCard(modifier: Modifier = Modifier) {
             painter = painterResource(Res.drawable.ic_ragu),
             contentDescription = null,
             modifier = Modifier.size(90.dp).padding(12.dp),
-            tint = MaterialTheme.colorScheme.onPrimary,
+            tint = MaterialTheme.colorScheme.onSurface,
         )
     }
 }

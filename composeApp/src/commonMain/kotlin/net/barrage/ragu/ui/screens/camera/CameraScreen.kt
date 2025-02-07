@@ -18,9 +18,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -95,11 +93,7 @@ fun CameraScreen(
             ) {
                 Card(
                     onClick = { scope.launch { profileImageByteArray.value = null } },
-                    shape = CircleShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                    shape = CircleShape
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -109,11 +103,7 @@ fun CameraScreen(
                 }
                 Card(
                     onClick = { onImagePicked(profileImageByteArray.value!!) },
-                    shape = CircleShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                    shape = CircleShape
                 ) {
                     Icon(
                         imageVector = Icons.Default.Check,
@@ -146,11 +136,7 @@ fun CameraScreen(
             ) {
                 Card(
                     onClick = { scope.launch { singleImagePicker.launch() } },
-                    shape = CircleShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                    shape = CircleShape
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_gallery),
@@ -158,24 +144,12 @@ fun CameraScreen(
                         modifier = Modifier.size(58.dp).padding(12.dp)
                     )
                 }
-                Card(
-                    onClick = { state.capture() },
-                    shape = CircleShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
+                Card(onClick = { state.capture() }, shape = CircleShape) {
                     Box(modifier = Modifier.size(72.dp).padding(12.dp))
                 }
-                Card(
-                    onClick = {
-                        state.toggleCamera()
-                    }, shape = CircleShape, colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
+                Card(onClick = {
+                    state.toggleCamera()
+                }, shape = CircleShape) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_rotate),
                         contentDescription = null,
@@ -193,12 +167,7 @@ fun CameraScreen(
                 .padding(horizontal = 20.dp).statusBarsPadding(),
             horizontalArrangement = Arrangement.Start
         ) {
-            Card(
-                onClick = onClose, shape = CircleShape, colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            ) {
+            Card(onClick = onClose, shape = CircleShape) {
                 Icon(
                     imageVector = Icons.Rounded.Close,
                     contentDescription = null,

@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -83,13 +82,7 @@ fun ThemePopup(
             enter = expandVertically(),
             exit = shrinkVertically(),
         ) {
-            Card(
-                modifier = Modifier.wrapContentSize().padding(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary
-                )
-            ) {
+            Card(modifier = Modifier.wrapContentSize().padding(12.dp)) {
                 Column(modifier = Modifier.padding(12.dp).widthIn(max = 160.dp)) {
                     for (row in 0 until themeRows) {
                         ThemeRow(

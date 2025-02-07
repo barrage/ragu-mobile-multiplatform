@@ -29,10 +29,6 @@ fun ErrorDialog(state: ErrorDialogState, modifier: Modifier = Modifier) {
         },
         confirmButton = state.confirmButton,
         properties = DialogProperties(usePlatformDefaultWidth = false),
-        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        textContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
         modifier = modifier.fillMaxWidth(),
     )
 }
