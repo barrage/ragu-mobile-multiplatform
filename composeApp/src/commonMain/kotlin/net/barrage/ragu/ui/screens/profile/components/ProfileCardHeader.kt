@@ -13,8 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,6 +23,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import net.barrage.ragu.ui.components.CardVariant
+import net.barrage.ragu.ui.components.CustomCard
 import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.screens.profile.viewstate.ProfileHeaderViewState
 import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
@@ -37,7 +37,8 @@ fun ProfileCardHeader(
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Box(modifier = Modifier.wrapContentSize()) {
-            Card(
+            CustomCard(
+                cardVariant = CardVariant.Secondary(),
                 shape = CircleShape,
                 modifier = Modifier
                     .size(74.dp)
@@ -60,7 +61,8 @@ fun ProfileCardHeader(
                     }
                 }
             }
-            Card(
+            CustomCard(
+                cardVariant = CardVariant.Primary(isOutlined = true),
                 shape = CircleShape,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -68,7 +70,6 @@ fun ProfileCardHeader(
                     .offset(x = 28.dp, y = 19.dp)
                     .zIndex(2f),
                 onClick = { onEditProfileImageClick(CameraSource.PROFILE) },
-                border = CardDefaults.outlinedCardBorder(enabled = true)
             ) {
                 Box(modifier = Modifier.padding(6.dp)) {
                     Icon(

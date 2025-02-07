@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,6 +28,8 @@ import com.svenjacobs.reveal.revealable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import net.barrage.ragu.ui.components.CardVariant
+import net.barrage.ragu.ui.components.CustomCard
 import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.painterResource
@@ -45,9 +44,8 @@ fun AgentItem(
     index: Int,
     modifier: Modifier = Modifier
 ) {
-
-    Card(
-        shape = RoundedCornerShape(12.dp),
+    CustomCard(
+        cardVariant = CardVariant.Secondary(isSelected = state.selectedAgentId == state.agent.id),
         onClick = { state.onAgentClick(state.agent) },
         modifier = modifier.then(
             if (index == 0) Modifier.revealable(
@@ -62,15 +60,7 @@ fun AgentItem(
                     }
                 },
             ) else Modifier
-        ),
-        colors =
-        CardDefaults.cardColors(
-            containerColor =
-            if (state.selectedAgentId == state.agent.id)
-                MaterialTheme.colorScheme.surfaceContainerHighest
-            else MaterialTheme.colorScheme.surfaceContainer
-        ),
-        border = CardDefaults.outlinedCardBorder(enabled = state.selectedAgentId == state.agent.id),
+        )
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
@@ -78,7 +68,8 @@ fun AgentItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Card(
+                CustomCard(
+                    cardVariant = CardVariant.Secondary(),
                     shape = CircleShape,
                     modifier = Modifier
                         .size(28.dp)

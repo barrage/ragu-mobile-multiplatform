@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,6 +39,8 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import com.materialkolor.PaletteStyle
 import kotlinx.collections.immutable.ImmutableList
+import net.barrage.ragu.ui.components.CardVariant
+import net.barrage.ragu.ui.components.CustomCard
 import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
@@ -82,7 +83,10 @@ fun ThemePopup(
             enter = expandVertically(),
             exit = shrinkVertically(),
         ) {
-            Card(modifier = Modifier.wrapContentSize().padding(12.dp)) {
+            CustomCard(
+                cardVariant = CardVariant.Secondary(),
+                modifier = Modifier.wrapContentSize().padding(12.dp)
+            ) {
                 Column(modifier = Modifier.padding(12.dp).widthIn(max = 160.dp)) {
                     for (row in 0 until themeRows) {
                         ThemeRow(

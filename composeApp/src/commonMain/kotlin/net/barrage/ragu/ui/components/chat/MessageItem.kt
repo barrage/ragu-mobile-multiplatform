@@ -14,15 +14,11 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -35,6 +31,9 @@ import com.mikepenz.markdown.compose.elements.highlightedCodeFence
 import com.mikepenz.markdown.m3.Markdown
 import net.barrage.ragu.data.remote.dto.history.SenderType
 import net.barrage.ragu.domain.model.ChatMessageItem
+import net.barrage.ragu.ui.components.CardVariant
+import net.barrage.ragu.ui.components.CustomCard
+import net.barrage.ragu.ui.components.CustomIconButton
 import net.barrage.ragu.utils.getScreenWidth
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -87,7 +86,15 @@ fun MessageItem(
 
                     SenderType.USER -> Unit
                 }
-                Card(shape = RoundedCornerShape(12.dp)) {
+                val cardVariant = when (chatMessage.senderType) {
+                    SenderType.USER -> CardVariant.Primary()
+                    SenderType.ASSISTANT -> CardVariant.Secondary()
+                    SenderType.ERROR -> CardVariant.Error()
+                }
+                CustomCard(
+                    cardVariant = cardVariant,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
                     Markdown(
                         chatMessage.content,
                         modifier = Modifier.padding(12.dp).widthIn(max = maxWidth),
@@ -116,59 +123,55 @@ fun MessageItem(
                     modifier = Modifier.padding(start = 30.dp, top = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    CompositionLocalProvider(
-                        LocalMinimumInteractiveComponentEnforcement provides false
+                    CustomIconButton(
+                        onClick = { onCopy(chatMessage) },
+                        modifier =
+                        Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
+                            .size(24.dp),
                     ) {
-                        IconButton(
-                            onClick = { onCopy(chatMessage) },
-                            modifier =
-                            Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
-                                .size(24.dp),
-                        ) {
-                            Icon(
-                                painterResource(Res.drawable.ic_copy),
-                                contentDescription =
-                                stringResource(Res.string.copy_button_content_description),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(16.dp),
-                            )
-                        }
-                        IconButton(
-                            onClick = { onPositiveEvaluation(chatMessage) },
-                            modifier =
-                            Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
-                                .size(24.dp),
-                        ) {
-                            Icon(
-                                if (chatMessage.evaluation == true) painterResource(Res.drawable.ic_thumb_filled) else painterResource(
-                                    Res.drawable.ic_thumb
-                                ),
-                                contentDescription =
-                                stringResource(
-                                    Res.string.positive_evaluation_button_content_description
-                                ),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(16.dp),
-                            )
-                        }
-                        IconButton(
-                            onClick = { onNegativeEvaluation(chatMessage) },
-                            modifier =
-                            Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
-                                .size(24.dp),
-                        ) {
-                            Icon(
-                                if (chatMessage.evaluation == false) painterResource(Res.drawable.ic_thumb_filled) else painterResource(
-                                    Res.drawable.ic_thumb
-                                ),
-                                contentDescription =
-                                stringResource(
-                                    Res.string.negative_evaluation_button_content_description
-                                ),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(16.dp).rotate(180F),
-                            )
-                        }
+                        Icon(
+                            painterResource(Res.drawable.ic_copy),
+                            contentDescription =
+                            stringResource(Res.string.copy_button_content_description),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                    CustomIconButton(
+                        onClick = { onPositiveEvaluation(chatMessage) },
+                        modifier =
+                        Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
+                            .size(24.dp),
+                    ) {
+                        Icon(
+                            if (chatMessage.evaluation == true) painterResource(Res.drawable.ic_thumb_filled) else painterResource(
+                                Res.drawable.ic_thumb
+                            ),
+                            contentDescription =
+                            stringResource(
+                                Res.string.positive_evaluation_button_content_description
+                            ),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                    CustomIconButton(
+                        onClick = { onNegativeEvaluation(chatMessage) },
+                        modifier =
+                        Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
+                            .size(24.dp),
+                    ) {
+                        Icon(
+                            if (chatMessage.evaluation == false) painterResource(Res.drawable.ic_thumb_filled) else painterResource(
+                                Res.drawable.ic_thumb
+                            ),
+                            contentDescription =
+                            stringResource(
+                                Res.string.negative_evaluation_button_content_description
+                            ),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(16.dp).rotate(180F),
+                        )
                     }
                 }
             }
@@ -183,7 +186,11 @@ private fun SenderIcon(
     agentAvatarBitmap: ImageBitmap?,
     modifier: Modifier = Modifier
 ) {
-    Card(shape = CircleShape, modifier = modifier.size(24.dp)) {
+    CustomCard(
+        cardVariant = CardVariant.Secondary(),
+        shape = CircleShape,
+        modifier = modifier.size(24.dp)
+    ) {
         Box(modifier = Modifier.fillMaxSize()) {
             when (senderType) {
                 SenderType.ASSISTANT,

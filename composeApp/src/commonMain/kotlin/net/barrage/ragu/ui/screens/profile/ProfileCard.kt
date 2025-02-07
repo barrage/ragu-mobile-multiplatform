@@ -1,24 +1,17 @@
 package net.barrage.ragu.ui.screens.profile
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +21,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import net.barrage.ragu.ui.components.CardVariant
+import net.barrage.ragu.ui.components.CustomButton
+import net.barrage.ragu.ui.components.CustomCard
 import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.screens.history.HistoryScreenStates
 import net.barrage.ragu.ui.screens.profile.components.ProfileCardHeader
@@ -48,9 +44,9 @@ fun ProfileContent(
     viewState: HistoryScreenStates<ProfileViewState>,
     modifier: Modifier = Modifier,
 ) {
-    Card(
+    CustomCard(
+        cardVariant = CardVariant.Secondary(),
         shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
         modifier = modifier
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
@@ -83,16 +79,16 @@ fun ProfileContent(
                                 modifier = Modifier.clip(CircleShape).clickable { onCloseClick() },
                             )
                         }
-                        ProfileSpacer()
+                        HorizontalDivider(color = MaterialTheme.colorScheme.onSecondaryContainer)
                         ProfileCardHeader(
                             modifier = Modifier.padding(vertical = 16.dp),
                             onEditProfileImageClick = onEditProfileImageClick,
                             viewState = viewState.data.header,
                         )
-                        ProfileSpacer()
+                        HorizontalDivider(color = MaterialTheme.colorScheme.onSecondaryContainer)
                         ProfileContent(viewState = viewState.data.content)
-                        ProfileSpacer()
-                        Button(
+                        HorizontalDivider(color = MaterialTheme.colorScheme.onSecondaryContainer)
+                        CustomButton(
                             onClick = onLogoutClick,
                             modifier = Modifier.padding(top = 16.dp).align(Alignment.End),
                         ) {
@@ -113,12 +109,5 @@ fun ProfileContent(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun ProfileSpacer(modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
-        Spacer(Modifier.background(MaterialTheme.colorScheme.outline).height(1.dp).fillMaxWidth())
     }
 }

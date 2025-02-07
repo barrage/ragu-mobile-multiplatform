@@ -2,10 +2,7 @@ package net.barrage.ragu.ui.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,18 +12,14 @@ import ragumultiplatform.composeapp.generated.resources.ic_ragu
 
 @Composable
 fun AppIconCard(modifier: Modifier = Modifier) {
-    Card(
-        colors =
-        CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
-        ),
+    CustomCard(
+        cardVariant = CardVariant.Primary(isOutlined = true),
         modifier = modifier,
     ) {
         Icon(
             painter = painterResource(Res.drawable.ic_ragu),
             contentDescription = null,
             modifier = Modifier.size(90.dp).padding(12.dp),
-            tint = MaterialTheme.colorScheme.onSurface,
         )
     }
 }

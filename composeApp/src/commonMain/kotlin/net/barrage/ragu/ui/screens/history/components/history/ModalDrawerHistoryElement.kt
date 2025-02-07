@@ -25,7 +25,7 @@ fun ModalDrawerHistoryElement(
         modifier
             .then(
                 if (viewState.isSelected) {
-                    Modifier.background(MaterialTheme.colorScheme.surfaceDim)
+                    Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
                 } else {
                     Modifier
                 }

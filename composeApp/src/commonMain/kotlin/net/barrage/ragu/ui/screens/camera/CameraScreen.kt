@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +29,8 @@ import com.preat.peekaboo.image.picker.ResizeOptions
 import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import kotlinx.coroutines.launch
+import net.barrage.ragu.ui.components.CardVariant
+import net.barrage.ragu.ui.components.CustomCard
 import net.barrage.ragu.ui.peekaboo.camera.CameraMode
 import net.barrage.ragu.ui.peekaboo.camera.PeekabooCamera
 import net.barrage.ragu.ui.peekaboo.camera.rememberPeekabooCameraState
@@ -91,7 +92,8 @@ fun CameraScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.Bottom
             ) {
-                Card(
+                CustomCard(
+                    cardVariant = CardVariant.Secondary(),
                     onClick = { scope.launch { profileImageByteArray.value = null } },
                     shape = CircleShape
                 ) {
@@ -101,7 +103,8 @@ fun CameraScreen(
                         modifier = Modifier.size(72.dp).padding(12.dp)
                     )
                 }
-                Card(
+                CustomCard(
+                    cardVariant = CardVariant.Secondary(),
                     onClick = { onImagePicked(profileImageByteArray.value!!) },
                     shape = CircleShape
                 ) {
@@ -134,7 +137,8 @@ fun CameraScreen(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.Bottom
             ) {
-                Card(
+                CustomCard(
+                    cardVariant = CardVariant.Secondary(),
                     onClick = { scope.launch { singleImagePicker.launch() } },
                     shape = CircleShape
                 ) {
@@ -144,10 +148,14 @@ fun CameraScreen(
                         modifier = Modifier.size(58.dp).padding(12.dp)
                     )
                 }
-                Card(onClick = { state.capture() }, shape = CircleShape) {
+                CustomCard(
+                    cardVariant = CardVariant.Secondary(),
+                    onClick = { state.capture() },
+                    shape = CircleShape
+                ) {
                     Box(modifier = Modifier.size(72.dp).padding(12.dp))
                 }
-                Card(onClick = {
+                CustomCard(cardVariant = CardVariant.Secondary(), onClick = {
                     state.toggleCamera()
                 }, shape = CircleShape) {
                     Icon(
@@ -167,7 +175,11 @@ fun CameraScreen(
                 .padding(horizontal = 20.dp).statusBarsPadding(),
             horizontalArrangement = Arrangement.Start
         ) {
-            Card(onClick = onClose, shape = CircleShape) {
+            CustomCard(
+                cardVariant = CardVariant.Secondary(),
+                onClick = onClose,
+                shape = CircleShape
+            ) {
                 Icon(
                     imageVector = Icons.Rounded.Close,
                     contentDescription = null,

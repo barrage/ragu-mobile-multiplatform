@@ -8,16 +8,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +30,7 @@ import com.svenjacobs.reveal.revealable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import net.barrage.ragu.ui.components.CustomIconButton
 import net.barrage.ragu.ui.components.TypewriterText
 import net.barrage.ragu.ui.components.TypewriterTextState
 import net.barrage.ragu.ui.components.reveal.RevealKeys
@@ -79,75 +77,71 @@ fun ChatTitle(
             modifier = Modifier.widthIn(min = 0.dp, max = maxWidth - 24.dp),
         )
         Column {
-            CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-                IconButton(
-                    onClick =
-                    if (state.isEditingTitle) state.onTitleChangeConfirmation
-                    else state.onThreeDotsClick,
-                    modifier =
-                    Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp)
-                        .revealable(
-                            key = RevealKeys.ChatTitle,
-                            state = revealState,
-                            shape = RevealShape.Circle,
-                            onClick = {
-                                scope.launch {
-                                    revealState.hide()
-                                    coreComponent.appPreferences.saveShouldShowChatTitleTutorial(
-                                        false
-                                    )
-                                    shouldShowTutorial = false
-                                }
-                            },
-                        ),
-                    enabled = if (state.isEditingTitle) state.title.length in 3..255 else true,
-                ) {
-                    Icon(
-                        painter =
-                        painterResource(
-                            if (state.isEditingTitle) Res.drawable.ic_check
-                            else Res.drawable.ic_three_dots
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier.padding(4.dp),
-                    )
-                }
-            }
-            ChatPopupMenu(
-                state =
-                ChatPopupMenuState(
-                    visible = state.isMenuVisible,
-                    onDismiss = state.onDismiss,
-                    menuItems =
-                    listOf(
-                        PopupMenuItemState(
-                            Icons.Filled.Edit,
-                            stringResource(Res.string.popup_menu_edit_title),
-                            state.onEditTitleClick,
-                        ),
-                        PopupMenuItemState(
-                            Icons.Filled.Delete,
-                            stringResource(Res.string.popup_menu_delete_chat),
-                            state.onDeleteChatClick,
-                        ),
+            CustomIconButton(
+                onClick =
+                if (state.isEditingTitle) state.onTitleChangeConfirmation
+                else state.onThreeDotsClick,
+                modifier =
+                Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp)
+                    .revealable(
+                        key = RevealKeys.ChatTitle,
+                        state = revealState,
+                        shape = RevealShape.Circle,
+                        onClick = {
+                            scope.launch {
+                                revealState.hide()
+                                coreComponent.appPreferences.saveShouldShowChatTitleTutorial(
+                                    false
+                                )
+                                shouldShowTutorial = false
+                            }
+                        },
                     ),
+                enabled = if (state.isEditingTitle) state.title.length in 3..255 else true,
+            ) {
+                Icon(
+                    painter =
+                    painterResource(
+                        if (state.isEditingTitle) Res.drawable.ic_check
+                        else Res.drawable.ic_three_dots
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier.padding(4.dp),
                 )
-            )
-        }
-        if (state.isEditingTitle) {
-            CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-                IconButton(
-                    onClick = state.onTitleChangeDismiss,
-                    modifier =
-                    Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp),
-                ) {
-                    Icon(
-                        Icons.Filled.Close,
-                        contentDescription = null,
-                        modifier = Modifier.padding(2.dp),
-                    )
-                }
             }
+        }
+        ChatPopupMenu(
+            state =
+            ChatPopupMenuState(
+                visible = state.isMenuVisible,
+                onDismiss = state.onDismiss,
+                menuItems =
+                listOf(
+                    PopupMenuItemState(
+                        Icons.Filled.Edit,
+                        stringResource(Res.string.popup_menu_edit_title),
+                        state.onEditTitleClick,
+                    ),
+                    PopupMenuItemState(
+                        Icons.Filled.Delete,
+                        stringResource(Res.string.popup_menu_delete_chat),
+                        state.onDeleteChatClick,
+                    ),
+                ),
+            )
+        )
+    }
+    if (state.isEditingTitle) {
+        CustomIconButton(
+            onClick = state.onTitleChangeDismiss,
+            modifier =
+            Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp),
+        ) {
+            Icon(
+                Icons.Filled.Close,
+                contentDescription = null,
+                modifier = Modifier.padding(2.dp),
+            )
         }
     }
 }

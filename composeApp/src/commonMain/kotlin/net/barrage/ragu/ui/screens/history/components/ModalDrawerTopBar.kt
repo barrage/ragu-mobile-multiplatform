@@ -9,13 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +29,7 @@ import com.svenjacobs.reveal.revealable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import net.barrage.ragu.ui.components.CustomIconButton
 import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.ui.screens.history.HistoryModalDrawerContentViewState
 import net.barrage.ragu.ui.screens.history.components.topbar.DarkLightThemeSwitcher
@@ -63,30 +61,28 @@ fun ModalDrawerContentTopBar(
     var showPopup by remember { mutableStateOf(false) }
 
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-            IconButton(
-                onClick = if (inputEnabled) {
-                    onChangeDrawerVisibility
-                } else {
-                    {}
-                }, modifier = Modifier.revealable(
-                    key = RevealKeys.MenuClose,
-                    shape = RevealShape.Circle,
-                    state = revealState,
-                    onClick = {
-                        scope.launch {
-                            revealState.hide()
-                            delay(1000)
-                            onChangeDrawerVisibility()
-                            coreComponent.appPreferences.saveShouldShowOnboardingTutorial(false)
-                            shouldShowTutorial.value = false
-                            changeInputEnabled(true)
-                        }
-                    },
-                )
-            ) {
-                Icon(imageVector = Icons.Filled.Close, contentDescription = null)
-            }
+        CustomIconButton(
+            onClick = if (inputEnabled) {
+                onChangeDrawerVisibility
+            } else {
+                {}
+            }, modifier = Modifier.revealable(
+                key = RevealKeys.MenuClose,
+                shape = RevealShape.Circle,
+                state = revealState,
+                onClick = {
+                    scope.launch {
+                        revealState.hide()
+                        delay(1000)
+                        onChangeDrawerVisibility()
+                        coreComponent.appPreferences.saveShouldShowOnboardingTutorial(false)
+                        shouldShowTutorial.value = false
+                        changeInputEnabled(true)
+                    }
+                },
+            )
+        ) {
+            Icon(imageVector = Icons.Filled.Close, contentDescription = null)
         }
         Spacer(modifier = Modifier.weight(1f))
         Row(

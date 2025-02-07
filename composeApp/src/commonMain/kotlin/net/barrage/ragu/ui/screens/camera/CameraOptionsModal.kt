@@ -1,6 +1,5 @@
 package net.barrage.ragu.ui.screens.camera
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,8 +12,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +27,8 @@ import com.preat.peekaboo.image.picker.ResizeOptions
 import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import kotlinx.coroutines.launch
+import net.barrage.ragu.ui.components.CardVariant
+import net.barrage.ragu.ui.components.CustomCard
 import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.painterResource
 import ragumultiplatform.composeapp.generated.resources.Res
@@ -74,7 +73,8 @@ fun CameraOptionsModal(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Card(
+                CustomCard(
+                    cardVariant = CardVariant.Secondary(),
                     shape = CircleShape
                 ) {
                     Icon(
@@ -96,7 +96,8 @@ fun CameraOptionsModal(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Card(
+                CustomCard(
+                    cardVariant = CardVariant.Secondary(),
                     shape = CircleShape
                 ) {
                     Icon(
@@ -117,10 +118,9 @@ fun CameraOptionsModal(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Card(
+                CustomCard(
+                    cardVariant = CardVariant.Error(),
                     shape = CircleShape,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Delete,

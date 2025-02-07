@@ -18,9 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -54,6 +51,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.barrage.ragu.data.remote.dto.history.SenderType
 import net.barrage.ragu.domain.model.ChatMessageItem
+import net.barrage.ragu.ui.components.CardVariant
+import net.barrage.ragu.ui.components.CustomButton
+import net.barrage.ragu.ui.components.CustomCard
 import net.barrage.ragu.ui.components.chat.AgentContent
 import net.barrage.ragu.ui.components.chat.ChatInput
 import net.barrage.ragu.ui.components.chat.ChatInputState
@@ -271,7 +271,10 @@ fun ChatScreen(
                             },
                             properties = DialogProperties(usePlatformDefaultWidth = false),
                         ) {
-                            Card(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+                            CustomCard(
+                                cardVariant = CardVariant.Secondary(),
+                                modifier = Modifier.fillMaxWidth().padding(20.dp)
+                            ) {
                                 Column(
                                     modifier = Modifier.padding(20.dp),
                                 ) {
@@ -287,7 +290,7 @@ fun ChatScreen(
                                         placeholder = { Text(stringResource(Res.string.additional_evaluation_feedback_label)) },
                                     )
                                     Spacer(modifier = Modifier.height(16.dp))
-                                    Button(
+                                    CustomButton(
                                         onClick = {
                                             evaluatingMessage?.let {
                                                 viewModel.evaluateMessage(
@@ -342,13 +345,10 @@ fun ChatScreen(
                             )
                         }
                     } else {
-                        Card(
+                        CustomCard(
+                            cardVariant = CardVariant.Secondary(isOutlined = true),
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.padding(horizontal = 20.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer
-                            ),
-                            border = CardDefaults.outlinedCardBorder(enabled = true),
                         ) {
                             Box(modifier = Modifier.padding(16.dp)) {
                                 Text(

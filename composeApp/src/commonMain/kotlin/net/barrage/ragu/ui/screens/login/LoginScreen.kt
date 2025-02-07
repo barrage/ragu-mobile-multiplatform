@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +27,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.barrage.ragu.ui.components.AppIconCard
+import net.barrage.ragu.ui.components.CardVariant
+import net.barrage.ragu.ui.components.CustomButton
+import net.barrage.ragu.ui.components.CustomCard
 import net.barrage.ragu.ui.components.ErrorDialog
 import net.barrage.ragu.ui.components.ErrorDialogState
 import net.barrage.ragu.utils.debugLog
@@ -112,7 +113,7 @@ fun LoginScreen(
                             }",
                             onDismissRequest = {},
                             confirmButton = {
-                                Button(
+                                CustomButton(
                                     onClick = {
                                         viewModel.viewModelScope.launch {
                                             viewModel.clearViewModel()
@@ -135,9 +136,8 @@ fun LoginScreen(
 
 @Composable
 fun LoginContent(onGoogleLogin: () -> Unit, onAaiLogin: () -> Unit, modifier: Modifier = Modifier) {
-    Card(
-        colors =
-        CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+    CustomCard(
+        cardVariant = CardVariant.Secondary(),
         elevation = CardDefaults.cardElevation(16.dp),
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -157,7 +157,7 @@ fun LoginContent(onGoogleLogin: () -> Unit, onAaiLogin: () -> Unit, modifier: Mo
                 style = MaterialTheme.typography.bodyMedium.fixCenterTextOnAllPlatforms(),
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Button(
+            CustomButton(
                 onClick = onGoogleLogin,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -180,7 +180,7 @@ fun LoginContent(onGoogleLogin: () -> Unit, onAaiLogin: () -> Unit, modifier: Mo
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
-            Button(
+            CustomButton(
                 onClick = onAaiLogin,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),

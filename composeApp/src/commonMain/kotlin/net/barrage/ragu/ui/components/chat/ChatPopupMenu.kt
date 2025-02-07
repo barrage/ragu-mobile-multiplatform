@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +21,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
+import net.barrage.ragu.ui.components.CardVariant
+import net.barrage.ragu.ui.components.CustomCard
 
 @Composable
 fun ChatPopupMenu(state: ChatPopupMenuState, modifier: Modifier = Modifier) {
@@ -46,7 +47,8 @@ fun ChatPopupMenu(state: ChatPopupMenuState, modifier: Modifier = Modifier) {
             enter = expandVertically(),
             exit = shrinkVertically(),
         ) {
-            Card(
+            CustomCard(
+                cardVariant = CardVariant.Secondary(),
                 shape = RoundedCornerShape(12.dp),
                 modifier = modifier.widthIn(min = 0.dp, max = 200.dp).padding(12.dp),
             ) {
