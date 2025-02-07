@@ -77,63 +77,63 @@ class LoginViewModel(
      */
 
     suspend fun login(deepLink: String) {
-            val code = DeepLinkParser.extractCodeFromDeepLink(deepLink)
-            _loginState.value = LoginScreenState.Loading
+        val code = DeepLinkParser.extractCodeFromDeepLink(deepLink)
+        _loginState.value = LoginScreenState.Loading
 
-            val codeVerifier = try {
-                tokenStorage.getCodeVerifier()
-            } catch (e: Exception) {
-                debugLogError("Failed to get code verifier", e)
-                null
-            }
-            val currentProvider = getProvider()
+        val codeVerifier = try {
+            tokenStorage.getCodeVerifier()
+        } catch (e: Exception) {
+            debugLogError("Failed to get code verifier", e)
+            null
+        }
+        val currentProvider = getProvider()
 
-            if (codeVerifier == null) {
-                _loginState.value =
-                    LoginScreenState.Error(messageRes = Res.string.code_verifier_null)
-                debugLogError("Login failed: Code verifier is null")
-                return
+        if (codeVerifier == null) {
+            _loginState.value =
+                LoginScreenState.Error(messageRes = Res.string.code_verifier_null)
+            debugLogError("Login failed: Code verifier is null")
+            return
+        }
+        if (currentProvider == null) {
+            _loginState.value = LoginScreenState.Error(messageRes = Res.string.unexpected_error)
+            debugLogError("Login failed: Provider is null")
+            return
+        }
+        val loginResult =
+            loginUseCase(
+                code = code ?: "", codeVerifier = codeVerifier,
+                grantType = "authorization_code",
+                provider = currentProvider,
+                source = "android",
+            )
+
+        _loginState.value = when (loginResult) {
+            is Response.Success -> {
+                clearCodeVerifier()
+                tokenStorage.saveCookie(loginResult.data.value)
+                getCurrentUser()
+                LoginScreenState.Loading
             }
-            if (currentProvider == null) {
-                _loginState.value = LoginScreenState.Error(messageRes = Res.string.unexpected_error)
-                debugLogError("Login failed: Provider is null")
-                return
-            }
-            val loginResult =
-                loginUseCase(
-                    code = code ?: "", codeVerifier = codeVerifier,
-                    grantType = "authorization_code",
-                    provider = currentProvider,
-                    source = "android",
+
+            is Response.Failure -> {
+                debugLogError("Login failed", loginResult.e)
+                clearCodeVerifier()
+                LoginScreenState.Error(
+                    message = loginResult.e?.message,
+                    messageRes = Res.string.unexpected_error,
                 )
-
-            _loginState.value = when (loginResult) {
-                is Response.Success -> {
-                    clearCodeVerifier()
-                    tokenStorage.saveCookie(loginResult.data.value)
-                    getCurrentUser()
-                    LoginScreenState.Loading
-                }
-
-                is Response.Failure -> {
-                    debugLogError("Login failed", loginResult.e)
-                    clearCodeVerifier()
-                    LoginScreenState.Error(
-                        message = loginResult.e?.message,
-                        messageRes = Res.string.unexpected_error,
-                    )
-                }
-
-                is Response.Loading -> LoginScreenState.Loading
-                else -> {
-                    debugLogError("Unexpected login result")
-                    clearCodeVerifier()
-                    LoginScreenState.Error(messageRes = Res.string.unexpected_error)
-                }
             }
-            tokenStorage.clearDeepLink()
-            tokenStorage.clearProvider()
-            tokenStorage.clearCodeVerifier()
+
+            is Response.Loading -> LoginScreenState.Loading
+            else -> {
+                debugLogError("Unexpected login result")
+                clearCodeVerifier()
+                LoginScreenState.Error(messageRes = Res.string.unexpected_error)
+            }
+        }
+        tokenStorage.clearDeepLink()
+        tokenStorage.clearProvider()
+        tokenStorage.clearCodeVerifier()
     }
 
     /**

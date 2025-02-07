@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.barrage.ragu.data.remote.dto.websocket.CancelStreamPayload
 import net.barrage.ragu.data.remote.dto.websocket.ChatMessage

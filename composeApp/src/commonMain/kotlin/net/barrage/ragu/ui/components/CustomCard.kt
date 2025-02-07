@@ -17,6 +17,9 @@ sealed class CardVariant(val outlined: Boolean = false, val selected: Boolean = 
     data class Secondary(val isOutlined: Boolean = false, val isSelected: Boolean = true) :
         CardVariant(isOutlined, isSelected)
 
+    data class Surface(val isOutlined: Boolean = false, val isSelected: Boolean = true) :
+        CardVariant(isOutlined, isSelected)
+
     data class Error(val isOutlined: Boolean = false, val isSelected: Boolean = true) :
         CardVariant(isOutlined, isSelected)
 }
@@ -26,7 +29,7 @@ fun CustomCard(
     cardVariant: CardVariant,
     shape: Shape = CardDefaults.shape,
     elevation: CardElevation = CardDefaults.cardElevation(),
-    onClick: () -> Unit = {},
+    onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
@@ -53,18 +56,42 @@ fun CustomCard(
             containerColor = MaterialTheme.colorScheme.errorContainer,
             contentColor = MaterialTheme.colorScheme.onErrorContainer
         )
+
+        is CardVariant.Surface -> CardDefaults.cardColors(
+            containerColor = if (cardVariant.selected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(
+                alpha = 0.6f
+            ),
+            contentColor = if (cardVariant.selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
+                alpha = 0.6f
+            )
+        )
     }
-    Card(
-        colors = cardColors,
-        border = if (cardVariant.outlined) BorderStroke(
-            1.dp,
-            MaterialTheme.colorScheme.primaryContainer
-        ) else null,
-        onClick = onClick,
-        shape = shape,
-        elevation = elevation,
-        modifier = modifier,
-    ) {
-        content()
+    if (onClick != null) {
+        Card(
+            colors = cardColors,
+            border = if (cardVariant.outlined) BorderStroke(
+                1.dp,
+                MaterialTheme.colorScheme.primaryContainer
+            ) else null,
+            onClick = onClick,
+            shape = shape,
+            elevation = elevation,
+            modifier = modifier,
+        ) {
+            content()
+        }
+    } else {
+        Card(
+            colors = cardColors,
+            border = if (cardVariant.outlined) BorderStroke(
+                1.dp,
+                MaterialTheme.colorScheme.primaryContainer
+            ) else null,
+            shape = shape,
+            elevation = elevation,
+            modifier = modifier,
+        ) {
+            content()
+        }
     }
 }

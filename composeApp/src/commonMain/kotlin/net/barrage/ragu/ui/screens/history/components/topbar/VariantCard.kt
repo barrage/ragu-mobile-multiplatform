@@ -29,7 +29,7 @@ fun VariantCard(
             .clickable { onClick(variant) }
             .then(
                 if (isSelected) {
-                    Modifier.background(MaterialTheme.colorScheme.onTertiary)
+                    Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
                 } else {
                     Modifier.border(
                         1.dp,

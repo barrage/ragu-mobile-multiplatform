@@ -131,18 +131,18 @@ fun ChatTitle(
                 )
             )
         }
-    }
-    if (state.isEditingTitle) {
-        CustomIconButton(
-            onClick = state.onTitleChangeDismiss,
-            modifier =
-            Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp),
-        ) {
-            Icon(
-                Icons.Filled.Close,
-                contentDescription = null,
-                modifier = Modifier.padding(2.dp),
-            )
+        if (state.isEditingTitle) {
+            CustomIconButton(
+                onClick = state.onTitleChangeDismiss,
+                modifier =
+                Modifier.defaultMinSize(minWidth = 0.dp, minHeight = 0.dp).size(24.dp),
+            ) {
+                Icon(
+                    Icons.Filled.Close,
+                    contentDescription = null,
+                    modifier = Modifier.padding(2.dp),
+                )
+            }
         }
     }
 }

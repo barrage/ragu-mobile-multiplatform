@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -60,7 +61,7 @@ fun ModalDrawer(
 ) {
     val historyViewState by viewModel.historyViewState.collectAsState()
     ModalDrawerSheet(modifier = modifier) {
-        Column {
+        Column(modifier = Modifier.statusBarsPadding()) {
             ModalDrawerContentTopBar(
                 viewState = historyViewState,
                 currentTheme = currentTheme,

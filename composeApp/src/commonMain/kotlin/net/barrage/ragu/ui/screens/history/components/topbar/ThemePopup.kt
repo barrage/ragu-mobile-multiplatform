@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -84,7 +85,8 @@ fun ThemePopup(
             exit = shrinkVertically(),
         ) {
             CustomCard(
-                cardVariant = CardVariant.Secondary(),
+                cardVariant = CardVariant.Surface(),
+                elevation = CardDefaults.cardElevation(8.dp),
                 modifier = Modifier.wrapContentSize().padding(12.dp)
             ) {
                 Column(modifier = Modifier.padding(12.dp).widthIn(max = 160.dp)) {
