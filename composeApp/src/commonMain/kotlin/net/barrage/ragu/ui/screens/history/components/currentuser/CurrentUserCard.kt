@@ -1,7 +1,6 @@
 package net.barrage.ragu.ui.screens.history.components.currentuser
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.skydoves.landscapist.ImageOptions
 import com.svenjacobs.reveal.RevealShape
 import com.svenjacobs.reveal.RevealState
 import com.svenjacobs.reveal.revealable
@@ -37,9 +37,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.barrage.ragu.ui.components.CardVariant
 import net.barrage.ragu.ui.components.CustomCard
+import net.barrage.ragu.ui.components.NetworkImage
 import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.ui.screens.history.HistoryScreenStates
 import net.barrage.ragu.ui.screens.profile.viewstate.ProfileViewState
+import net.barrage.ragu.utils.Constants
 import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.stringResource
 import ragumultiplatform.composeapp.generated.resources.Res
@@ -108,12 +110,14 @@ fun CurrentUserCard(
                                 .zIndex(1f)
                         ) {
                             Box(modifier = Modifier.fillMaxSize()) {
-                                if (viewState.data.header.profileImage != null) {
-                                    Image(
-                                        bitmap = viewState.data.header.profileImage,
-                                        contentDescription = "Profile",
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier.fillMaxSize(),
+                                if (viewState.data.header.avatarId != null) {
+                                    NetworkImage(
+                                        imageModel = { "https://${Constants.BASE_URL}/avatars/${viewState.data.header.avatarId}" },
+                                        imageOptions = ImageOptions(
+                                            contentScale = ContentScale.Crop,
+                                            alignment = Alignment.Center
+                                        ),
+                                        modifier = Modifier.fillMaxSize()
                                     )
                                 } else {
                                     Icon(

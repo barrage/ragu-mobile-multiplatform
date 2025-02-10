@@ -1,6 +1,6 @@
 package net.barrage.ragu.ui.components.chat
 
-import androidx.compose.foundation.Image
+import RaguMultiplatform.composeApp.BuildConfig
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,18 +21,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.highlightedCodeBlock
 import com.mikepenz.markdown.compose.elements.highlightedCodeFence
 import com.mikepenz.markdown.m3.Markdown
+import com.skydoves.landscapist.ImageOptions
 import net.barrage.ragu.data.remote.dto.history.SenderType
 import net.barrage.ragu.domain.model.ChatMessageItem
 import net.barrage.ragu.ui.components.CardVariant
 import net.barrage.ragu.ui.components.CustomCard
 import net.barrage.ragu.ui.components.CustomIconButton
+import net.barrage.ragu.ui.components.NetworkImage
 import net.barrage.ragu.utils.getScreenWidth
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -50,8 +51,8 @@ import ragumultiplatform.composeapp.generated.resources.positive_evaluation_butt
 @Composable
 fun MessageItem(
     chatMessage: ChatMessageItem,
-    userAvatarBitmap: ImageBitmap?,
-    agentAvatarBitmap: ImageBitmap?,
+    userAvatarId: String?,
+    agentAvatarId: String?,
     onCopy: (ChatMessageItem) -> Unit,
     onPositiveEvaluation: (ChatMessageItem) -> Unit,
     onNegativeEvaluation: (ChatMessageItem) -> Unit,
@@ -79,8 +80,8 @@ fun MessageItem(
                     SenderType.ASSISTANT,
                     SenderType.ERROR -> SenderIcon(
                         senderType = SenderType.ASSISTANT,
-                        userAvatarBitmap = userAvatarBitmap,
-                        agentAvatarBitmap = agentAvatarBitmap
+                        userAvatarId = userAvatarId,
+                        agentAvatarId = agentAvatarId
                     )
 
                     SenderType.USER -> Unit
@@ -109,8 +110,8 @@ fun MessageItem(
                 when (chatMessage.senderType) {
                     SenderType.USER -> SenderIcon(
                         senderType = SenderType.USER,
-                        userAvatarBitmap = userAvatarBitmap,
-                        agentAvatarBitmap = agentAvatarBitmap
+                        userAvatarId = userAvatarId,
+                        agentAvatarId = agentAvatarId
                     )
 
                     SenderType.ASSISTANT,
@@ -178,8 +179,8 @@ fun MessageItem(
 @Composable
 private fun SenderIcon(
     senderType: SenderType,
-    userAvatarBitmap: ImageBitmap?,
-    agentAvatarBitmap: ImageBitmap?,
+    userAvatarId: String?,
+    agentAvatarId: String?,
     modifier: Modifier = Modifier
 ) {
     CustomCard(
@@ -191,12 +192,14 @@ private fun SenderIcon(
             when (senderType) {
                 SenderType.ASSISTANT,
                 SenderType.ERROR -> {
-                    if (agentAvatarBitmap != null) {
-                        Image(
-                            bitmap = agentAvatarBitmap,
-                            contentDescription = "Agent Avatar",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize(),
+                    if (agentAvatarId != null) {
+                        NetworkImage(
+                            imageModel = { "https://${BuildConfig.BASE_URL}/avatars/$agentAvatarId" },
+                            imageOptions = ImageOptions(
+                                contentScale = ContentScale.Crop,
+                                alignment = Alignment.Center
+                            ),
+                            modifier = Modifier.fillMaxSize()
                         )
                     } else {
                         Icon(
@@ -209,12 +212,14 @@ private fun SenderIcon(
                 }
 
                 SenderType.USER ->
-                    if (userAvatarBitmap != null) {
-                        Image(
-                            bitmap = userAvatarBitmap,
-                            contentDescription = "User Avatar",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize(),
+                    if (userAvatarId != null) {
+                        NetworkImage(
+                            imageModel = { "https://${BuildConfig.BASE_URL}/avatars/$userAvatarId" },
+                            imageOptions = ImageOptions(
+                                contentScale = ContentScale.Crop,
+                                alignment = Alignment.Center
+                            ),
+                            modifier = Modifier.fillMaxSize()
                         )
                     } else {
                         Icon(

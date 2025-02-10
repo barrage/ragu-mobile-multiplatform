@@ -1,6 +1,5 @@
 package net.barrage.ragu.domain.model
 
-import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.datetime.Instant
 import net.barrage.ragu.data.remote.dto.user.Role
@@ -28,13 +27,13 @@ data class CurrentUser(
     val role: Role,
     val createdAt: Instant,
     val updatedAt: Instant,
-    val avatarBitmap: ImageBitmap? = null,
+    val avatarId: String? = null,
 ) {
     fun toViewState(): ProfileViewState =
         ProfileViewState(
             id = id,
             header = ProfileHeaderViewState(
-                profileImage = avatarBitmap,
+                avatarId = avatarId,
                 name = fullName,
                 active = active
             ),
@@ -66,6 +65,6 @@ data class CurrentUser(
                             iconDescription = "Updated At",
                         ),
             ),
-            avatarImageBitmap = avatarBitmap,
+            avatarId = avatarId,
         )
 }

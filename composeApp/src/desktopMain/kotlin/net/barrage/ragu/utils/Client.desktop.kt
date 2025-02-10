@@ -22,8 +22,8 @@ actual val restClient: HttpClient
     get() =
         HttpClient(CIO) {
             install(HttpTimeout) {
-                socketTimeoutMillis = 10_000
-                requestTimeoutMillis = 10_000
+                socketTimeoutMillis = 30_000
+                requestTimeoutMillis = 30_000
             }
             defaultRequest {
                 header("Content-Type", "application/json")

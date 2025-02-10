@@ -1,6 +1,6 @@
 package net.barrage.ragu.ui.screens.profile.components
 
-import androidx.compose.foundation.Image
+import RaguMultiplatform.composeApp.BuildConfig
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,8 +23,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.skydoves.landscapist.ImageOptions
 import net.barrage.ragu.ui.components.CardVariant
 import net.barrage.ragu.ui.components.CustomCard
+import net.barrage.ragu.ui.components.NetworkImage
 import net.barrage.ragu.ui.screens.camera.CameraSource
 import net.barrage.ragu.ui.screens.profile.viewstate.ProfileHeaderViewState
 import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
@@ -45,12 +47,14 @@ fun ProfileCardHeader(
                     .zIndex(1f)
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    if (viewState.profileImage != null) {
-                        Image(
-                            bitmap = viewState.profileImage,
-                            contentDescription = "Profile",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize(),
+                    if (viewState.avatarId != null) {
+                        NetworkImage(
+                            imageModel = { "https://${BuildConfig.BASE_URL}/avatars/${viewState.avatarId}" },
+                            imageOptions = ImageOptions(
+                                contentScale = ContentScale.Crop,
+                                alignment = Alignment.Center
+                            ),
+                            modifier = Modifier.fillMaxSize()
                         )
                     } else {
                         Icon(

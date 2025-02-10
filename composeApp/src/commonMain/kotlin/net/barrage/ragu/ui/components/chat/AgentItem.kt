@@ -1,7 +1,7 @@
 package net.barrage.ragu.ui.components.chat
 
+import RaguMultiplatform.composeApp.BuildConfig
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.skydoves.landscapist.ImageOptions
 import com.svenjacobs.reveal.RevealShape
 import com.svenjacobs.reveal.RevealState
 import com.svenjacobs.reveal.revealable
@@ -30,6 +31,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.barrage.ragu.ui.components.CardVariant
 import net.barrage.ragu.ui.components.CustomCard
+import net.barrage.ragu.ui.components.NetworkImage
 import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.utils.fixCenterTextOnAllPlatforms
 import org.jetbrains.compose.resources.painterResource
@@ -76,12 +78,14 @@ fun AgentItem(
                         .zIndex(1f)
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        if (state.agent.avatarBitmap != null) {
-                            Image(
-                                bitmap = state.agent.avatarBitmap,
-                                contentDescription = "Profile",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize(),
+                        if (state.agent.avatarId != null) {
+                            NetworkImage(
+                                imageModel = { "https://${BuildConfig.BASE_URL}/avatars/${state.agent.avatarId}" },
+                                imageOptions = ImageOptions(
+                                    contentScale = ContentScale.Crop,
+                                    alignment = Alignment.Center
+                                ),
+                                modifier = Modifier.fillMaxSize()
                             )
                         } else {
                             Icon(

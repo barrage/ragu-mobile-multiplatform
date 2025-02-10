@@ -1,6 +1,5 @@
 package net.barrage.ragu.ui.screens.profile.viewstate
 
-import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.collections.immutable.ImmutableMap
 import org.jetbrains.compose.resources.StringResource
 
@@ -9,5 +8,5 @@ data class ProfileViewState(
     val header: ProfileHeaderViewState,
     val email: String,
     val content: ImmutableMap<StringResource, ProfileContentItem>,
-    val avatarImageBitmap: ImageBitmap? = null,
+    val avatarId: String? = null,
 )

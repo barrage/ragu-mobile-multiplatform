@@ -3,7 +3,6 @@ package net.barrage.ragu.data.remote.dto.user
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import net.barrage.ragu.data.remote.dto.Avatar
 
 @Serializable
 data class CurrentUserDTO(
@@ -16,7 +15,7 @@ data class CurrentUserDTO(
     val role: Role,
     val createdAt: Instant,
     val updatedAt: Instant,
-    val avatar: Avatar? = null,
+    val avatar: String? = null,
 )
 
 
