@@ -68,9 +68,14 @@ fun rememberAppState(): AppState {
         val job = coroutineScope.launch {
             snapshotFlow { drawerState.isOpen }.collect { isOpen ->
                 if (isOpen) {
-                    chatViewModel.chatHistoryManager.updateHistory(
-                        currentChatId = chatViewModel.webSocketManager.webSocketChatClient?.currentChatId?.value
-                    )
+                    launch {
+                        chatViewModel.chatHistoryManager.updateHistory(
+                            currentChatId = chatViewModel.webSocketManager.webSocketChatClient?.currentChatId?.value
+                        )
+                    }
+                    launch {
+                        chatViewModel.updateCurrentUser()
+                    }
                 }
             }
         }

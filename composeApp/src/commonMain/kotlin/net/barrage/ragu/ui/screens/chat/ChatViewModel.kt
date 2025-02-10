@@ -550,7 +550,7 @@ class ChatViewModel(
     /**
      * Updates the current user information.
      */
-    private fun updateCurrentUser() {
+    fun updateCurrentUser() {
         viewModelScope.launch {
             currentUserUseCase(withAvatar = true).collect { response ->
                 _currentUserViewState.value = when (response) {
