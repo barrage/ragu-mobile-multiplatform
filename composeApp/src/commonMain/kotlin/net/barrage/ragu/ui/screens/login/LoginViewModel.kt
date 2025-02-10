@@ -15,7 +15,6 @@ import net.barrage.ragu.utils.PKCEUtil
 import net.barrage.ragu.utils.TokenStorage
 import net.barrage.ragu.utils.debugLogError
 import ragumultiplatform.composeapp.generated.resources.Res
-import ragumultiplatform.composeapp.generated.resources.code_verifier_null
 import ragumultiplatform.composeapp.generated.resources.unexpected_error
 
 /**
@@ -89,13 +88,10 @@ class LoginViewModel(
         val currentProvider = getProvider()
 
         if (codeVerifier == null) {
-            _loginState.value =
-                LoginScreenState.Error(messageRes = Res.string.code_verifier_null)
             debugLogError("Login failed: Code verifier is null")
             return
         }
         if (currentProvider == null) {
-            _loginState.value = LoginScreenState.Error(messageRes = Res.string.unexpected_error)
             debugLogError("Login failed: Provider is null")
             return
         }

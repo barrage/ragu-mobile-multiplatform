@@ -134,6 +134,7 @@ fun ChatScreen(
                     }
                     checkAuth()
                     viewModel.loadAllData()
+                    viewModel.webSocketManager.webSocketChatClient?.updateForegroundState(true)
                     viewModel.webSocketManager.reconnect()
                 }
             },
@@ -143,6 +144,7 @@ fun ChatScreen(
                         viewModel.webSocketManager.setChatId(null, null)
                     }
                     viewModel.webSocketManager.disconnect()
+                    viewModel.webSocketManager.webSocketChatClient?.updateForegroundState(false)
                 }
             }
         )

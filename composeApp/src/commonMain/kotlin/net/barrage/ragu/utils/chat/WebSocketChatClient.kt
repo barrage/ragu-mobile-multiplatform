@@ -56,6 +56,9 @@ class WebSocketChatClient(
     private val webSocketTokenUseCase: WebSocketTokenUseCase,
     handleChatId: (String?) -> Unit,
 ) {
+    // Flag indicating whether the app is in the foreground
+    private var isAppInForeground = mutableStateOf(true)
+
     // Current WebSocket session
     private var session: WebSocketSession? = null
 
@@ -111,6 +114,7 @@ class WebSocketChatClient(
                     connectWithRetry()
                 } catch (e: CancellationException) {
                     debugLog("Reconnection cancelled: ${e.message}")
+                    reconnect()
                 } catch (e: Exception) {
                     debugLogError("Reconnection failed", e)
                     reconnect()
@@ -126,7 +130,7 @@ class WebSocketChatClient(
     private suspend fun connectWithRetry() = coroutineScope {
         var retryDelay = 1.seconds
         disconnect()
-        while (this.isActive) {
+        while (this.isActive && isAppInForeground.value) {
             try {
                 val wsTokenResponse = webSocketTokenUseCase()
                 if (wsTokenResponse is Response.Success) {
@@ -176,6 +180,7 @@ class WebSocketChatClient(
             receiveMessageCallback.disableSending()
             isOpeningChat = false
             isChatOpen.value = false
+            reconnect()
         }
     }
 
@@ -201,16 +206,19 @@ class WebSocketChatClient(
             receiveMessageCallback.disableSending()
             isOpeningChat = false
             isChatOpen.value = false
+            reconnect()
         } catch (e: CancellationException) {
             debugLog("WebSocket cancelled: ${e.message}")
             receiveMessageCallback.disableSending()
             isOpeningChat = false
             isChatOpen.value = false
+            reconnect()
         } catch (e: Exception) {
             debugLogError("Error handling incoming messages", e)
             receiveMessageCallback.disableSending()
             isOpeningChat = false
             isChatOpen.value = false
+            reconnect()
         }
     }
 
@@ -362,5 +370,9 @@ class WebSocketChatClient(
             isChatOpen.value = !isChatOpen.value
             sendMessage(lastMessage)
         }
+    }
+
+    fun updateForegroundState(inForeground: Boolean) {
+        isAppInForeground.value = inForeground
     }
 }
