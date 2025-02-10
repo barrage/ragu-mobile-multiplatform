@@ -14,7 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.arkivanov.essenty.lifecycle.essentyLifecycle
 import dev.theolm.rinku.compose.ext.Rinku
-import net.barrage.ragu.utils.debugLog
+import net.barrage.ragu.ui.main.rememberAppState
+import net.barrage.ragu.ui.screens.chat.ChatScreenState
+import net.barrage.ragu.ui.screens.chat.ChatViewModel
 
 /**
  * The main activity for the Android application.
@@ -25,10 +27,13 @@ class MainActivity : ComponentActivity() {
     private var backPressedTime: Long = 0
     private val backPressedInterval: Long = 2000 // 2 seconds
     private val inputEnabled = mutableStateOf(true)
+    private lateinit var chatViewModel: ChatViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val appState = rememberAppState()
+            chatViewModel = appState.chatViewModel
             var isDarkTheme by remember { mutableStateOf(false) }
             Rinku {
                 LaunchedEffect(isDarkTheme) {
@@ -47,9 +52,12 @@ class MainActivity : ComponentActivity() {
                         },
                     )
                 }
-                App(onThemeChange = { darkTheme -> isDarkTheme = darkTheme }, onInputEnabled = {
-                    inputEnabled.value = it
-                },
+                App(
+                    appState = appState,
+                    onThemeChange = { darkTheme -> isDarkTheme = darkTheme },
+                    onInputEnabled = {
+                        inputEnabled.value = it
+                    },
                     lifecycle = essentyLifecycle()
                 )
             }
@@ -58,9 +66,13 @@ class MainActivity : ComponentActivity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
+        val currentState = chatViewModel.chatScreenState.value
+        if (currentState is ChatScreenState.Success && currentState.messages.isNotEmpty()) {
+            chatViewModel.newChat()
+            return
+        }
 
         if (!onBackPressedDispatcher.hasEnabledCallbacks() || inputEnabled.value.not()) {
-            debugLog("inputEnabled.value: ${inputEnabled.value}")
             if (backPressedTime + backPressedInterval > System.currentTimeMillis()) {
                 if (inputEnabled.value.not()) {
                     finish()

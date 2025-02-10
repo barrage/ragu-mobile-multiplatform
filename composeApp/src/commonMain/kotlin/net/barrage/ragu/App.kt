@@ -38,10 +38,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
+import net.barrage.ragu.ui.main.AppState
 import net.barrage.ragu.ui.main.MainContent
 import net.barrage.ragu.ui.main.Overlays
 import net.barrage.ragu.ui.main.navigateToLogin
-import net.barrage.ragu.ui.main.rememberAppState
 import net.barrage.ragu.ui.screens.camera.CameraModal
 import net.barrage.ragu.ui.screens.camera.CameraOptionsModal
 import net.barrage.ragu.ui.screens.camera.CameraSource
@@ -70,10 +70,10 @@ import ragumultiplatform.composeapp.generated.resources.message_evaluated
 fun App(
     modifier: Modifier = Modifier,
     lifecycle: Lifecycle,
+    appState: AppState,
     onThemeChange: ((Boolean) -> Unit)? = null,
     onInputEnabled: ((Boolean) -> Unit)? = null
 ) {
-    val appState = rememberAppState()
     var deepLink by remember { mutableStateOf<DeepLink?>(null) }
     var isDarkTheme by remember { mutableStateOf(true) }
     var selectedTheme by remember { mutableStateOf(White) }

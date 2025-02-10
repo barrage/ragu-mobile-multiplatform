@@ -8,6 +8,7 @@ import dev.gitlive.firebase.initialize
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import net.barrage.ragu.di.KoinHelper
+import net.barrage.ragu.ui.main.rememberAppState
 import net.barrage.ragu.utils.AppContext
 
 /**
@@ -18,7 +19,12 @@ import net.barrage.ragu.utils.AppContext
  *
  * @return A UIViewController that contains the main App composable.
  */
-fun MainViewController() = ComposeUIViewController { App(lifecycle = ApplicationLifecycle()) }
+fun MainViewController() = ComposeUIViewController {
+    App(
+        lifecycle = ApplicationLifecycle(),
+        appState = rememberAppState()
+    )
+}
 
 /**
  * Initializes various components and libraries used in the app.
