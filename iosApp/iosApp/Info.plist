@@ -41,13 +41,5 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to your camera to capture photos for profile pictures and sharing in chats.</string>
-	<key>NSContactsUsageDescription</key>
-	<string>We need access to your contacts to help you connect with your friends who are using the app.</string>
-	<key>NSMotionUsageDescription</key>
-	<string>We need access to motion data to provide enhanced app interactions and features.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to provide location-based features when using the app.</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>We need Bluetooth access to connect with nearby devices for enhanced functionality.</string>
 </dict>
 </plist>

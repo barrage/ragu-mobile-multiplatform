@@ -31,6 +31,7 @@ import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.RequestCanceledException
+import dev.icerock.moko.permissions.camera.CAMERA
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.theolm.rinku.DeepLink
 import dev.theolm.rinku.compose.ext.DeepLinkListener
