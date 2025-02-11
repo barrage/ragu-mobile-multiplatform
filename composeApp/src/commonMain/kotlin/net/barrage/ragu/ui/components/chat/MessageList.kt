@@ -33,7 +33,7 @@ fun MessageList(
         state = lazyListState,
         reverseLayout = true,
     ) {
-        items(messages.reversed()) { item ->
+        items(messages) { item ->
             MessageItem(
                 chatMessage = item,
                 onCopy = onCopy,

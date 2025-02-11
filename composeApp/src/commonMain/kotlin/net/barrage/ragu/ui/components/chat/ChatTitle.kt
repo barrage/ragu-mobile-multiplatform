@@ -106,6 +106,9 @@ fun ChatTitle(
                         else Res.drawable.ic_three_dots
                     ),
                     contentDescription = null,
+                    tint = if (state.isEditingTitle && state.title.length !in 3..255) MaterialTheme.colorScheme.onSurface.copy(
+                        alpha = 0.5f
+                    ) else MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(4.dp),
                 )
             }

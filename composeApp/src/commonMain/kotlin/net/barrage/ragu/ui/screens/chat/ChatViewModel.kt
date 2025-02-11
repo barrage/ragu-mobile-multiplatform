@@ -262,10 +262,10 @@ class ChatViewModel(
     fun updateTitle() {
         viewModelScope.launch {
             val currentState = chatScreenState.value
-            if (currentState is ChatScreenState.Success && !webSocketManager.webSocketChatClient?.currentChatId?.value.isNullOrEmpty() && currentState.chatTitle?.isNotEmpty() == true) {
+            if (currentState is ChatScreenState.Success && !webSocketManager.webSocketChatClient?.tempChatId?.value.isNullOrEmpty() && currentState.chatTitle?.isNotEmpty() == true) {
                 currentState.chatTitle.let { chatTitle ->
                     val response = chatUseCase.updateChatTitle(
-                        webSocketManager.webSocketChatClient?.currentChatId?.value!!,
+                        webSocketManager.webSocketChatClient?.tempChatId?.value!!,
                         chatTitle,
                     )
                     if (response is Response.Success) {
@@ -443,10 +443,10 @@ class ChatViewModel(
                                         val updatedMessages = if (isInitialLoad) {
                                             newMessages.toImmutableList()
                                         } else {
-                                            (currentState.messages.reversed() + newMessages.reversed())
+                                            currentState.messages + newMessages
                                         }
                                         currentState.copy(
-                                            messages = updatedMessages.reversed().toImmutableList(),
+                                            messages = updatedMessages.toImmutableList(),
                                             isLoadingMessages = false
                                         )
                                     }
@@ -773,10 +773,8 @@ class ChatViewModel(
                     when (tempChatScreenState) {
                         is ChatScreenState.Success -> {
                             val tempMessages = tempChatScreenState.messages.toMutableList()
-                            val lastIndex = tempMessages.lastIndex
-                            if (lastIndex >= 0) {
-                                tempMessages[lastIndex] =
-                                    tempMessages[lastIndex].copy(id = messageId)
+                            if (tempMessages.isNotEmpty()) {
+                                tempMessages[0] = tempMessages[0].copy(id = messageId)
                             }
                             tempChatScreenState.copy(
                                 messages = tempMessages.toImmutableList()

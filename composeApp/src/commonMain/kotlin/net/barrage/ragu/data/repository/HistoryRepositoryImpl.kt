@@ -38,8 +38,7 @@ class HistoryRepositoryImpl(private val api: Api) : HistoryRepository {
             try {
                 when (val response = api.getChatMessagesById(chatId, page, pageSize)) {
                     is Response.Success ->
-                        emit(Response.Success(response.data.map { it.toDomain() }
-                            .sortedBy { it.updatedAt }))
+                        emit(Response.Success(response.data.map { it.toDomain() }))
 
                     is Response.Failure -> emit(response)
                     is Response.Unauthorized -> emit(response)

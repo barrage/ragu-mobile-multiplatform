@@ -151,7 +151,7 @@ fun ChatScreen(
     }
 
     if (chatScreenState is ChatScreenState.Success && (chatScreenState as ChatScreenState.Success).messages.isNotEmpty()) {
-        LaunchedEffect((chatScreenState as ChatScreenState.Success).messages.last()) {
+        LaunchedEffect((chatScreenState as ChatScreenState.Success).messages.first()) {
             lazyListState.animateScrollToItem(0)
         }
     }

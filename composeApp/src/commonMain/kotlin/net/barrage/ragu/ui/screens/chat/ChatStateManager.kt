@@ -58,8 +58,10 @@ class ChatStateManager {
             when (currentState) {
                 is ChatScreenState.Success -> {
                     val message = ChatMessageItem(content = messageContent, senderType = senderType)
+                    val updatedMessages = currentState.messages.toMutableList()
+                    updatedMessages.add(0, message)
                     currentState.copy(
-                        messages = (currentState.messages + message).toImmutableList()
+                        messages = updatedMessages.toImmutableList()
                     )
                 }
 
@@ -69,21 +71,22 @@ class ChatStateManager {
     }
 
     /**
-     * Updates the last message in the chat screen state.
+     * Updates the first message in the chat screen state.
      *
      * @param message The new content to append to the last message
      */
     fun updateLastMessage(message: String) {
         updateChatScreenState { currentState ->
             if (currentState is ChatScreenState.Success && currentState.messages.isNotEmpty()) {
-                val lastMessage = currentState.messages.last()
+                val lastMessage = currentState.messages.first()
                 val updatedMessages = currentState.messages.toMutableList()
 
                 if (lastMessage.senderType == SenderType.ASSISTANT) {
-                    updatedMessages[updatedMessages.lastIndex] =
+                    updatedMessages[0] =
                         lastMessage.copy(content = lastMessage.content + message)
                 } else {
                     updatedMessages.add(
+                        0,
                         ChatMessageItem(content = message, senderType = SenderType.ASSISTANT)
                     )
                 }
