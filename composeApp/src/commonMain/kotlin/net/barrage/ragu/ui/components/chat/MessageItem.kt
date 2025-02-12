@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
@@ -34,6 +33,7 @@ import net.barrage.ragu.ui.components.CardVariant
 import net.barrage.ragu.ui.components.CustomCard
 import net.barrage.ragu.ui.components.CustomIconButton
 import net.barrage.ragu.ui.components.NetworkImage
+import net.barrage.ragu.utils.fixUnderscores
 import net.barrage.ragu.utils.getScreenWidth
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -47,7 +47,6 @@ import ragumultiplatform.composeapp.generated.resources.ic_thumb_filled
 import ragumultiplatform.composeapp.generated.resources.negative_evaluation_button_content_description
 import ragumultiplatform.composeapp.generated.resources.positive_evaluation_button_content_description
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MessageItem(
     chatMessage: ChatMessageItem,
@@ -96,7 +95,7 @@ fun MessageItem(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Markdown(
-                        chatMessage.content,
+                        fixUnderscores(chatMessage.content),
                         modifier = Modifier.padding(12.dp).widthIn(max = maxWidth),
                         components =
                         markdownComponents(

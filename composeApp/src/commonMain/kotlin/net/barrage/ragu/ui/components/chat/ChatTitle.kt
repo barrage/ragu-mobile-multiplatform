@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -43,7 +42,6 @@ import ragumultiplatform.composeapp.generated.resources.ic_three_dots
 import ragumultiplatform.composeapp.generated.resources.popup_menu_delete_chat
 import ragumultiplatform.composeapp.generated.resources.popup_menu_edit_title
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ChatTitle(
     state: ChatTitleState,

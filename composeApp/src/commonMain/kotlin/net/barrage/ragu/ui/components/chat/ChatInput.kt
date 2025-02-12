@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
@@ -33,7 +32,6 @@ import net.barrage.ragu.ui.components.CustomIconButton
 import net.barrage.ragu.ui.components.reveal.RevealKeys
 import net.barrage.ragu.ui.theme.customTypography
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ChatInput(
     state: ChatInputState,

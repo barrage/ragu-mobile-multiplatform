@@ -107,8 +107,6 @@ kotlin {
             implementation(libs.reveal.shapes)
             api(libs.gitlive.firebase.kotlin.crashlytics)
             implementation(libs.peekaboo.image.picker)
-            // Commented out until Peekaboo is updated to latest Compose
-            // implementation(libs.peekaboo.ui)
             api(libs.moko.permissions)
             implementation(libs.moko.camera)
             implementation(libs.krop.core)

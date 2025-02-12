@@ -199,8 +199,8 @@ class ChatViewModel(
     fun sendMessage() {
         val currentState = chatScreenState.value
         if (currentState is ChatScreenState.Success && currentState.inputText.isNotEmpty()) {
-            addMessage(currentState.inputText, SenderType.USER)
-            webSocketManager.sendMessage(currentState.inputText)
+            addMessage(currentState.inputText.trim(), SenderType.USER)
+            webSocketManager.sendMessage(currentState.inputText.trim())
             updateInputText("")
         }
     }
